@@ -1,0 +1,126 @@
+<div id="container">
+    <apt-header></apt-header>
+    <div id="wrapper">
+        <div id="content">
+            <div id="box">
+                <h3>Users</h3>
+                <table width="100%">
+                    <thead>
+                    <tr>
+                        <th width="40px"><a href="#">ID<img src="asserts/img/icons/arrow_down_mini.gif" width="16"
+                                                            height="16"
+                                                            align="absmiddle"/></a></th>
+                        <th><a href="#">Full Name</a></th>
+                        <th><a href="#">Email</a></th>
+                        <th width="70px"><a href="#">Group</a></th>
+                        <th><a href="#">Address</a></th>
+                        <th width="90px"><a href="#">Registered</a></th>
+                        <th width="60px"><a href="#">Action</a></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="user in userCtrl.users">
+                        <td class="a-center">{{user.id}}</td>
+                        <td><a href="#">{{user.username}}</a></td>
+                        <td>{{user.email}}</td>
+                        <td>{{user.permission}}</td>
+                        <td>{{user.address}}</td>
+                        <td></td>
+                        <td><a href="#"><img src="asserts/img/icons/user.png" title="Show profile" width="16"
+                                             height="16"/></a><a href="#"><img src="asserts/img/icons/user_edit.png"
+                                                                               title="Edit user" width="16"
+                                                                               height="16"/></a><a href="#"><img
+                                src="asserts/img/icons/user_delete.png" title="Delete user" width="16" height="16"/></a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div id="pager">
+                    Page <a href="#"><img src="asserts/img/icons/arrow_left.gif" width="16" height="16"/></a>
+                    <input size="1" value="1" type="text" name="page" id="page"/>
+                    <a href="#"><img src="asserts/img/icons/arrow_right.gif" width="16" height="16"/></a>of 42
+                    pages | View <select name="view">
+                    <option>10</option>
+                    <option>20</option>
+                    <option>50</option>
+                    <option>100</option>
+                </select>
+                    per page | Total <strong>420</strong> records found
+                </div>
+            </div>
+            <br/>
+            <div id="box">
+                <h3 id="adduser">Add user</h3>
+                <form id="form" ng-submit="userCtrl.addUser()">
+                    <fieldset id="personal">
+                        <legend>PERSONAL INFORMATION</legend>
+                        <label for="lastname">Last name : </label>
+                        <input ng-model="userCtrl.lastname" name="lastname" id="lastname" type="text" tabindex="1"/>
+                        <br/>
+                        <label for="firstname">First name : </label>
+                        <input ng-model="userCtrl.firstname" name="firstname" id="firstname" type="text"
+                               tabindex="2"/>
+                        <br/>
+                        <label for="email">Email : </label>
+                        <input ng-model="userCtrl.user.email" name="email" id="email" type="text"
+                               tabindex="2"/>
+                        <br/>
+
+                        <p>Send auto generated password
+                            <input name="generatepass" id="yes" type="checkbox"
+                                   value="yes" tabindex="35"/></p>
+                        <label for="pass">Password : </label>
+                        <input ng-model="userCtrl.user.pass" name="pass" id="pass" type="password"
+                               tabindex="2"/>
+                        <br/>
+                        <label for="pass-2">Password : </label>
+                        <input ng-model="userCtrl.confpass" name="pass-2" id="pass-2" type="password"
+                               tabindex="2"/>
+                        <br/>
+                    </fieldset>
+                    <fieldset id="address">
+                        <legend>Address</legend>
+                        <label for="street">Street address : </label>
+                        <input ng-model="userCtrl.street" name="street" id="street" type="text"
+                               tabindex="1"/>
+                        <br/>
+                        <label for="city">City : </label>
+                        <input ng-model="userCtrl.city" name="city" id="city" type="text"
+                               tabindex="2"/>
+                        <br/>
+                        <label for="country">Country : </label>
+                        <input ng-model="userCtrl.country" name="country" id="country" type="text"
+                               tabindex="1"/>
+                        <br/>
+                        <label for="state">State/Province : </label>
+                        <input ng-model="userCtrl.state" name="state" id="state" type="text"
+                               tabindex="2"/>
+                        <br/>
+                        <label for="zip">Zip/Postal Code : </label>
+                        <input ng-model="userCtrl.zip" name="zip" id="zip" type="text"
+                               tabindex="2"/>
+                        <br/>
+                    </fieldset>
+                    <fieldset id="opt">
+                        <legend>OPTIONS</legend>
+                        <label for="permission">Group : </label>
+                        <select ng-model="userCtrl.user.permission" name="choice">
+                            <optgroup label="Admin">
+                                <option label="Super Admin" value="1">Super Admin</option>
+                            </optgroup>
+                            <optgroup label="General">
+                                <option label="Customer" value="2">Customer</option>
+                            </optgroup>
+                        </select>
+                    </fieldset>
+                    <div align="center">
+                        <input id="button1" type="submit" value="Send"/>
+                        <input id="button2" type="reset"/>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <apt-sidebar></apt-sidebar>
+    </div>
+    <apt-footer></apt-footer>
+</div>
