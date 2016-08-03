@@ -19,19 +19,14 @@ User.prototype.listUser = function () {
 };
 User.prototype.saveUser = function (user) {
     var self = this;
-    //var sql = 'INSERT INTO `apt_user` (`email`, `username`, `password`, `salt`, `permission`, `address`, `registered`) ' +
-    //    'VALUES ("' + user.email + '", ' +
-    //    '"' + user.username + '", ' +
-    //    '"' + user.password + '", ' +
-    //    '"' + user.salt + '", ' +
-    //    '' + user.permission + ', ' +
-    //    '"' + user.address + '", ' +
-    //    '"' + user.registered + '");';
-
-    var sql = 'INSERT INTO `apt_user` SET ?';
-    connection.query(sql, user, function (err, res) {
-        self.emit('list_user', res.insertId);
+    connection.query('INSERT INTO `apt_user` SET ?', user, function (err, res) {
+        self.emit('save_user', res.insertId);
     });
-
+};
+User.prototype.showUser = function (userId) {
+    var self = this;
+    connection.query('SELECT * FROM `apt_user` WHERE `permission` != 1 AND `id` =' + userId, function (err, rows) {
+        self.emit('show_user', rows);
+    });
 };
 module.exports = new User();

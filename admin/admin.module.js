@@ -38,7 +38,7 @@ aptAdminModule.provider('adminAuthenticate', [function () {
             },
             get: {
                 method: 'GET',
-                params: {action: 'edit'}
+                params: {action: 'showUser'}
             },
             delete: {
                 method: 'DELETE',
@@ -49,7 +49,9 @@ aptAdminModule.provider('adminAuthenticate', [function () {
             }
         });
     }
-]);
+]).constant('validateAddUserErrorCode', {
+    '1': 'You are missing some fields'
+});
 aptAdminModule.run(function ($rootScope, $location, adminAuthenticate) {
     $rootScope.$on('$locationChangeStart',
         function () {
