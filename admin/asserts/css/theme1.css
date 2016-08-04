@@ -58,6 +58,10 @@ thead{
 #box{
 	border:1px solid #d9e6f0;
 }
+#box #adduser-notification{
+    text-align: center;
+    color: #cc0000;
+}
 #box h3{
 	background:#f3f9ff;
 	border-bottom:1px solid #d9e6f0;

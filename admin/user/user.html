@@ -10,7 +10,7 @@
                         <th width="40px"><a href="#">ID<img src="asserts/img/icons/arrow_down_mini.gif" width="16"
                                                             height="16"
                                                             align="absmiddle"/></a></th>
-                        <th><a href="#">Full Name</a></th>
+                        <th><a href="#">Username</a></th>
                         <th><a href="#">Email</a></th>
                         <th width="70px"><a href="#">Group</a></th>
                         <th><a href="#">Address</a></th>
@@ -54,18 +54,15 @@
             </div>
             <br/>
             <div id="box">
-                <h3 id="adduser">Add user</h3>
+                <h3 id="adduser">{{userCtrl.formTitle}}</h3>
+                <p id="adduser-notification">{{userCtrl.notification}}</p>
                 <form id="form" name="addUserForm" ng-submit="userCtrl.addUser()">
                     <fieldset id="personal">
                         <legend>PERSONAL INFORMATION</legend>
-                        <label for="lastname">Last name(*) : </label>
-                        <input ng-model="userCtrl.lastname" name="lastname" id="lastname" type="text" tabindex="1" required/>
-                        <span ng-show="addUserForm.lastname.$touched && addUserForm.lastname.$invalid"
-                              class="help-block">Last name is required</span>
-                        <br/>
-                        <label for="firstname">First name : </label>
-                        <input ng-model="userCtrl.firstname" name="firstname" id="firstname" type="text" value=""
-                               tabindex="2"/>
+                        <label for="username">Username(*) : </label>
+                        <input ng-model="userCtrl.user.username" name="username" id="lastname" type="text" tabindex="1" required/>
+                        <span ng-show="addUserForm.username.$touched && addUserForm.username.$invalid"
+                              class="help-block">Username is required</span>
                         <br/>
                         <label for="email">Email(*) : </label>
                         <input ng-model="userCtrl.user.email" name="email" id="email" type="text"
@@ -89,23 +86,23 @@
                     <fieldset id="address">
                         <legend>Address</legend>
                         <label for="street">Street address : </label>
-                        <input ng-model="userCtrl.street" name="street" id="street" type="text"
+                        <input ng-model="userCtrl.user.street" name="street" id="street" type="text"
                                tabindex="1"/>
                         <br/>
                         <label for="city">City : </label>
-                        <input ng-model="userCtrl.city" name="city" id="city" type="text"
+                        <input ng-model="userCtrl.user.city" name="city" id="city" type="text"
                                tabindex="2"/>
                         <br/>
                         <label for="country">Country : </label>
-                        <input ng-model="userCtrl.country" name="country" id="country" type="text"
+                        <input ng-model="userCtrl.user.country" name="country" id="country" type="text"
                                tabindex="1"/>
                         <br/>
                         <label for="state">State/Province : </label>
-                        <input ng-model="userCtrl.state" name="state" id="state" type="text"
+                        <input ng-model="userCtrl.user.state" name="state" id="state" type="text"
                                tabindex="2"/>
                         <br/>
                         <label for="zip">Zip/Postal Code : </label>
-                        <input ng-model="userCtrl.zip" name="zip" id="zip" type="text"
+                        <input ng-model="userCtrl.user.zipcode  " name="zip" id="zip" type="text"
                                tabindex="2"/>
                         <br/>
                     </fieldset>
@@ -113,20 +110,14 @@
                         <legend>OPTIONS</legend>
                         <label for="choice">Group(*) : </label>
                         <select ng-model="userCtrl.user.permission" name="choice" required>
-                            <optgroup label="Admin">
-                                <option label="Super Admin" value="1">Super Admin</option>
-                            </optgroup>
-                            <optgroup label="General">
-                                <option label="Customer" value="2">Customer</option>
-                            </optgroup>
+                            <option label="Choose a permission" value="">Choose a permission</option>
+                            <option label="Super Admin" value="1">Super Admin</option>
+                            <option label="Customer" value="2">Customer</option>
                         </select>
-                        <span ng-show="addUserForm.choice.$touched && addUserForm.choice.$invalid"
-                              class="help-block">Permission is required</span>
                     </fieldset>
                     <div align="center">(*) is required field</div>
                     <br />
                     <div align="center">
-
                         <input id="button1" type="submit" value="Send"/>
                         <input id="button2" type="reset"/>
                     </div>

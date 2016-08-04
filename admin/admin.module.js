@@ -50,7 +50,11 @@ aptAdminModule.provider('adminAuthenticate', [function () {
         });
     }
 ]).constant('validateAddUserErrorCode', {
-    '1': 'You are missing some fields'
+    '1': 'You are missing some fields',
+    '2': 'Email is exsited',
+    '3': 'Username is exsited',
+    '4': 'Username && Email are exsited'
+
 });
 aptAdminModule.run(function ($rootScope, $location, adminAuthenticate) {
     $rootScope.$on('$locationChangeStart',
