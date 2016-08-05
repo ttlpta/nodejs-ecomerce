@@ -7,6 +7,8 @@ var connection = mysql.createConnection({
 });
 connection.connect();
 var User = function () {
+    this.usernameValidated = false;
+    this.emailValidated = false;
 };
 util.inherits(User, EventEmitter);
 User.prototype.listUser = function () {
@@ -31,22 +33,34 @@ User.prototype.showUser = function (userId) {
         self.emit('show_user', rows[0]);
     });
 };
-User.prototype.validateUser = function (user) {
+User.prototype.validateUser = function (field) {
     var self = this;
-    this.existedField = [];
-    connection.query('SELECT COUNT(*) as countUser FROM `apt_user` WHERE `permission` != 1 AND `username` = ?',
-        [user.username], function (err, rows) {
-            if (!err && rows[0].countUser) {
-                self.existedField.push('username');
-                this.emit('validate_user', self.existedField);
-            }
-        });
-    connection.query('SELECT COUNT(*) as countUser FROM `apt_user` WHERE `permission` != 1 AND `email` = ?',
-        [user.email], function (err, rows) {
-            if (!err && rows[0].countUser) {
-                self.existedField.push('email');
-                this.emit('validate_user', self.existedField);
-            }
-        });
+    if (typeof field.username != 'undefined') {
+        connection.query('SELECT COUNT(*) as countUser FROM `apt_user` WHERE `permission` != 1 AND `username` = ?',
+            [field.username], function (err, rows) {
+                var isExisted = false;
+                if (!err && rows[0].countUser) {
+                    isExisted = true;
+                    self.usernameValidated = false;
+                } else {
+                    self.usernameValidated = true;
+                }
+                self.emit('validate_user', isExisted);
+            });
+    }
+    if (typeof field.email != 'undefined') {
+        connection.query('SELECT COUNT(*) as countUser FROM `apt_user` WHERE `permission` != 1 AND `email` = ?',
+            [field.email], function (err, rows) {
+                var isExisted = false;
+                if (!err && rows[0].countUser) {
+                    isExisted = true;
+                    self.emailValidated = false;
+                } else {
+                    self.emailValidated = true;
+                }
+                self.emit('validate_user', isExisted);
+            });
+    }
+
 };
 module.exports = new User();

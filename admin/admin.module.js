@@ -18,10 +18,10 @@ aptAdminModule.provider('adminAuthenticate', [function () {
                             $cookies.put('apt_session_admin', response.data.hash);
                             callback({success: true});
                         } else {
-                            callback({success: false, message: 'password/username is incorect'})
+                            callback({success: false, errorCode: '1'})
                         }
                     }, function () {
-                        callback({success: false, message: 'password/username is incorect'});
+                        callback({success: false, errorCode: '1'});
                     });
             }
         };
@@ -51,10 +51,13 @@ aptAdminModule.provider('adminAuthenticate', [function () {
     }
 ]).constant('validateAddUserErrorCode', {
     '1': 'You are missing some fields',
-    '2': 'Email is exsited',
-    '3': 'Username is exsited',
-    '4': 'Username && Email are exsited'
+    '2': 'Email is existed',
+    '3': 'Username is existed',
+    '4': 'Username && Email are existed',
+    '5': 'Confirm password is correct'
 
+}).constant('loginErrorCode', {
+    '1': 'Password/Username is incorrect'
 });
 aptAdminModule.run(function ($rootScope, $location, adminAuthenticate) {
     $rootScope.$on('$locationChangeStart',

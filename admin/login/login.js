@@ -2,8 +2,8 @@ var aptLoginModule = angular.module('aptLoginModule', []);
 aptLoginModule.component('login', {
     templateUrl: 'login/login.html',
     controllerAs: 'loginCrl',
-    controller: ['adminAuthenticate', '$location',
-        function loginController(adminAuthenticate, $location) {
+    controller: ['adminAuthenticate', '$location', 'loginErrorCode',
+        function loginController(adminAuthenticate, $location, loginErrorCode) {
             var isAuth = adminAuthenticate.isAuthenticated();
             if (typeof isAuth != 'undefined' && true == isAuth) {
                 $location.path('dashboard');
@@ -15,7 +15,7 @@ aptLoginModule.component('login', {
                     if (response.success) {
                         $location.path('dashboard');
                     } else {
-                        self.message = response.message;
+                        self.message = loginErrorCode[response.errorCode];
                     }
                 });
             }

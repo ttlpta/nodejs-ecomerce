@@ -9,7 +9,7 @@ aptUserModule.component('user', {
         this.formTitle = 'Add user';
         this.addUser = function () {
             if (self.user.password != self.confpass) {
-                alert('Confirm password is correct');
+                self.notification = validateAddUserErrorCode['5'];
                 return;
             }
             self.user.registered = new Date();
@@ -18,15 +18,31 @@ aptUserModule.component('user', {
                     alert('Insert user succress');
                     location.reload();
                 } else {
-                    console.log(data.errorCode);
                     self.notification = validateAddUserErrorCode[data.errorCode];
                 }
             });
         };
         this.editUser = function (userId) {
-            self.formTitle = 'Edit user '+userId;
+            self.formTitle = 'Edit user ' + userId;
             self.user = userService.get({id: userId});
         };
+        this.validateField = function (field) {
+            var param = {};
+            if (field == 'username' && self.user.username) {
+                param.username = self.user.username;
+                if (!$.isEmptyObject(param)) {
+                    $http.get("/admin/validateUser", {params: param}).then(function (response) {
+                        if (response.data.isExisted) {
+                            self.notification = validateAddUserErrorCode[response.data.errorCode];
+                        } else {
+                            self.notification = '';
+                        }
+                    });
+                }
+            } else if (field == 'email' && self.user.email) {
+                param.email = self.user.email;
+            }
+        }
     }]
 
 });

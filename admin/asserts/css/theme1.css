@@ -58,7 +58,7 @@ thead{
 #box{
 	border:1px solid #d9e6f0;
 }
-#box #adduser-notification{
+#box .adduser-notification{
     text-align: center;
     color: #cc0000;
 }

@@ -53,34 +53,41 @@
                 </div>
             </div>
             <br/>
+
             <div id="box">
                 <h3 id="adduser">{{userCtrl.formTitle}}</h3>
-                <p id="adduser-notification">{{userCtrl.notification}}</p>
+                <!--<p class="adduser-notification">{{userCtrl.notification}}</p>-->
                 <form id="form" name="addUserForm" ng-submit="userCtrl.addUser()">
                     <fieldset id="personal">
                         <legend>PERSONAL INFORMATION</legend>
                         <label for="username">Username(*) : </label>
-                        <input ng-model="userCtrl.user.username" name="username" id="lastname" type="text" tabindex="1" required/>
+                        <input ng-blur="userCtrl.validateField('username')" ng-model="userCtrl.user.username"
+                               name="username" id="lastname" type="text" tabindex="1" required/>
                         <span ng-show="addUserForm.username.$touched && addUserForm.username.$invalid"
-                              class="help-block">Username is required</span>
+                              class="help-block adduser-notification">Username is required</span>
+                        <span class="help-block adduser-notification"
+                              ng-model="userCtrl.validateUsernameNotification"></span>
                         <br/>
                         <label for="email">Email(*) : </label>
-                        <input ng-model="userCtrl.user.email" name="email" id="email" type="text"
+                        <input ng-blur="userCtrl.validateField('email')" ng-model="userCtrl.user.email" name="email"
+                               id="email" type="text"
                                tabindex="2" required/>
                         <span ng-show="addUserForm.email.$touched && addUserForm.email.$invalid"
-                              class="help-block">Email is required</span>
+                              class="help-block adduser-notification">Email is required</span>
+                        <span class="help-block adduser-notification"
+                              ng-model="userCtrl.validateEmailNotification"></span>
                         <br/>
                         <label for="pass">Password(*) : </label>
                         <input ng-model="userCtrl.user.password" name="pass" id="pass" type="password"
                                tabindex="2" required/>
                         <span ng-show="addUserForm.pass.$touched && addUserForm.pass.$invalid"
-                               class="help-block">Password is required</span>
+                              class="help-block adduser-notification">Password is required</span>
                         <br/>
                         <label for="pass-2">Retype Password(*) : </label>
                         <input ng-model="userCtrl.confpass" name="pass2" id="pass-2" type="password"
                                tabindex="2" required/>
                         <span ng-show="addUserForm.pass2.$touched && addUserForm.pass2.$invalid"
-                              class="help-block">Retype Password is required</span>
+                              class="help-block adduser-notification">Retype Password is required</span>
                         <br/>
                     </fieldset>
                     <fieldset id="address">
@@ -114,9 +121,12 @@
                             <option label="Super Admin" value="1">Super Admin</option>
                             <option label="Customer" value="2">Customer</option>
                         </select>
+                         <span ng-show="addUserForm.choice.$touched && addUserForm.choice.$invalid"
+                               class="help-block adduser-notification">Group is required</span>
                     </fieldset>
                     <div align="center">(*) is required field</div>
-                    <br />
+                    <br/>
+
                     <div align="center">
                         <input id="button1" type="submit" value="Send"/>
                         <input id="button2" type="reset"/>
