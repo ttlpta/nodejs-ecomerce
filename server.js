@@ -3,6 +3,7 @@ var app = express();
 var bodyParser = require('body-parser');
 var helper = require('./helper');
 var user = require('./user');
+user.setMaxListeners(0);
 app.set('view engine', 'html');
 app.engine('html', require('ejs').renderFile);
 app.use(bodyParser.urlencoded({extended: false}));
@@ -26,7 +27,6 @@ app.post('/admin/login', function (req, res) {
     admin.isAdmin(username, password);
 });
 app.get('/admin/user', function (req, res) {
-    user.setMaxListeners(0);
     if (typeof req.query.action != 'undefined') {
         switch (req.query.action) {
             case 'listUser':
@@ -37,59 +37,70 @@ app.get('/admin/user', function (req, res) {
                         value.address = value.street + ',' + value.city + ',' + value.country + ',' + value.state + ',' + value.zipcode;
                         here.users.push(value);
                     });
-                    res.end(JSON.stringify(this.users));
+                    res.json(this.users);
                 });
-                user.listUser();
+                user.listUser(req.query.limit, req.query.offset);
                 break;
             case 'showUser':
                 var userId = req.query.id;
-                user.once('show_user', function (users) {
-                    users.permission = users.permission.toString();
-                    res.end(JSON.stringify(users));
+                user.once('show_user', function (result) {
+                    if (result.success) {
+                        result.user.permission = result.user.permission.toString();
+                        res.json(result.user);
+                    } else {
+                        res.json(result);
+                    }
                 });
                 user.showUser(userId);
+                break;
+            case 'getTotalUser':
+                user.once('total_user', function (result) {
+                    res.json(result);
+                });
+                user.totalUser();
                 break;
         }
     }
 });
 app.post('/admin/user', function (req, res) {
     if (typeof req.body != 'undefined') {
-        if (!user.usernameValidated) {
-            res.end(JSON.stringify({lastInsertId: 0, errorCode: 3}));
-        } else if (!user.emailValidated) {
-            res.end(JSON.stringify({lastInsertId: 0, errorCode: 2}));
-        } else if (!req.body.username || !req.body.email || !req.body.password || !req.body.permission) {
-            res.end(JSON.stringify({lastInsertId: 0, errorCode: 1}));
-        } else {
-            user.once('save_user', function (lastUsersId) {
-                res.end(JSON.stringify({lastInsertId: lastUsersId}));
-            });
-            user.saveUser(req.body);
-        }
+        user.once('save_user', function (userId) {
+            res.json({userId: userId});
+        });
+        user.saveUser(req.body);
     }
 });
+
+app.delete('/admin/user', function (req, res) {
+    if (typeof req.query.id != 'undefined' && req.query.id) {
+        var userId = req.query.id;
+        user.once('delete_user', function (result) {
+            res.json(result);
+        });
+        user.deleteUser(userId);
+    }
+});
+
 app.get('/admin/validateUser', function (req, res) {
     if (typeof req.query.username != 'undefined') {
-        var username = req.query.username;
         user.once('validate_user', function (isExisted) {
             if (isExisted) {
-                res.end(JSON.stringify({isExisted: true, errorCode: 3}));
+                res.json({isExisted: true, errorCode: 3});
             } else {
-                res.end(JSON.stringify({isExisted: false}));
+                res.json({isExisted: false});
             }
         });
-        user.validateUser({'username': username});
+        user.validateUser(req.query);
     }
     if (typeof req.query.email != 'undefined') {
-        var email = req.query.email;
         user.once('validate_user', function (isExisted) {
             if (isExisted) {
-                res.end(JSON.stringify({isExisted: true, errorCode: 2}));
+                res.json({isExisted: true, errorCode: 2});
             } else {
-                res.end(JSON.stringify({isExisted: false}));
+                res.json({isExisted: false});
             }
         });
-        user.validateUser({'email': email});
+        user.validateUser(req.query);
     }
 });
 var server = app.listen(8081, function () {

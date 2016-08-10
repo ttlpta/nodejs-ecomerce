@@ -36,16 +36,8 @@ aptAdminModule.provider('adminAuthenticate', [function () {
                 params: {action: 'listUser'},
                 isArray: true
             },
-            get: {
-                method: 'GET',
-                params: {action: 'showUser'}
-            },
             delete: {
-                method: 'DELETE',
-                params: {action: 'delete'}
-            },
-            save: {
-                method: 'POST'
+                method: 'DELETE'
             }
         });
     }
@@ -54,7 +46,8 @@ aptAdminModule.provider('adminAuthenticate', [function () {
     '2': 'Email is existed',
     '3': 'Username is existed',
     '4': 'Username && Email are existed',
-    '5': 'Confirm password is correct'
+    '5': 'Confirm password is incorrect',
+    '6': 'User do not exist'
 
 }).constant('loginErrorCode', {
     '1': 'Password/Username is incorrect'
