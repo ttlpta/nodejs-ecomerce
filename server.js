@@ -3,6 +3,8 @@ var app = express();
 var bodyParser = require('body-parser');
 var helper = require('./helper');
 var user = require('./user');
+var userGroup = require('./usergroup');
+var permission = require('./permission');
 user.setMaxListeners(0);
 app.set('view engine', 'html');
 app.engine('html', require('ejs').renderFile);
@@ -10,6 +12,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use(express.static(__dirname));
 app.use(express.static(__dirname + '/admin/asserts'));
+// Admin Login module
 app.post('/admin/login', function (req, res) {
     var username = req.body.username;
     var password = req.body.password;
@@ -26,6 +29,7 @@ app.post('/admin/login', function (req, res) {
     });
     admin.isAdmin(username, password);
 });
+// Admin User module
 app.get('/admin/user', function (req, res) {
     if (typeof req.query.action != 'undefined') {
         switch (req.query.action) {
@@ -39,7 +43,7 @@ app.get('/admin/user', function (req, res) {
                     });
                     res.json(this.users);
                 });
-                user.listUser(req.query.limit, req.query.offset);
+                user.listUser(req.query.limit, req.query.offset, req.query.orderBy, req.query.sort);
                 break;
             case 'showUser':
                 var userId = req.query.id;
@@ -62,25 +66,6 @@ app.get('/admin/user', function (req, res) {
         }
     }
 });
-app.post('/admin/user', function (req, res) {
-    if (typeof req.body != 'undefined') {
-        user.once('save_user', function (userId) {
-            res.json({userId: userId});
-        });
-        user.saveUser(req.body);
-    }
-});
-
-app.delete('/admin/user', function (req, res) {
-    if (typeof req.query.id != 'undefined' && req.query.id) {
-        var userId = req.query.id;
-        user.once('delete_user', function (result) {
-            res.json(result);
-        });
-        user.deleteUser(userId);
-    }
-});
-
 app.get('/admin/validateUser', function (req, res) {
     if (typeof req.query.username != 'undefined') {
         user.once('validate_user', function (isExisted) {
@@ -101,6 +86,49 @@ app.get('/admin/validateUser', function (req, res) {
             }
         });
         user.validateUser(req.query);
+    }
+});
+app.post('/admin/user', function (req, res) {
+    if (typeof req.body != 'undefined') {
+        user.once('save_user', function (userId) {
+            res.json({userId: userId});
+        });
+        user.saveUser(req.body);
+    }
+});
+app.delete('/admin/user', function (req, res) {
+    if (typeof req.query.id != 'undefined' && req.query.id) {
+        var userId = req.query.id;
+        user.once('delete_user', function (result) {
+            res.json(result);
+        });
+        user.deleteUser(userId);
+    }
+});
+// Admin User Group module
+app.get('/admin/usergroup', function (req, res) {
+    if (typeof req.query.action != 'undefined') {
+        switch (req.query.action) {
+            case 'listUserGroup':
+                userGroup.once('list_group', function (groups) {
+                    res.json(groups);
+                });
+                userGroup.listGroup();
+                break;
+        }
+    }
+});
+// Admin Permission module
+app.get('/admin/permission', function (req, res) {
+    if (typeof req.query.action != 'undefined') {
+        switch (req.query.action) {
+            case 'listPermission':
+                permission.once('list_permission', function (permissions) {
+                    res.json(permissions);
+                });
+                permission.listPermission();
+                break;
+        }
     }
 });
 var server = app.listen(8081, function () {

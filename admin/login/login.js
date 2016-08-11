@@ -1,4 +1,4 @@
-var aptLoginModule = angular.module('aptLoginModule', []);
+var aptLoginModule = angular.module('aptLoginModule', ['aptLoginHelper']);
 aptLoginModule.component('login', {
     templateUrl: 'login/login.html',
     controllerAs: 'loginCrl',

@@ -1,11 +1,7 @@
-var mysql = require('mysql'), util = require('util'), EventEmitter = require('events').EventEmitter, helper = require('./helper');
-var connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'nodejs'
-});
-connection.connect();
+var connection = require('./connection'),
+    util = require('util'),
+    EventEmitter = require('events').EventEmitter,
+    helper = require('./helper');
 var Admin = function () {
 };
 util.inherits(Admin, EventEmitter);

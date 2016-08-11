@@ -1,4 +1,4 @@
-var aptUserModule = angular.module('aptUserModule', []);
+var aptUserModule = angular.module('aptUserModule', ['aptUserHelper']);
 aptUserModule.component('user', {
     templateUrl: 'user/user.html',
     controllerAs: 'userCtrl',
@@ -7,27 +7,29 @@ aptUserModule.component('user', {
             var self = this;
             this.user = new userService();
             this.currentPage = 1;
-            this.limitItemPerPage = 3;
-            this.users = userService.query({offset: this.currentPage - 1, limit: this.limitItemPerPage}, function () {
-                $http.get("/admin/user", {params: {action: 'getTotalUser'}}).then(function (response) {
-                    self.totalUser = response.data.total;
-                    self.totalPage = Math.ceil(response.data.total / self.limitItemPerPage);
+            this.limitItemPerPage = '10';
+            this.orderBy = 'id';
+            this.sort = 'asc';
+            var _listUser = function () {
+                return userService.query({
+                    offset: (self.currentPage - 1) * self.limitItemPerPage,
+                    limit: self.limitItemPerPage,
+                    orderBy: self.orderBy,
+                    sort: self.sort
+                }, function () {
+                    _preparePagination();
                 });
-            });
+            };
+            this.users = _listUser();
             this.formTitle = 'Add user';
             this.saveUser = function () {
-                if (!self.isValidatedUser())
+                if (!_isValidatedUser())
                     return false;
                 self.user.registered = new Date();
                 self.user.$save(function (data) {
                     if (+data.userId > 0) {
                         alert('Insert user success');
-                        self.users = userService.query({offset: self.currentPage - 1, limit: self.limitItemPerPage}, function () {
-                            $http.get("/admin/user", {params: {action: 'getTotalUser'}}).then(function (response) {
-                                self.totalUser = response.data.total;
-                                self.totalPage = Math.ceil(response.data.total / self.limitItemPerPage);
-                            });
-                        });
+                        self.users = _listUser();
                     } else {
                         self.notification = errorMsg[data.errorCode];
                     }
@@ -53,12 +55,7 @@ aptUserModule.component('user', {
                 if (confirm) {
                     userService.delete({id: userId}, function (result) {
                         if (result.success) {
-                            self.users = userService.query({offset: self.currentPage - 1, limit: self.limitItemPerPage}, function () {
-                                $http.get("/admin/user", {params: {action: 'getTotalUser'}}).then(function (response) {
-                                    self.totalUser = response.data.total;
-                                    self.totalPage = Math.ceil(response.data.total / self.limitItemPerPage);
-                                });
-                            });
+                            self.users = _listUser();
                         } else {
                             alert(result.errorMsg);
                         }
@@ -116,37 +113,47 @@ aptUserModule.component('user', {
                         break;
                 }
             };
-
-            this.isValidatedUser = function () {
+            this.movePage = function (action) {
+                switch (action) {
+                    case 'previous':
+                        self.currentPage = +self.currentPage - 1;
+                        break;
+                    case 'next':
+                        self.currentPage = +self.currentPage + 1;
+                        break;
+                    case 'specific':
+                        if (isNaN(self.currentPage)) {
+                            return;
+                        }
+                        break;
+                }
+                var offset = (self.currentPage - 1) * self.limitItemPerPage;
+                self.users = _listUser();
+            };
+            this.changeLimitItemPerPage = function () {
+                self.users = _listUser();
+            };
+            this.sortItem = function (field) {
+                self.orderBy = field;
+                self.sort = (self.sort === 'asc') ? 'desc' : 'asc';
+                self.users = _listUser()
+            };
+            this.changeAddUserForm = function () {
+                self.formTitle = 'Add user';
+                self.user = new userService();
+            };
+            var _preparePagination = function () {
+                $http.get("/admin/user", {params: {action: 'getTotalUser'}}).then(function (response) {
+                    self.totalUser = response.data.total;
+                    self.totalPage = Math.ceil(response.data.total / self.limitItemPerPage);
+                });
+            };
+            var _isValidatedUser = function () {
                 return (!self.validateUsernameNotification
                 && !self.validateEmailNotification
                 && !self.validateConfirmPassNotification
                 && !self.validatePasswordNotification
                 && !self.validatePermissionNotification);
             };
-
-            this.changeAddUserForm = function () {
-                self.formTitle = 'Add user';
-                self.user = new userService();
-            };
-
-            this.previousPage = function () {
-                self.currentPage = self.currentPage - 1;
-                var offset = (self.currentPage - 1) * self.limitItemPerPage;
-                self.users = userService.query({offset: offset, limit: self.limitItemPerPage});
-            };
-
-            this.nextPage = function () {
-                self.currentPage = self.currentPage + 1;
-                var offset = (self.currentPage - 1) * self.limitItemPerPage;
-                self.users = userService.query({offset: offset, limit: self.limitItemPerPage});
-            };
-
-            this.gotoPage = function () {
-                if(!isNaN(self.currentPage)){
-                    var offset = (self.currentPage - 1) * self.limitItemPerPage;
-                    self.users = userService.query({offset: offset, limit: self.limitItemPerPage});
-                }
-            }
         }]
 });

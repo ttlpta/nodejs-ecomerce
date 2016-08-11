@@ -1,5 +1,14 @@
 <div id="container">
     <apt-header></apt-header>
+    <div id="top-panel">
+        <div id="panel">
+            <ul>
+                <li><a href="javascript:void(0)" ng-click="userCtrl.changeAddUserForm()" class="useradd">Add user</a></li>
+                <li><a href="#/usergroup" class="group">User groups</a></li>
+                <li><a href="javascript:void(0)" class="online">Users online</a></li>
+            </ul>
+        </div>
+    </div>
     <div id="wrapper">
         <div id="content">
             <div id="box">
@@ -7,21 +16,22 @@
                 <table width="100%">
                     <thead>
                     <tr>
-                        <th width="40px"><a href="#">ID<img src="asserts/img/icons/arrow_down_mini.gif" width="16"
-                                                            height="16"
-                                                            align="absmiddle"/></a></th>
-                        <th><a href="#">Username</a></th>
-                        <th><a href="#">Email</a></th>
-                        <th width="70px"><a href="#">Group</a></th>
-                        <th><a href="#">Address</a></th>
-                        <th width="90px"><a href="#">Registered</a></th>
-                        <th width="60px"><a href="#">Action</a></th>
+                        <th width="40px"><a ng-click="userCtrl.sortItem('id')" href="javascript:void(0)">ID<img
+                                src="asserts/img/icons/arrow_down_mini.gif" width="16"
+                                height="16"
+                                align="absmiddle"/></a></th>
+                        <th><a href="javascript:void(0)">Username</a></th>
+                        <th><a href="javascript:void(0)">Email</a></th>
+                        <th width="70px"><a href="javascript:void(0)">Group</a></th>
+                        <th><a href="javascript:void(0)">Address</a></th>
+                        <th width="90px"><a href="javascript:void(0)">Registered</a></th>
+                        <th width="60px"><a href="javascript:void(0)">Action</a></th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr ng-repeat="user in userCtrl.users">
                         <td class="a-center">{{user.id}}</td>
-                        <td><a href="#">{{user.username}}</a></td>
+                        <td><a href="javascript:void(0)">{{user.username}}</a></td>
                         <td>{{user.email}}</td>
                         <td>{{user.permission}}</td>
                         <td>{{user.address}}</td>
@@ -41,16 +51,20 @@
                 </table>
                 <div id="pager">
                     Page <a ng-show="userCtrl.currentPage > 1" href="javascript:void(0)"
-                            ng-click="userCtrl.previousPage()"><img src="asserts/img/icons/arrow_left.gif" width="16"
-                                                                    height="16"/></a>
-                    <input ng-keypress="$event.keyCode == 13 && userCtrl.gotoPage()" size="1" ng-model="userCtrl.currentPage" type="text" name="page" id="page"/>
-                    <a ng-show="userCtrl.currentPage < userCtrl.totalPage" href="javascript:void(0)" ng-click="userCtrl.nextPage()"><img
-                            src="asserts/img/icons/arrow_right.gif" width="16" height="16"/></a>of {{userCtrl.totalPage}}
+                            ng-click="userCtrl.movePage('previous')"><img src="asserts/img/icons/arrow_left.gif"
+                                                                          width="16"
+                                                                          height="16"/></a>
+                    <input ng-keypress="$event.keyCode == 13 && userCtrl.movePage('specific')" size="1"
+                           ng-model="userCtrl.currentPage" type="text" name="page" id="page"/>
+                    <a ng-show="userCtrl.currentPage < userCtrl.totalPage" href="javascript:void(0)"
+                       ng-click="userCtrl.movePage('next')"><img
+                            src="asserts/img/icons/arrow_right.gif" width="16" height="16"/></a>of
+                    {{userCtrl.totalPage}}
                     pages | View
-                    <select name="view">
-                        <option>3</option>
-                        <option>6</option>
-                        <option>9</option>
+                    <select ng-model="userCtrl.limitItemPerPage" ng-change="userCtrl.changeLimitItemPerPage()">
+                        <option>10</option>
+                        <option>20</option>
+                        <option>50</option>
                     </select>
                     per page | Total <strong>{{userCtrl.totalUser}}</strong> records found
                 </div>

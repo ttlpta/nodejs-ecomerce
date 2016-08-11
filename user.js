@@ -1,24 +1,20 @@
-var mysql = require('mysql'), util = require('util'), EventEmitter = require('events').EventEmitter, helper = require('./helper');
-var connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'nodejs'
-});
-connection.connect();
+var connection = require('./connection'),
+    util = require('util'),
+    EventEmitter = require('events').EventEmitter,
+    helper = require('./helper');
 var User = function () {
     this.usernameValidated = false;
     this.emailValidated = false;
 };
 util.inherits(User, EventEmitter);
-User.prototype.listUser = function (limit, offset) {
+User.prototype.listUser = function (limit, offset, orderBy, sort) {
     var self = this;
     var sql = 'SELECT `id`, `email`, `username`, `permission`, `street`, `registered`, `city`, `country`, `state`, `zipcode`' +
-        ' FROM `apt_user` WHERE `permission` != 1 LIMIT ? OFFSET ? ';
+        ' FROM `apt_user` WHERE `permission` != 1 ORDER BY `' + orderBy + '` ' + sort + ' LIMIT ? OFFSET ? ';
+
     connection.query(sql, [+limit, +offset], function (err, rows) {
         self.emit('list_user', rows);
     });
-
 };
 User.prototype.saveUser = function (user) {
     var self = this;

@@ -10,6 +10,9 @@ aptAdminModule.config(['$routeProvider',
             .when('/user', {
                 template: '<user></user>'
             })
+            .when('/usergroup', {
+                template: '<usergroup></usergroup>'
+            })
             .otherwise('/login');
     }
 ]);
