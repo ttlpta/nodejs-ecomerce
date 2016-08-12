@@ -3,8 +3,6 @@ var connection = require('./connection'),
     EventEmitter = require('events').EventEmitter,
     helper = require('./helper');
 var User = function () {
-    this.usernameValidated = false;
-    this.emailValidated = false;
 };
 util.inherits(User, EventEmitter);
 User.prototype.listUser = function (limit, offset, orderBy, sort) {
@@ -75,9 +73,6 @@ User.prototype.validateUser = function (field) {
             var isExisted = false;
             if (!err && rows[0].countUser) {
                 isExisted = true;
-                self.usernameValidated = false;
-            } else {
-                self.usernameValidated = true;
             }
             self.emit('validate_user', isExisted);
         });
@@ -94,9 +89,6 @@ User.prototype.validateUser = function (field) {
             var isExisted = false;
             if (!err && rows[0].countUser) {
                 isExisted = true;
-                self.emailValidated = false;
-            } else {
-                self.emailValidated = true;
             }
             self.emit('validate_user', isExisted);
         });

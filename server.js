@@ -17,15 +17,17 @@ app.post('/admin/login', function (req, res) {
     var username = req.body.username;
     var password = req.body.password;
     var admin = require('./admin');
-    admin.once('authenticate_admin', function (isAdmin) {
+    admin.once('authenticate_admin', function (auth) {
         var result;
-        if (isAdmin) {
-            var hash = helper.encodeBase64(username + '-' + password);
-            result = {success: isAdmin, hash: hash};
+        if (auth.success) {
+            result = {success: true, hash: auth.hash};
+            if (typeof auth.isSuperAdmin != 'undefined') {
+                result = {success: true, hash: 'superAdmin'};
+            }
         } else {
             result = {success: false};
         }
-        res.end(JSON.stringify(result));
+        res.json(result);
     });
     admin.isAdmin(username, password);
 });
@@ -115,7 +117,40 @@ app.get('/admin/usergroup', function (req, res) {
                 });
                 userGroup.listGroup();
                 break;
+            case 'showUserGroup':
+                userGroup.once('show_group', function (result) {
+                    if (result.success) {
+                        var groups = result.group;
+                        var permission = [];
+                        var group = {
+                            'group_id': groups[0].group_id,
+                            'group_name': groups[0].group_name
+                        };
+                        groups.forEach(function (value) {
+                            permission.push(value.code);
+                        });
+                        if(permission)
+                            group.permission = permission;
+                        res.json(group);
+                    } else {
+                        res.json(result);
+                    }
+                });
+                userGroup.showGroup(req.query.id);
+                break;
         }
+    }
+});
+app.get('/admin/validateGroupUser', function (req, res) {
+    if (typeof req.query.groupName != 'undefined') {
+        userGroup.once('validate_group', function (isExisted) {
+            if (isExisted) {
+                res.json({isExisted: true, errorCode: 1});
+            } else {
+                res.json({isExisted: false});
+            }
+        });
+        userGroup.validateGroup(req.query);
     }
 });
 // Admin Permission module

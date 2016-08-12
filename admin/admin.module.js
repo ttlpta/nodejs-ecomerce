@@ -4,10 +4,7 @@ aptAdminModule.provider('adminAuthenticate', [function () {
     this.$get = ['$http', '$cookies', function ($http, $cookies) {
         var $auth = {};
         $auth.isAuthenticated = function () {
-            if (typeof $cookies.get('apt_session_admin') != 'undefined') {
-                return true;
-            }
-            return false;
+            return (typeof $cookies.get('apt_session_admin') != 'undefined')
         };
         $auth.login = function (username, password, callback) {
             if (!username || !password) {
@@ -26,6 +23,9 @@ aptAdminModule.provider('adminAuthenticate', [function () {
                     });
             }
         };
+        $auth.isSuperAdmin = function () {
+            return (this.isAuthenticated() && $cookies.get('apt_session_admin') == 'superAdmin');
+        };
 
         return $auth;
     }];
@@ -36,6 +36,11 @@ aptAdminModule.run(function ($rootScope, $location, adminAuthenticate) {
             var isAuth = adminAuthenticate.isAuthenticated();
             if (typeof isAuth == 'undefined' || false == isAuth) {
                 $location.path('login');
+            } else if (!adminAuthenticate.isSuperAdmin()) {
+                var path = $location.path().replace('/', '');
+                if (path == 'usergroup') {
+                    $location.path('user');
+                }
             }
         });
 });

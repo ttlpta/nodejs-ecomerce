@@ -2,7 +2,7 @@ aptAdminModule.component('aptHeader', {
     templateUrl: 'inc/header.html',
     controllerAs: 'headerCtr',
     controller: ['$route', '$routeParams', '$location', function headerController($route, $routeParams, $location){
-        this.currentCat = $location.path().replace('/','');;
+        this.currentCat = $location.path().replace('/','');
     }]
 });
 aptAdminModule.component('aptSidebar', {

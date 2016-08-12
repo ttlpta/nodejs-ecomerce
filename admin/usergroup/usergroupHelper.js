@@ -19,4 +19,6 @@ aptUserGroupHelper.factory('userGroupService', ['$resource',
             }
         });
     }
-]);
+]).constant('validateAddGroupErrorCode', {
+    '1': 'Group name is existed'
+});
