@@ -47,9 +47,7 @@
 
             <div id="box">
                 <h3 id="adduser">{{userGroupCrl.formTitle}}</h3>
-
                 <p class="adduser-notification">{{userGroupCrl.notification}}</p>
-
                 <form id="form" name="addUserForm" ng-submit="userGroupCrl.saveGroup()">
                     <fieldset id="personal">
                         <legend>GROUP INFORMATION</legend>
@@ -67,25 +65,23 @@
                             <thead>
                             <tr>
                                 <th><a href="javascript:void(0)">Permission</a></th>
-                                <th width="60px"><a href="javascript:void(0)">Not Set</a></th>
-                                <th width="60px"><a href="javascript:void(0)">Allow</a></th>
-                                <th width="60px"><a href="javascript:void(0)">Never</a></th>
+                                <th width="60px"><a href="javascript:void(0)" ng-click="userGroupCrl.checkAllPermission(1)">Allow</a></th>
+                                <th width="60px"><a href="javascript:void(0)" ng-click="userGroupCrl.checkAllPermission(2)">Deny</a></th>
                             </tr>
                             </thead>
                             <tbody>
-                            <!-- userGroupCrl.group.permission-->
                             <tr ng-repeat="permission in userGroupCrl.permissions">
                                 <td style="text-align: center;">{{permission.name}}</td>
                                 <td style="text-align: center;"><input
-                                        ng-checked="!userGroupCrl.checkedPermission(permission.code, userGroupCrl.group.permission)"
-                                        name="{{permission.code}}" value="1"
+                                        ng-checked="userGroupCrl.checkedPermission(permission.code, userGroupCrl.group.permission)"
+                                        ng-model="userGroupCrl.permission[permission.code]"
+                                        value="1"
                                         type="radio"/></td>
                                 <td style="text-align: center;"><input
-                                        ng-checked="userGroupCrl.checkedPermission(permission.code, userGroupCrl.group.permission)"
-                                        name="{{permission.code}}" value="2"
+                                        ng-checked="!userGroupCrl.checkedPermission(permission.code, userGroupCrl.group.permission)"
+                                        ng-model="userGroupCrl.permission[permission.code]"
+                                        value="2"
                                         type="radio"/></td>
-                                <td style="text-align: center;"><input name="{{permission.code}}" value="3"
-                                                                       type="radio"/></td>
                             </tr>
                             </tbody>
                         </table>
