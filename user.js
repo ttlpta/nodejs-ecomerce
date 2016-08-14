@@ -44,7 +44,7 @@ User.prototype.showUser = function (userId) {
             result = {success: false, errorCode: 6};
         }
         self.emit('show_user', result);
-    });
+    }); 
 };
 User.prototype.deleteUser = function (userId) {
     var self = this;
