@@ -21,7 +21,6 @@ User.prototype.saveUser = function (user) {
             user.salt = helper.randomString();
             user.password = helper.encodeBase64(user.password) + user.salt;
         }
-
         connection.query('UPDATE `apt_user` SET ? WHERE `id` = ?', [user, user.id], function (err, res) {
             self.emit('save_user', (res.changedRows) ? user.id : 0);
         });

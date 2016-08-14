@@ -10,7 +10,7 @@ Admin.prototype.isAdmin = function (username, password) {
     var sql = 'SELECT `id`, `permission`, `password`, `salt` FROM `apt_user` ' +
         'WHERE `username` = ? AND `permission`= 1';
     connection.query(sql, [username], function (err, rows) {
-        var result;
+        var result = {success: false};
         if (!err && rows[0]) {
             var encryptPassword = helper.encodeBase64(password) + rows[0].salt;
             if (encryptPassword === rows[0].password) {

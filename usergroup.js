@@ -1,7 +1,6 @@
 var connection = require('./connection'),
     util = require('util'),
-    EventEmitter = require('events').EventEmitter,
-    helper = require('./helper');
+    EventEmitter = require('events').EventEmitter;
 var UserGroup = function () {
     this.groupNameValidated = false;
 };
@@ -53,6 +52,25 @@ UserGroup.prototype.validateGroup = function (group) {
             isExisted = true;
         }
         self.emit('validate_group', isExisted);
+    });
+};
+UserGroup.prototype.saveGroup = function (group) {
+    var self = this;
+    connection.beginTransaction(function(err) {
+        if(err) throw err;
+        if (typeof group.id != 'undefined') {
+            if (group.groupName) {
+                connection.query('UPDATE `apt_user` SET `group_name` = ? WHERE `id` = ?', [group.groupName, +group.id],
+                    function (err, res) {
+                        if(err){
+                            connection.rollback(function(){
+                                throw err;
+                            });
+                        }
+                        self.emit('save_user', (res.changedRows) ? user.id : 0);
+                    });
+            }
+        }
     });
 };
 module.exports = new UserGroup();

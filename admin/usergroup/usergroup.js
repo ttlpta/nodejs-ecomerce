@@ -20,19 +20,21 @@ aptUserModule.component('usergroup', {
                 });
             };
             this.saveGroup = function () {
+                if(!_isValidatedGroup())
+                    return;
                 var allowPermissions = [];
                 angular.forEach(self.permission, function (value, key) {
                     if (+value == 1) {
                         allowPermissions.push(key);
                     }
                 });
-                console.log(permissions);
-                //var group = new userGroupService();
-                //group.groupName = self.group.group_name;
-                //group.permission = permissions;
-                //group.$save(function (data) {
-                //    console.log(data);
-                //});
+                var group = new userGroupService();
+                group.id = self.group.id;
+                group.groupName = self.group.group_name;
+                group.permission = allowPermissions;
+                group.$save(function (data) {
+                    console.log(data);
+                });
             };
             this.validateField = function (field) {
                 var param = {};
@@ -52,17 +54,16 @@ aptUserModule.component('usergroup', {
                         break;
                 }
             };
-            this.checkedPermission = function (permissionCode, permissionCodeOfGroup) {
+            this.isGroupPermission = function (permissionCode, permissionCodeOfGroup) {
                 return (typeof permissionCodeOfGroup != 'undefined' && permissionCodeOfGroup.indexOf(permissionCode) != -1);
             };
             this.checkAllPermission = function (action) {
-                self.permission[permission.code] = 1;
-                //if (+action == 1) {
-                //    //angular.forEach(self.permissions, function (value, key) {
-                //    //    self.permission = {value.code};
-                //    //});
-                //}
             };
+            this.changeAddGroupForm = function (){
+                self.formTitle = 'Add group';
+                self.group = new userGroupService();
+            };
+
             var _isValidatedGroup = function () {
                 return !self.validateGroupnameNotification;
             };

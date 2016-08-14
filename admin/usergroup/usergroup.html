@@ -65,37 +65,44 @@
                             <thead>
                             <tr>
                                 <th><a href="javascript:void(0)">Permission</a></th>
-                                <th width="60px"><a href="javascript:void(0)" ng-click="userGroupCrl.checkAllPermission(1)">Allow</a></th>
-                                <th width="60px"><a href="javascript:void(0)" ng-click="userGroupCrl.checkAllPermission(2)">Deny</a></th>
+                                <th width="60px">
+                                    <a href="javascript:void(0)" ng-click="userGroupCrl.checkAllPermission(1)">Allow</a>
+                                </th>
+                                <th width="60px">
+                                    <a href="javascript:void(0)" ng-click="userGroupCrl.checkAllPermission(2)">Deny</a>
+                                </th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr ng-repeat="permission in userGroupCrl.permissions">
                                 <td style="text-align: center;">{{permission.name}}</td>
-                                <td style="text-align: center;"><input
-                                        ng-checked="userGroupCrl.checkedPermission(permission.code, userGroupCrl.group.permission)"
+                                <td style="text-align: center;">
+                                    <input
+                                        ng-checked="userGroupCrl.isGroupPermission(permission.code, userGroupCrl.group.permission)"
                                         ng-model="userGroupCrl.permission[permission.code]"
                                         value="1"
-                                        type="radio"/></td>
-                                <td style="text-align: center;"><input
-                                        ng-checked="!userGroupCrl.checkedPermission(permission.code, userGroupCrl.group.permission)"
+                                        type="radio"/>
+                                </td>
+                                <td style="text-align: center;">
+                                    <input
+                                        ng-checked="!userGroupCrl.isGroupPermission(permission.code, userGroupCrl.group.permission)"
                                         ng-model="userGroupCrl.permission[permission.code]"
-                                        value="2"
-                                        type="radio"/></td>
+                                        type="radio"/>
+                                </td>
                             </tr>
                             </tbody>
                         </table>
                         <br/>
                     </fieldset>
-                    <div align="center">(*) is required field</div>
+                    <div align="cen ter">(*) is required field</div>
                     <br/>
 
                     <div align="center">
                         <input id="button1" type="submit" value="Send"/>
                         <input id="button2"
-                               ng-show="userCtrl.user.id > 0"
+                               ng-show="userGroupCrl.group.id > 0"
                                type="submit"
-                               value="Change to add user" ng-click="userCtrl.changeAddUserForm()"/>
+                               value="Change to add group" ng-click="userCtrl.changeAddGroupForm()"/>
                     </div>
                 </form>
             </div>

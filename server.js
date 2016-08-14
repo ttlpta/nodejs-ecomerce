@@ -123,7 +123,7 @@ app.get('/admin/usergroup', function (req, res) {
                         var groups = result.group;
                         var permission = [];
                         var group = {
-                            'group_id': groups[0].group_id,
+                            'id': groups[0].group_id,
                             'group_name': groups[0].group_name
                         };
                         groups.forEach(function (value) {
@@ -151,6 +151,14 @@ app.get('/admin/validateGroupUser', function (req, res) {
             }
         });
         userGroup.validateGroup(req.query);
+    }
+});
+app.post('/admin/usergroup', function (req, res){
+    if (typeof req.body != 'undefined') {
+        user.once('save_group', function (userId) {
+            res.json({userId: userId});
+        });
+        userGroup.saveGroup(req.body);
     }
 });
 // Admin Permission module
