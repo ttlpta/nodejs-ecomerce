@@ -28,23 +28,28 @@ aptUserModule.component('usergroup', {
                     }
                 });
             };
-
             this.saveGroup = function () {
                 if(!_isValidatedGroup())
                     return;
                 var allowPermissionId = [];
+                var denyPermissionId = [];
                 angular.forEach(self.groupPermissionCodes, function (value, key) {
                     if (+value == 1) {
                         allowPermissionId.push(key);
-                    }
+                    } else if (+value == 2) {
+						denyPermissionId.push(key);
+					}
                 });
                 var group = new userGroupService();
                 group.id = self.group.id;
                 group.groupName = self.group.group_name;
-                group.permission = allowPermissionId;
-                group.$save(function (data) {
-                    console.log(data);
-                });
+                group.allowPermission = allowPermissionId;
+                group.denyPermission = denyPermissionId;
+                group.$save().then(function(result){
+					if (result.success){
+						self.changeAddGroupForm();
+					}
+				});
             };
             this.validateField = function (field) {
                 var param = {};
@@ -64,13 +69,16 @@ aptUserModule.component('usergroup', {
                         break;
                 }
             };
-            this.checkAllPermission = function (action) {
-            };
             this.changeAddGroupForm = function (){
                 self.formTitle = 'Add group';
                 self.group = new userGroupService();
+				self.groups = userGroupService.query();
+				self.permissions = permissionService.query(function(result){
+					result.forEach(function (value) {
+						self.groupPermissionCodes[value.id] = 2;
+					})
+				});
             };
-
             var _isValidatedGroup = function () {
                 return !self.validateGroupnameNotification;
             };

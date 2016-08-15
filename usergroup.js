@@ -56,7 +56,7 @@ UserGroup.prototype.validateGroup = function (group) {
     });
 };
 UserGroup.prototype.saveGroup = function (group) {
-    var self = this;//permission
+    var self = this;
     connection.beginTransaction(function (err) {
         if (err) throw err;
         if (typeof group.id != 'undefined') {
@@ -68,26 +68,74 @@ UserGroup.prototype.saveGroup = function (group) {
                                 throw err;
                             });
                         } else {
-                            var allowPermissionIdArr = group.permission;
-                            userGroupCombinePermission.once('add_group_permission_error', function () {
-                                connection.rollback();
-                            });
-                            userGroupCombinePermission.once('add_group_permission_success', function () {
-                                connection.commit(function (err, res) {
-                                    if (err) {
-                                        connection.rollback(function () {
-                                            throw err;
-                                        });
-                                    } else {
-                                        self.emit('save_group');
-                                    }
-                                });
-                            });
-                            userGroupCombinePermission.addGroupPermission(+group.id, allowPermissionIdArr);
+							if (group.allowPermission) {
+								userGroupCombinePermission.once('add_allow_group_permission_error', function () {
+									connection.rollback();
+								});
+								userGroupCombinePermission.once('add_allow_group_permission_success', function () {
+									if (group.denyPermission) {
+										console.log('dasdasds');
+										userGroupCombinePermission.once('remove_deny_group_permission_error', function () {
+											connection.rollback();
+										});
+										userGroupCombinePermission.once('remove_deny_group_permission_success', function () {
+											connection.commit(function (err, res) {
+												if (err) {
+													connection.rollback(function () {
+														throw err;
+													});
+												} else {
+													self.emit('save_group');
+												}
+											});
+										});
+										userGroupCombinePermission.removeDenyGroupPermission(+group.id, group.denyPermission);
+									} else {
+										connection.commit(function (err, res) {
+												if (err) {
+													connection.rollback(function () {
+														throw err;
+													});
+												} else {
+													self.emit('save_group');
+												}
+											});
+									}
+								});
+								userGroupCombinePermission.addAllowGroupPermission(+group.id, group.allowPermission);
+							}
                         }
-                    });
+					});
             }
-        }
+        } else {
+			connection.query('INSERT INTO `apt_user_group` (`group_name`) VALUES (?)', [group.groupName],
+				function (err, res) {
+					if (err) {
+						connection.rollback(function () {
+							throw err;
+						});
+					} else if(res.insertId){
+						if (group.allowPermission) {
+							var groupId = +res.insertId;
+							userGroupCombinePermission.once('add_allow_group_permission_error', function () {
+								connection.rollback();
+							});
+							userGroupCombinePermission.once('add_allow_group_permission_success', function () {
+								connection.commit(function (err, res) {
+										if (err) {
+											connection.rollback(function () {
+												throw err;
+											});
+										} else {
+											self.emit('save_group');
+										}
+									});
+							});
+							userGroupCombinePermission.addAllowGroupPermission(groupId, group.allowPermission);
+						}
+					}
+				});
+		}
     });
 };
 module.exports = new UserGroup();
