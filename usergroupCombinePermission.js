@@ -1,18 +1,23 @@
 var connection = require('./connection'),
     util = require('util'),
     EventEmitter = require('events').EventEmitter;
-var UsergroupCombinePermission = function () {
+var UserGroupCombinePermission = function () {
 };
-util.inherits(UsergroupCombinePermission, EventEmitter);
-UsergroupCombinePermission.prototype.addGroupPermission = function(groupId, permissionId){
-    var sql = 'INSERT INTO `apt_permission_combine_group` (`user_group_id`, `permission_id`) VALUES (?, ?)';
-    var self = this;
-    connection.query(sql, [+groupId, +permissionId], function (err, rows){
-        if(err){
-            self.emit('add_group_permisson_error', err);
-        } else {
-            self.emit('add_group_permisson_success', rows);
-        }
-    });
+util.inherits(UserGroupCombinePermission, EventEmitter);
+UserGroupCombinePermission.prototype.addGroupPermission = function (groupId, allowPermissionIds) {
+    if (allowPermissionIds) {
+        var insertValues = '(' + allowPermissionIds.join(',' + groupId + '),(') + ','+groupId +')';
+        var sql = 'INSERT IGNORE INTO `apt_permission_combine_group` (`permission_id`, `user_group_id`) ' +
+            'VALUES ' + insertValues;
+        var self = this;
+        connection.query(sql, function (err, res) {
+            if (err) {
+                self.emit('add_group_permission_error');
+            } else {
+                self.emit('add_group_permission_success');
+            }
+        });
+    }
+
 };
-module.exports = new UsergroupCombinePermission();
+module.exports = new UserGroupCombinePermission();

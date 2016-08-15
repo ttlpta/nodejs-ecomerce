@@ -6,32 +6,42 @@ aptUserModule.component('usergroup', {
         function userGroupController(userGroupService, permissionService, errorMsg, $http) {
             var self = this;
             this.groups = userGroupService.query();
-            this.permissions = permissionService.query();
+            this.groupPermissionCodes = {};
+            this.permissions = permissionService.query(function(result){
+                result.forEach(function (value) {
+                    self.groupPermissionCodes[value.id] = 2;
+                })
+            });
             this.formTitle = 'Add User Group';
             this.group = new userGroupService();
             this.showGroup = function (groupId) {
                 self.validateGroupnameNotification = '';
                 self.formTitle = 'Edit User Group ' + groupId;
                 self.group = userGroupService.get({action: 'showUserGroup', id: groupId}, function (result) {
-                    if (typeof result.success != 'undefined' && result.success == false) {
+                    if (result.success == false) {
                         alert(errorMsg[result.errorCode]);
                         location.reload();
+                    } else {
+                        result.permissionId.forEach(function(permissionId){
+                            self.groupPermissionCodes[permissionId] = 1;
+                        });
                     }
                 });
             };
+
             this.saveGroup = function () {
                 if(!_isValidatedGroup())
                     return;
-                var allowPermissions = [];
-                angular.forEach(self.permission, function (value, key) {
+                var allowPermissionId = [];
+                angular.forEach(self.groupPermissionCodes, function (value, key) {
                     if (+value == 1) {
-                        allowPermissions.push(key);
+                        allowPermissionId.push(key);
                     }
                 });
                 var group = new userGroupService();
                 group.id = self.group.id;
                 group.groupName = self.group.group_name;
-                group.permission = allowPermissions;
+                group.permission = allowPermissionId;
                 group.$save(function (data) {
                     console.log(data);
                 });
@@ -53,9 +63,6 @@ aptUserModule.component('usergroup', {
                         }
                         break;
                 }
-            };
-            this.isGroupPermission = function (permissionCode, permissionCodeOfGroup) {
-                return (typeof permissionCodeOfGroup != 'undefined' && permissionCodeOfGroup.indexOf(permissionCode) != -1);
             };
             this.checkAllPermission = function (action) {
             };

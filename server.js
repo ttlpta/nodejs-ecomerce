@@ -121,16 +121,16 @@ app.get('/admin/usergroup', function (req, res) {
                 userGroup.once('show_group', function (result) {
                     if (result.success) {
                         var groups = result.group;
-                        var permission = [];
+                        var permissionIds = [];
                         var group = {
                             'id': groups[0].group_id,
                             'group_name': groups[0].group_name
                         };
                         groups.forEach(function (value) {
-                            permission.push(value.code);
+                            permissionIds.push(value.permission_id);
                         });
-                        if(permission)
-                            group.permission = permission;
+                        if (permission)
+                            group.permissionId = permissionIds;
                         res.json(group);
                     } else {
                         res.json(result);
@@ -153,11 +153,12 @@ app.get('/admin/validateGroupUser', function (req, res) {
         userGroup.validateGroup(req.query);
     }
 });
-app.post('/admin/usergroup', function (req, res){
+app.post('/admin/usergroup', function (req, res) {
     if (typeof req.body != 'undefined') {
-        user.once('save_group', function (userId) {
-            res.json({userId: userId});
+        userGroup.once('save_group', function () {
+            res.json({success: true});
         });
+
         userGroup.saveGroup(req.body);
     }
 });

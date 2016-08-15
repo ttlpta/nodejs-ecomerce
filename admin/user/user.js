@@ -44,7 +44,7 @@ aptUserModule.component('user', {
                 self.validatePermissionNotification = '';
                 self.formTitle = 'Edit user ' + userId;
                 self.user = userService.get({action: 'showUser', id: userId}, function (result) {
-                    if (typeof result.success != 'undefined' && result.success == false) {
+                    if (result.success == false) {
                         alert(errorMsg[result.errorCode]);
                         location.reload();
                     }

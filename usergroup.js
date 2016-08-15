@@ -1,6 +1,7 @@
 var connection = require('./connection'),
     util = require('util'),
-    EventEmitter = require('events').EventEmitter;
+    EventEmitter = require('events').EventEmitter,
+    userGroupCombinePermission = require('./usergroupCombinePermission');
 var UserGroup = function () {
     this.groupNameValidated = false;
 };
@@ -55,19 +56,35 @@ UserGroup.prototype.validateGroup = function (group) {
     });
 };
 UserGroup.prototype.saveGroup = function (group) {
-    var self = this;
-    connection.beginTransaction(function(err) {
-        if(err) throw err;
+    var self = this;//permission
+    connection.beginTransaction(function (err) {
+        if (err) throw err;
         if (typeof group.id != 'undefined') {
             if (group.groupName) {
-                connection.query('UPDATE `apt_user` SET `group_name` = ? WHERE `id` = ?', [group.groupName, +group.id],
+                connection.query('UPDATE `apt_user_group` SET `group_name` = ? WHERE `id` = ?', [group.groupName, +group.id],
                     function (err, res) {
-                        if(err){
-                            connection.rollback(function(){
+                        if (err) {
+                            connection.rollback(function () {
                                 throw err;
                             });
+                        } else {
+                            var allowPermissionIdArr = group.permission;
+                            userGroupCombinePermission.once('add_group_permission_error', function () {
+                                connection.rollback();
+                            });
+                            userGroupCombinePermission.once('add_group_permission_success', function () {
+                                connection.commit(function (err, res) {
+                                    if (err) {
+                                        connection.rollback(function () {
+                                            throw err;
+                                        });
+                                    } else {
+                                        self.emit('save_group');
+                                    }
+                                });
+                            });
+                            userGroupCombinePermission.addGroupPermission(+group.id, allowPermissionIdArr);
                         }
-                        self.emit('save_user', (res.changedRows) ? user.id : 0);
                     });
             }
         }
