@@ -5,61 +5,37 @@ aptUserModule.component('usergroup', {
     controller: ['userGroupService', 'permissionService', 'validateAddGroupErrorCode', '$http',
         function userGroupController(userGroupService, permissionService, errorMsg, $http) {
             var self = this;
-            this.groups = userGroupService.query();
-            this.groupPermissionCodes = {};
-            this.permissions = permissionService.query(function(result){
-                result.forEach(function (value) {
-                    self.groupPermissionCodes[value.id] = 2;
-                })
-            });
+            var ALLOW_PERMISSION = 1;
+            var DENY_PERMISSION = 2;
             this.formTitle = 'Add User Group';
-            this.group = new userGroupService();
+            this.groupPermissionCodes = {};
+            var _init = function(){
+                self.group = new userGroupService();
+                self.groups = userGroupService.query();
+                self.permissions = permissionService.query(function (permissions) {
+                    _setDefaultStatusPermission(permissions);
+                });
+            };
+            _init();
             this.showGroup = function (groupId) {
-                self.validateGroupnameNotification = '';
+                _removeValidateNotice();
                 self.formTitle = 'Edit User Group ' + groupId;
                 self.group = userGroupService.get({action: 'showUserGroup', id: groupId}, function (result) {
                     if (result.success == false) {
                         alert(errorMsg[result.errorCode]);
                         location.reload();
                     } else {
-                        result.permissionId.forEach(function(permissionId){
-                            self.groupPermissionCodes[permissionId] = 1;
-                        });
+                        _setDefaultStatusPermission(self.permissions);
+                        result.permissionId.status = ALLOW_PERMISSION;
+                        angular.forEach(result.permissionId, _setStatusPermission);
                     }
                 });
             };
-            this.saveGroup = function () {
-                if(!_isValidatedGroup())
-                    return;
-                var allowPermissionId = [];
-                var denyPermissionId = [];
-                angular.forEach(self.groupPermissionCodes, function (value, key) {
-                    if (+value == 1) {
-                        allowPermissionId.push(key);
-                    } else if (+value == 2) {
-						denyPermissionId.push(key);
-					}
-                });
-                var group = new userGroupService();
-                group.id = self.group.id;
-                group.groupName = self.group.group_name;
-                group.allowPermission = allowPermissionId;
-                group.denyPermission = denyPermissionId;
-                group.$save().then(function(result){
-					if (result.success){
-						self.changeAddGroupForm();
-					}
-				});
-            };
             this.validateField = function (field) {
-                var param = {};
                 switch (field) {
                     case 'groupname':
-                        if (param.groupName = self.group.group_name) {
-                            if (self.group.id) {
-                                param.groupId = self.group.id;
-                            }
-                            $http.get("/admin/validateGroupUser", {params: param}).then(function (response) {
+                        if (self.group.group_name) {
+                            $http.get("/admin/validateGroupUser", {params: self.group}).then(function (response) {
                                 self.validateGroupnameNotification = (response.data.isExisted) ?
                                     errorMsg[response.data.errorCode] : '';
                             });
@@ -69,18 +45,46 @@ aptUserModule.component('usergroup', {
                         break;
                 }
             };
-            this.changeAddGroupForm = function (){
+            this.changeAddGroupForm = function () {
                 self.formTitle = 'Add group';
-                self.group = new userGroupService();
-				self.groups = userGroupService.query();
-				self.permissions = permissionService.query(function(result){
-					result.forEach(function (value) {
-						self.groupPermissionCodes[value.id] = 2;
-					})
-				});
+                _init();
+            };
+            this.saveGroup = function () {
+                if (!_isValidatedGroup())
+                    return;
+                var allowPermissionId = [];
+                var denyPermissionId = [];
+                angular.forEach(self.groupPermissionCodes, function (value, key) {
+                    if (+value == 1) {
+                        allowPermissionId.push(key);
+                    } else if (+value == 2) {
+                        denyPermissionId.push(key);
+                    }
+                });
+                var group = new userGroupService();
+                group.id = self.group.id;
+                group.groupName = self.group.group_name;
+                group.allowPermission = allowPermissionId;
+                group.denyPermission = denyPermissionId;
+                group.$save().then(function (result) {
+                    if (result.success) {
+                        self.changeAddGroupForm();
+                    }
+                });
             };
             var _isValidatedGroup = function () {
                 return !self.validateGroupnameNotification;
             };
+            var _setDefaultStatusPermission = function (permissions) {
+                permissions.status = DENY_PERMISSION;
+                angular.forEach(permissions, _setStatusPermission);
+            };
+            var _setStatusPermission = function (permission, permissionKey, permissionObj) {
+                var permissionId = (typeof permission == 'object') ? permission.id : permission;
+                self.groupPermissionCodes[permissionId] = permissionObj.status;
+            };
+            var _removeValidateNotice = function () {
+                self.validateGroupnameNotification = '';
+            }
         }]
 });

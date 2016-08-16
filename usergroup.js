@@ -1,19 +1,20 @@
 var connection = require('./connection'),
     util = require('util'),
+    Promise = require('bluebird'),
     EventEmitter = require('events').EventEmitter,
     userGroupCombinePermission = require('./usergroupCombinePermission');
 var UserGroup = function () {
-    this.groupNameValidated = false;
 };
 util.inherits(UserGroup, EventEmitter);
 UserGroup.prototype.listGroup = function () {
     var self = this;
     var sql = 'SELECT * FROM `apt_user_group`';
     connection.query(sql, function (err, rows) {
+        if (err) throw  err;
         self.emit('list_group', rows);
     });
 };
-UserGroup.prototype.showGroup = function (groupId) {
+UserGroup.prototype.showGroupById = function (groupId) {
     var self = this;
     var sql = 'SELECT DISTINCT aug.id AS group_id, aug.group_name AS group_name, apcg.permission_id, ap.code, ap.name' +
         ' FROM `apt_user_group` AS aug' +
@@ -27,8 +28,8 @@ UserGroup.prototype.showGroup = function (groupId) {
         ' RIGHT JOIN `apt_permission` AS ap ON apcg.permission_id = ap.id' +
         ' WHERE aug.id = ?';
     connection.query(sql, [groupId, groupId], function (err, rows) {
-        var result = {};
         if (err) throw err;
+        var result;
         if (typeof rows != 'undefined' && rows) {
             result = {success: true, group: rows};
         } else {
@@ -40,15 +41,16 @@ UserGroup.prototype.showGroup = function (groupId) {
 UserGroup.prototype.validateGroup = function (group) {
     var sql, param;
     var self = this;
-    if (typeof group.groupId != 'undefined') {
+    if (typeof group.id != 'undefined') {
         sql = 'SELECT COUNT(*) as countGroup FROM `apt_user_group` WHERE `group_name` LIKE ? AND `id` != ?';
-        param = [group.groupName, group.groupId]
+        param = [group.group_name, group.id]
     } else {
         sql = 'SELECT COUNT(*) as countGroup FROM `apt_user_group` WHERE `group_name` LIKE ?';
-        param = [group.groupName]
+        param = [group.group_name]
     }
     connection.query(sql, param, function (err, rows) {
         var isExisted = false;
+        if (err) throw err;
         if (!err && rows[0].countGroup) {
             isExisted = true;
         }
@@ -61,81 +63,81 @@ UserGroup.prototype.saveGroup = function (group) {
         if (err) throw err;
         if (typeof group.id != 'undefined') {
             if (group.groupName) {
-                connection.query('UPDATE `apt_user_group` SET `group_name` = ? WHERE `id` = ?', [group.groupName, +group.id],
+                var updateUserGroupPromise = new Promise(function (resolve, reject) {
+                    connection.query('UPDATE `apt_user_group` SET `group_name` = ? WHERE `id` = ?', [group.groupName, +group.id],
+                        function (err) {
+                            if (err) {
+                                reject();
+                            } else {
+                                resolve();
+                            }
+                        });
+                });
+                updateUserGroupPromise.then(function () {
+                    if (group.allowPermission) {
+                        return new Promise(function (resolve, reject) {
+                            userGroupCombinePermission.once('add_allow_group_permission_error', function () {
+                                reject();
+                            });
+                            userGroupCombinePermission.once('add_allow_group_permission_success', function () {
+                                resolve();
+                            });
+                            userGroupCombinePermission.addAllowGroupPermission(+group.id, group.allowPermission);
+                        });
+                    }
+                }).then(function () {
+                    if (group.denyPermission) {
+                        userGroupCombinePermission.once('remove_deny_group_permission_error', function () {
+                            reject();
+                        });
+                    } else {
+                        resolve();
+                    }
+                }).then(function () {
+                    return new Promise(function (resolve, reject) {
+                        connection.commit(function (err, res) {
+                            if (err) {
+                                reject();
+                            } else {
+                                self.emit('save_group');
+                            }
+                        });
+                    });
+                }).catch(function () {
+                    connection.rollback();
+                });
+            }
+        } else {
+            if (group.groupName) {
+                connection.query('INSERT INTO `apt_user_group` (`group_name`) VALUES (?)', [group.groupName],
                     function (err, res) {
                         if (err) {
                             connection.rollback(function () {
                                 throw err;
                             });
-                        } else {
-							if (group.allowPermission) {
-								userGroupCombinePermission.once('add_allow_group_permission_error', function () {
-									connection.rollback();
-								});
-								userGroupCombinePermission.once('add_allow_group_permission_success', function () {
-									if (group.denyPermission) {
-										console.log('dasdasds');
-										userGroupCombinePermission.once('remove_deny_group_permission_error', function () {
-											connection.rollback();
-										});
-										userGroupCombinePermission.once('remove_deny_group_permission_success', function () {
-											connection.commit(function (err, res) {
-												if (err) {
-													connection.rollback(function () {
-														throw err;
-													});
-												} else {
-													self.emit('save_group');
-												}
-											});
-										});
-										userGroupCombinePermission.removeDenyGroupPermission(+group.id, group.denyPermission);
-									} else {
-										connection.commit(function (err, res) {
-												if (err) {
-													connection.rollback(function () {
-														throw err;
-													});
-												} else {
-													self.emit('save_group');
-												}
-											});
-									}
-								});
-								userGroupCombinePermission.addAllowGroupPermission(+group.id, group.allowPermission);
-							}
+                        } else if (res.insertId) {
+                            if (group.allowPermission) {
+                                var groupId = +res.insertId;
+                                userGroupCombinePermission.once('add_allow_group_permission_error', function () {
+                                    connection.rollback();
+                                });
+                                userGroupCombinePermission.once('add_allow_group_permission_success', function () {
+                                    connection.commit(function (err, res) {
+                                        if (err) {
+                                            connection.rollback(function () {
+                                                throw err;
+                                            });
+                                        } else {
+                                            self.emit('save_group');
+                                        }
+                                    });
+                                });
+                                userGroupCombinePermission.addAllowGroupPermission(groupId, group.allowPermission);
+                            }
                         }
-					});
+                    });
             }
-        } else {
-			connection.query('INSERT INTO `apt_user_group` (`group_name`) VALUES (?)', [group.groupName],
-				function (err, res) {
-					if (err) {
-						connection.rollback(function () {
-							throw err;
-						});
-					} else if(res.insertId){
-						if (group.allowPermission) {
-							var groupId = +res.insertId;
-							userGroupCombinePermission.once('add_allow_group_permission_error', function () {
-								connection.rollback();
-							});
-							userGroupCombinePermission.once('add_allow_group_permission_success', function () {
-								connection.commit(function (err, res) {
-										if (err) {
-											connection.rollback(function () {
-												throw err;
-											});
-										} else {
-											self.emit('save_group');
-										}
-									});
-							});
-							userGroupCombinePermission.addAllowGroupPermission(groupId, group.allowPermission);
-						}
-					}
-				});
-		}
+        }
     });
 };
 module.exports = new UserGroup();

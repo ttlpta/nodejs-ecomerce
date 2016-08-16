@@ -9,6 +9,7 @@ Permissions.prototype.listPermission = function () {
     var self = this;
     var sql = 'SELECT * FROM `apt_permission`';
     connection.query(sql, function (err, rows) {
+        if(err) throw err;
         self.emit('list_permission', rows);
     });
 };

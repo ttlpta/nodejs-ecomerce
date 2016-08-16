@@ -127,22 +127,24 @@ app.get('/admin/usergroup', function (req, res) {
                             'group_name': groups[0].group_name
                         };
                         groups.forEach(function (value) {
-                            permissionIds.push(value.permission_id);
+                            if (value.permission_id) {
+                                permissionIds.push(value.permission_id);
+                            }
                         });
-                        if (permission)
+                        if (permissionIds)
                             group.permissionId = permissionIds;
                         res.json(group);
                     } else {
                         res.json(result);
                     }
                 });
-                userGroup.showGroup(req.query.id);
+                userGroup.showGroupById(req.query.id);
                 break;
         }
     }
 });
 app.get('/admin/validateGroupUser', function (req, res) {
-    if (typeof req.query.groupName != 'undefined') {
+    if (typeof req.query.group_name != 'undefined') {
         userGroup.once('validate_group', function (isExisted) {
             if (isExisted) {
                 res.json({isExisted: true, errorCode: 1});
