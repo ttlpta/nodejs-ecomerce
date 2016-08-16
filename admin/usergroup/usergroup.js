@@ -72,7 +72,20 @@ aptUserModule.component('usergroup', {
                     }
                 });
             };
-            var _isValidatedGroup = function () {
+            this.deleteGroup = function (groupId) {
+				var confirm = window.confirm("Are you sure?");
+                if (confirm) {
+                    userGroupService.delete({id: groupId}, function (result) {
+                        if(result.success){
+							_init();
+						} else {
+							alert('Error');
+							location.reload();
+						}
+                    });
+                }
+			};
+			var _isValidatedGroup = function () {
                 return !self.validateGroupnameNotification;
             };
             var _setDefaultStatusPermission = function (permissions) {

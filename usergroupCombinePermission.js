@@ -12,26 +12,37 @@ UserGroupCombinePermission.prototype.addAllowGroupPermission = function (groupId
         var self = this;
         connection.query(sql, function (err, res) {
             if (err) {
-                self.emit('add_allow_group_permission_error');
+                self.emit('add_allow_group_permission_error', err);
             } else {
                 self.emit('add_allow_group_permission_success');
             }
         });
     }
-
 };
 UserGroupCombinePermission.prototype.removeDenyGroupPermission = function (groupId, denyPermissionIds) {
     if (denyPermissionIds) {
+		var deleteValues = denyPermissionIds.join(',');
         var sql = 'DELETE FROM `apt_permission_combine_group` WHERE `user_group_id` = ? ' +
-		'AND `permission_id` IN (?)';
+		'AND `permission_id` IN ( '+deleteValues+' )';
         var self = this;
-        connection.query(sql, [+groupId, denyPermissionIds.toString()], function (err, res) {
+        connection.query(sql, [+groupId], function (err, res) {
             if (err) {
-                self.emit('remove_deny_group_permission_error');
+                self.emit('remove_deny_group_permission_error', err);
             } else {
                 self.emit('remove_deny_group_permission_success');
             }
         });
     }
+};
+UserGroupCombinePermission.prototype.deleteGroupByGroupId = function(groupId){
+	var sql = 'DELETE FROM `apt_permission_combine_group` WHERE `user_group_id` = ? ';
+	var self = this;
+	connection.query(sql, [+groupId], function (err, res) {
+		if (err) {
+			self.emit('remove_group_permission_error', err);
+		} else {
+			self.emit('remove_group_permission_success');
+		}
+	});
 };
 module.exports = new UserGroupCombinePermission();

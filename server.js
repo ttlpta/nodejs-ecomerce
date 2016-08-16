@@ -157,11 +157,19 @@ app.get('/admin/validateGroupUser', function (req, res) {
 });
 app.post('/admin/usergroup', function (req, res) {
     if (typeof req.body != 'undefined') {
-        userGroup.once('save_group', function () {
-            res.json({success: true});
+        userGroup.once('save_group', function (result) {
+            res.json(result);
         });
-
         userGroup.saveGroup(req.body);
+    }
+});
+app.delete('/admin/usergroup', function (req, res) {
+	if (typeof req.query.id != 'undefined' && req.query.id) {
+        var groupId = req.query.id;
+        userGroup.once('delete_group', function (result) {
+            res.json(result);
+        });
+        userGroup.deleteGroup(groupId);
     }
 });
 // Admin Permission module
