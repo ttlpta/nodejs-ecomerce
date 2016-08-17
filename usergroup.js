@@ -151,14 +151,14 @@ UserGroup.prototype.saveGroup = function (group) {
 				});
 			}
 		})
-	};
+	}
 };
 UserGroup.prototype.deleteGroup = function (groupId) {
 	var self = this;
 	if (groupId){
 		connection.beginTransaction(function (err) {
 			if (err) throw err;
-			var deteteUserGroupCombinePermissionPromise = new Promise(function (resolve, reject) {
+			var deleteUserGroupCombinePermissionPromise = new Promise(function (resolve, reject) {
 				userGroupCombinePermission.once('remove_group_permission_error', function(err){
 					reject(err);
 				});
@@ -167,7 +167,7 @@ UserGroup.prototype.deleteGroup = function (groupId) {
 				});
 				userGroupCombinePermission.deleteGroupByGroupId(groupId);
 			});
-			deteteUserGroupCombinePermissionPromise.then(function(){
+            deleteUserGroupCombinePermissionPromise.then(function(){
 				return new Promise(function(resolve, reject){
 					connection.query('DELETE FROM `apt_user_group` WHERE `id` = ?', [+groupId],
 						function(err, res){
@@ -195,5 +195,5 @@ UserGroup.prototype.deleteGroup = function (groupId) {
 			});
 		});
 	}
-}
+};
 module.exports = new UserGroup();

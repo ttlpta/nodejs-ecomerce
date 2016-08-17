@@ -7,8 +7,8 @@ var User = function () {
 util.inherits(User, EventEmitter);
 User.prototype.listUser = function (limit, offset, orderBy, sort) {
     var self = this;
-    var sql = 'SELECT `id`, `email`, `username`, `permission`, `street`, `registered`, `city`, `country`, `state`, `zipcode`' +
-        ' FROM `apt_user` WHERE `permission` != 1 ORDER BY `' + orderBy + '` ' + sort + ' LIMIT ? OFFSET ? ';
+    var sql = 'SELECT `id`, `email`, `username`, `group`, `street`, `registered`, `city`, `country`, `state`, `zipcode`' +
+        ' FROM `apt_user` ORDER BY `' + orderBy + '` ' + sort + ' LIMIT ? OFFSET ? ';
 
     connection.query(sql, [+limit, +offset], function (err, rows) {
         self.emit('list_user', rows);
@@ -34,8 +34,8 @@ User.prototype.saveUser = function (user) {
 };
 User.prototype.showUser = function (userId) {
     var self = this;
-    connection.query('SELECT `id`, `email`, `username`, `permission`, `street`, `registered`, `city`, `country`, `state`, `zipcode`' +
-        'FROM `apt_user` WHERE `permission` != 1 AND `id` = ?', [userId], function (err, rows) {
+    connection.query('SELECT `id`, `email`, `username`, `group`, `street`, `registered`, `city`, `country`, `state`, `zipcode`' +
+        'FROM `apt_user` WHERE `id` = ?', [userId], function (err, rows) {
         var result = {};
         if (typeof rows[0] != 'undefined' && rows[0]) {
             result = {success: true, user: rows[0]};
@@ -62,10 +62,10 @@ User.prototype.validateUser = function (field) {
     if (typeof field.username != 'undefined') {
         var sql, param;
         if (typeof field.userId != 'undefined') {
-            sql = 'SELECT COUNT(*) as countUser FROM `apt_user` WHERE `permission` != 1 AND `username` = ? AND `id` != ?';
+            sql = 'SELECT COUNT(*) as countUser FROM `apt_user` WHERE `username` = ? AND `id` != ?';
             param = [field.username, field.userId]
         } else {
-            sql = 'SELECT COUNT(*) as countUser FROM `apt_user` WHERE `permission` != 1 AND `username` = ?';
+            sql = 'SELECT COUNT(*) as countUser FROM `apt_user` WHERE `username` = ?';
             param = [field.username]
         }
         connection.query(sql, param, function (err, rows) {
@@ -78,10 +78,10 @@ User.prototype.validateUser = function (field) {
     }
     if (typeof field.email != 'undefined') {
         if (typeof field.userId != 'undefined') {
-            sql = 'SELECT COUNT(*) as countUser FROM `apt_user` WHERE `permission` != 1 AND `email` = ? AND `id` != ?';
+            sql = 'SELECT COUNT(*) as countUser FROM `apt_user` WHERE `email` = ? AND `id` != ?';
             param = [field.email, field.userId]
         } else {
-            sql = 'SELECT COUNT(*) as countUser FROM `apt_user` WHERE `permission` != 1 AND `email` = ?';
+            sql = 'SELECT COUNT(*) as countUser FROM `apt_user` WHERE `email` = ?';
             param = [field.email]
         }
         connection.query(sql, param, function (err, rows) {
@@ -96,7 +96,7 @@ User.prototype.validateUser = function (field) {
 };
 User.prototype.totalUser = function () {
     var self = this;
-    connection.query('SELECT COUNT(*) as total FROM `apt_user` WHERE `permission` != 1', function (err, rows) {
+    connection.query('SELECT COUNT(*) as total FROM `apt_user`', function (err, rows) {
         self.emit('total_user', rows[0]);
     });
 };

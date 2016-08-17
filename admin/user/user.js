@@ -1,11 +1,12 @@
-var aptUserModule = angular.module('aptUserModule', ['aptUserHelper']);
+var aptUserModule = angular.module('aptUserModule', ['aptUserHelper', 'aptUserGroupHelper']);
 aptUserModule.component('user', {
     templateUrl: 'user/user.html',
     controllerAs: 'userCtrl',
-    controller: ['$http', 'userService', 'validateAddUserErrorCode',
-        function userController($http, userService, errorMsg) {
+    controller: ['$http', 'userService', 'validateAddUserErrorCode', 'userGroupService',
+        function userController($http, userService, errorMsg, userGroupService) {
             var self = this;
             this.user = new userService();
+            this.groups = userGroupService.query();
             this.currentPage = 1;
             this.limitItemPerPage = '10';
             this.orderBy = 'id';
@@ -41,7 +42,7 @@ aptUserModule.component('user', {
                 self.validateEmailNotification = '';
                 self.validatePasswordNotification = '';
                 self.validateConfirmPassNotification = '';
-                self.validatePermissionNotification = '';
+                self.validateGroupNotification = '';
                 self.formTitle = 'Edit user ' + userId;
                 self.user = userService.get({action: 'showUser', id: userId}, function (result) {
                     if (result.success == false) {
@@ -108,8 +109,8 @@ aptUserModule.component('user', {
                             self.validateConfirmPassNotification = '';
                         }
                         break;
-                    case 'permission':
-                        self.validatePermissionNotification = (!self.user.permission.length) ? 'Group is required' : '';
+                    case 'group':
+                        self.validateGroupNotification = (!self.user.group.length) ? 'Group is required' : '';
                         break;
                 }
             };
@@ -153,7 +154,7 @@ aptUserModule.component('user', {
                 && !self.validateEmailNotification
                 && !self.validateConfirmPassNotification
                 && !self.validatePasswordNotification
-                && !self.validatePermissionNotification);
+                && !self.validateGroupNotification);
             };
         }]
 });

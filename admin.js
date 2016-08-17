@@ -7,10 +7,10 @@ var Admin = function () {
 util.inherits(Admin, EventEmitter);
 Admin.prototype.isAdmin = function (username, password) {
     var self = this;
-    var sql = 'SELECT `id`, `permission`, `password`, `salt` FROM `apt_user` ' +
-        'WHERE `username` = ? AND `permission`= 1';
+    var sql = 'SELECT `id`, `group`, `password`, `salt` FROM `apt_user` ' +
+        'WHERE `username` = ? AND `group` = 1';
     connection.query(sql, [username], function (err, rows) {
-        var result = {success: false};
+        var result = {success: false, errorCode: 1};
         if (!err && rows[0]) {
             var encryptPassword = helper.encodeBase64(password) + rows[0].salt;
             if (encryptPassword === rows[0].password) {

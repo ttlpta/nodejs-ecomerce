@@ -26,7 +26,6 @@ aptAdminModule.provider('adminAuthenticate', [function () {
         $auth.isSuperAdmin = function () {
             return (this.isAuthenticated() && $cookies.get('apt_session_admin') == 'superAdmin');
         };
-
         return $auth;
     }];
 }]);
@@ -37,6 +36,7 @@ aptAdminModule.run(function ($rootScope, $location, adminAuthenticate) {
             if (typeof isAuth == 'undefined' || false == isAuth) {
                 $location.path('login');
             } else if (!adminAuthenticate.isSuperAdmin()) {
+                alert('You do not have permission to access');
                 var path = $location.path().replace('/', '');
                 if (path == 'usergroup') {
                     $location.path('user');

@@ -12,22 +12,16 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use(express.static(__dirname));
 app.use(express.static(__dirname + '/admin/asserts'));
+app.use(express.static(__dirname + '/APTshop/asserts'));
 // Admin Login module
 app.post('/admin/login', function (req, res) {
     var username = req.body.username;
     var password = req.body.password;
     var admin = require('./admin');
     admin.once('authenticate_admin', function (auth) {
-        var result;
-        if (auth.success) {
-            result = {success: true, hash: auth.hash};
-            if (typeof auth.isSuperAdmin != 'undefined') {
-                result = {success: true, hash: 'superAdmin'};
-            }
-        } else {
-            result = {success: false};
-        }
-        res.json(result);
+        if (typeof auth.isSuperAdmin != 'undefined')
+            auth.hash = 'superAdmin';
+        res.json(auth);
     });
     admin.isAdmin(username, password);
 });
@@ -51,7 +45,7 @@ app.get('/admin/user', function (req, res) {
                 var userId = req.query.id;
                 user.once('show_user', function (result) {
                     if (result.success) {
-                        result.user.permission = result.user.permission.toString();
+                        result.user.group = result.user.group.toString();
                         res.json(result.user);
                     } else {
                         res.json(result);
