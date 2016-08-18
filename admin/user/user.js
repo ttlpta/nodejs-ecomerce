@@ -71,7 +71,7 @@ aptUserModule.component('user', {
                             if (self.user.id) {
                                 param.userId = self.user.id;
                             }
-                            $http.get("/admin/validateUser", {params: param}).then(function (response) {
+                            $http.get("/validateUser", {params: param}).then(function (response) {
                                 self.validateUsernameNotification = (response.data.isExisted) ?
                                     errorMsg[response.data.errorCode] : '';
                             });
@@ -84,7 +84,7 @@ aptUserModule.component('user', {
                             if (self.user.id) {
                                 param.userId = self.user.id;
                             }
-                            $http.get("/admin/validateUser", {params: param}).then(function (response) {
+                            $http.get("/validateUser", {params: param}).then(function (response) {
                                 self.validateEmailNotification = (response.data.isNotValid) ?
                                     errorMsg[response.data.errorCode] : '';
                             });
@@ -144,7 +144,7 @@ aptUserModule.component('user', {
                 self.user = new userService();
             };
             var _preparePagination = function () {
-                $http.get("/admin/user", {params: {action: 'getTotalUser'}}).then(function (response) {
+                $http.get("/user", {params: {action: 'getTotalUser'}}).then(function (response) {
                     self.totalUser = response.data.total;
                     self.totalPage = Math.ceil(response.data.total / self.limitItemPerPage);
                 });

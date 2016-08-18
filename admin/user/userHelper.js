@@ -1,7 +1,7 @@
 var aptUserHelper = angular.module('aptUserHelper', []);
 aptUserHelper.factory('userService', ['$resource',
     function ($resource) {
-        return $resource('/admin/user', {}, {
+        return $resource('/user', {}, {
             query: {
                 method: 'GET',
                 params: {action: 'listUser'},
