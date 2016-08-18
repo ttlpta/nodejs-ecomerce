@@ -18,6 +18,9 @@ Helper.prototype = {
             text += possible.charAt(Math.floor(Math.random() * possible.length));
 
         return text;
+    },
+    isEmail: function (str) {
+
     }
 };
 module.exports = new Helper();

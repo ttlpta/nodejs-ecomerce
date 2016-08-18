@@ -1,0 +1,82 @@
+<div class="banner-top">
+    <div class="container">
+        <h1>Register</h1>
+        <em></em>
+        <h2><a href="index.html">Home</a><label>/</label>Register</a></h2>
+    </div>
+</div>
+<div class="content">
+    <div class="container">
+        <div class="login">
+            <span style="color: red">{{registerCtrl.notification}}</span>
+            <form ng-submit="registerCtrl.register()">
+                <div class="col-md-6 login-do">
+                    <div class="login-mail">
+                        <span class="notification">{{registerCtrl.validateUsernameNotification}}</span>
+                        <input type="text"
+                               placeholder="Name"
+                               ng-blur="registerCtrl.validateField('username')"
+                               ng-model="registerCtrl.user.username"
+                               required>
+                        <i class="glyphicon glyphicon-user"></i>
+                    </div>
+                    <div class="login-mail">
+                        <span class="notification">{{registerCtrl.validatePhoneNotification}}</span>
+                        <input type="text"
+                               placeholder="Phone Number"
+                               ng-blur="registerCtrl.validateField('phone')"
+                               ng-model="registerCtrl.user.phone"
+                               required>
+                        <i class="glyphicon glyphicon-phone"></i>
+                    </div>
+                    <div class="login-mail">
+                        <span class="notification">{{registerCtrl.validateEmailNotification}}</span>
+                        <input type="text"
+                               placeholder="Email"
+                               ng-blur="registerCtrl.validateField('email')"
+                               ng-model="registerCtrl.user.email"
+                               required>
+                        <i class="glyphicon glyphicon-envelope"></i>
+                    </div>
+                    <div class="login-mail">
+                        <span class="notification">{{registerCtrl.validatePasswordNotification}}</span>
+                        <input type="password"
+                               placeholder="Password"
+                               ng-blur="registerCtrl.validateField('password')"
+                               ng-model="registerCtrl.user.password"
+                               required>
+                        <i class="glyphicon glyphicon-lock"></i>
+                    </div>
+                    <div class="login-mail">
+                        <span class="notification">{{registerCtrl.validateConfirmPassNotification}}</span>
+                        <input type="password"
+                               placeholder="Confirm Password"
+                               ng-blur="registerCtrl.validateField('confpass')"
+                               ng-model="registerCtrl.confpass"
+                               required>
+                        <i class="glyphicon glyphicon-lock"></i>
+                    </div>
+                    <a class="news-letter " href="javascript:void(0)">
+                        <label class="checkbox1">Forget Password ?</label>
+                    </a>
+                    <label class="hvr-skew-backward">
+                        <input type="submit" value="Submit">
+                    </label>
+                </div>
+                <div class="col-md-6 login-right">
+                    <h3>Completely Free Account</h3>
+
+                    <p>Pellentesque neque leo, dictum sit amet accumsan non, dignissim ac mauris. Mauris rhoncus, lectus
+                        tincidunt tempus aliquam, odio
+                        libero tincidunt metus, sed euismod elit enim ut mi. Nulla porttitor et dolor sed condimentum.
+                        Praesent porttitor lorem dui, in pulvinar enim rhoncus vitae. Curabitur tincidunt, turpis ac
+                        lobortis hendrerit, ex elit vestibulum est, at faucibus erat ligula non neque.</p>
+                    <a href="login.html" class="hvr-skew-backward">Login</a>
+
+                </div>
+                <div class="clearfix"></div>
+            </form>
+        </div>
+        <apt-brand></apt-brand>
+    </div>
+</div>

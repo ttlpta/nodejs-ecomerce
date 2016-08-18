@@ -4,7 +4,9 @@
         <ul>
             <li ng-class="headerCtr.currentCat == 'dashboard'? 'current' : ''"><a href="#/dashboard">Dashboard</a></li>
             <li ng-class="headerCtr.currentCat == 'order'? 'current' : ''"><a href="#/order">Orders</a></li>
-            <li ng-class="(headerCtr.currentCat == 'user' || headerCtr.currentCat == 'usergroup')? 'current' : ''"><a href="#/user">Users</a></li>
+            <li ng-class="(headerCtr.currentCat == 'user' || headerCtr.currentCat == 'usergroup') ? 'current' : ''">
+                <a href="#/user">Users</a>
+            </li>
             <li ng-class="headerCtr.currentCat == 'manage'? 'current' : ''"><a href="#/manage">Manage</a></li>
             <li ng-class="headerCtr.currentCat == 'cms'? 'current' : ''"><a href="#/cms">CMS</a></li>
             <li ng-class="headerCtr.currentCat == 'statistics'? 'current' : ''"><a href="#/statistics">Statistics</a></li>

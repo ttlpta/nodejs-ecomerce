@@ -1,10 +1,6 @@
-var express = require('express');
-var app = express();
-var bodyParser = require('body-parser');
-var helper = require('./helper');
-var user = require('./user');
-var userGroup = require('./usergroup');
-var permission = require('./permission');
+var express = require('express'), app = express(), bodyParser = require('body-parser'), helper = require('./helper'),
+user = require('./user'), userGroup = require('./usergroup'), permission = require('./permission'),
+validator = require('validator');
 user.setMaxListeners(0);
 app.set('view engine', 'html');
 app.engine('html', require('ejs').renderFile);
@@ -74,14 +70,19 @@ app.get('/admin/validateUser', function (req, res) {
         user.validateUser(req.query);
     }
     if (typeof req.query.email != 'undefined') {
-        user.once('validate_user', function (isExisted) {
-            if (isExisted) {
-                res.json({isExisted: true, errorCode: 2});
-            } else {
-                res.json({isExisted: false});
-            }
-        });
-        user.validateUser(req.query);
+        console.log(validator.isEmail(req.query.email));
+        if (validator.isEmail(req.query.email)) {
+            user.once('validate_user', function (isExisted) {
+                if (isExisted) {
+                    res.json({isNotValid: true, errorCode: 2});
+                } else {
+                    res.json({isNotValid: false});
+                }
+            });
+            user.validateUser(req.query);
+        } else {
+            res.json({isNotValid: true, errorCode: 7});
+        }
     }
 });
 app.post('/admin/user', function (req, res) {

@@ -62,10 +62,10 @@ User.prototype.validateUser = function (field) {
     if (typeof field.username != 'undefined') {
         var sql, param;
         if (typeof field.userId != 'undefined') {
-            sql = 'SELECT COUNT(*) as countUser FROM `apt_user` WHERE `username` = ? AND `id` != ?';
+            sql = 'SELECT COUNT(*) as countUser FROM `apt_user` WHERE `username` LIKE ? AND `id` != ?';
             param = [field.username, field.userId]
         } else {
-            sql = 'SELECT COUNT(*) as countUser FROM `apt_user` WHERE `username` = ?';
+            sql = 'SELECT COUNT(*) as countUser FROM `apt_user` WHERE `username` LIKE ?';
             param = [field.username]
         }
         connection.query(sql, param, function (err, rows) {

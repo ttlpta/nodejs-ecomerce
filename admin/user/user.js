@@ -85,7 +85,7 @@ aptUserModule.component('user', {
                                 param.userId = self.user.id;
                             }
                             $http.get("/admin/validateUser", {params: param}).then(function (response) {
-                                self.validateEmailNotification = (response.data.isExisted) ?
+                                self.validateEmailNotification = (response.data.isNotValid) ?
                                     errorMsg[response.data.errorCode] : '';
                             });
                         } else {

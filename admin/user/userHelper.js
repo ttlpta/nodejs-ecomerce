@@ -15,6 +15,6 @@ aptUserHelper.factory('userService', ['$resource',
     '3': 'Username is existed',
     '4': 'Username && Email are existed',
     '5': 'Confirm password is incorrect',
-    '6': 'User do not exist'
-
+    '6': 'User do not exist',
+    '7': 'Please fill a valid email'
 });

@@ -243,6 +243,10 @@ a.item_add {
 }
 /*--//banner--*/
 /*--content--*/
+.notification {
+    color: red;
+    font-size: 11px;
+}
 .content-top {
     padding: 5em 0;
 }

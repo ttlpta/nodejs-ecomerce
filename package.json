@@ -28,7 +28,8 @@
 	"ejs": "2.5.1",
 	"mysql": "2.11.1",
 	"util": "0.10.3",
-	"bluebird" : "3.4.1"
+	"bluebird" : "3.4.1",
+	"validator" : "5.5.0" 
   },
   "devDependencies": {
   },

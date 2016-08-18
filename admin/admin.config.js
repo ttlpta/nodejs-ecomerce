@@ -1,17 +1,17 @@
 aptAdminModule.config(['$routeProvider',
     function ($routeProvider) {
         $routeProvider
-            .when('/dashboard', {
-                template: '<dashboard></dashboard>'
-            })
             .when('/login', {
                 template: '<login></login>'
             })
+            .when('/dashboard', {
+                template: '<apt-header></apt-header><dashboard></dashboard><apt-footer></apt-footer>'
+            })
             .when('/user', {
-                template: '<user></user>'
+                template: '<apt-header></apt-header><user></user><apt-footer></apt-footer>'
             })
             .when('/usergroup', {
-                template: '<usergroup></usergroup>'
+                template: '<apt-header></apt-header><usergroup></usergroup><apt-footer></apt-footer>'
             })
             .otherwise('/login');
     }
