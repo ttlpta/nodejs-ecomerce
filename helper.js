@@ -8,7 +8,7 @@ Helper.prototype = {
         return new Buffer(hash, 'base64').toString('ascii');
     },
     randomString: function (length) {
-        if(typeof length == 'undefined') {
+        if (typeof length == 'undefined') {
             length = 20;
         }
         var text = "";
@@ -19,8 +19,27 @@ Helper.prototype = {
 
         return text;
     },
-    isEmail: function (str) {
-
+    sendEmail: function (to, subject, content) {
+        var mailer = require("nodemailer");
+        var smtpTransport = mailer.createTransport("SMTP", {
+            service: "Gmail",
+            auth: {
+                user: 'tuananhdev200898@gmail.com',
+                pass: 'ttlpta840465'
+            }
+        });
+        var mailOptions = {
+            to: to,
+            subject: subject,
+            text: content
+        };
+        smtpTransport.sendMail(mailOptions, function (error, response) {
+            if (error) {
+                throw error;
+            } else {
+                console.log("Message sent: " + response.message);
+            }
+        });
     }
 };
 module.exports = new Helper();

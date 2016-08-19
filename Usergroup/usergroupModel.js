@@ -2,7 +2,7 @@ var connection = require('../connection'),
     util = require('util'),
     Promise = require('bluebird'),
     EventEmitter = require('events').EventEmitter,
-    userGroupCombinePermission = require('../usergroupCombinePermission');
+    userGroupCombinePermission = require('../UsergroupCombinePermission/usergroupCombinePermissionModel');
 var UserGroup = function () {
 };
 util.inherits(UserGroup, EventEmitter);
