@@ -35,7 +35,7 @@ User.prototype.saveUser = function (user) {
 };
 User.prototype.showUser = function (userId) {
     var self = this;
-    connection.query('SELECT `id`, `email`, `username`, `group`, `street`, `registered`, `city`, `country`, `state`, `zipcode`' +
+    connection.query('SELECT `id`, `salt`, `email`, `username`, `group`, `street`, `registered`, `city`, `country`, `state`, `zipcode`' +
         'FROM `apt_user` WHERE `id` = ?', [userId], function (err, rows) {
         var result = {};
         if (typeof rows[0] != 'undefined' && rows[0]) {
@@ -101,4 +101,26 @@ User.prototype.totalUser = function () {
         self.emit('total_user', rows[0]);
     });
 };
+User.prototype.getUser = function(options) {
+	var self = this;
+	var condition = '';
+	if ( typeof options['salt'] != 'undefined') {
+		condition = connection.format('`salt` = ?', [options['salt']]); 
+	}
+	if (condition) {
+		connection.query('SELECT `id`, `email`, `username`, `group`, `street`, `registered`, `city`, `country`, `state`, `zipcode`' +
+		'FROM `apt_user` WHERE '+condition, function (err, rows) {
+			var result = {};
+			if (typeof rows[0] != 'undefined' && rows[0]) {
+				result = {user: rows[0]};
+			} else {
+				if (err) throw err;
+				result = [];
+			}
+			self.emit('get_user', result);
+		}); 
+	} else {
+		self.emit('get_user', []);
+	}
+}
 module.exports = new User();
