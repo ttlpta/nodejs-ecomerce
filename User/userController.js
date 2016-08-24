@@ -84,12 +84,22 @@ module.exports = function(app){
 								result.user.email,
 								'[Apt Shop] Confirm your password',
 								result.user.salt
-							);
-						} 
+							, function (error, response) {
+								if (error){
+									res.json({success : false, errorCode : 8});
+									throw error;
+								} else {
+									res.json({success : true});
+								}
+							});
+						} else {
+							res.json({success : false, errorCode : 8});
+						}
 					});
 					user.showUser(userId);
+				} else {
+					res.json({success : false, errorCode : 8});
 				}
-				res.json({userId: userId});
 			});
 			var userData = req.body;
 			userData.group = 3;
@@ -105,10 +115,15 @@ module.exports = function(app){
 			user.deleteUser(userId);
 		}
 	});
-	app.get('/user/confirm', function(req, res){
-		if (typeof req.query.salt != 'undefined') {
+	app.get('/confirmRegisted', function(req, res){
+		res.send(req.query);
+		if (typeof req.query.id != 'undefined' && typeof req.query.salt != 'undefined') {
+			var id = req.query.id;
 			var salt = req.query.salt;
-			res.end(salt);
+			user.once('get_user', function (user) {
+				res.send({user: user});
+			});
+			user.getUser({salt: salt, id: id});
 		}
 	});
 };

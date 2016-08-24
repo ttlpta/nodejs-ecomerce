@@ -6,5 +6,6 @@ aptShopRegisterHelper.constant('validateRegisterErrorCode', {
     '4': 'Username && Email are existed',
     '5': 'Confirm password is incorrect',
     '6': 'User do not exist',
-    '7': 'Please fill a valid email'
+    '7': 'Please fill a valid email',
+    '8': 'Register fail. Please try again!',
 });

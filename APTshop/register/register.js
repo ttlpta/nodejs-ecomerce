@@ -6,14 +6,15 @@ aptShopRegisterModule.component('register', {
         function registerController(errorMsg, $http, $resource, $location) {
         var self = this;
         var User = $resource('/registerUser');
+		this.isRegisted = false;
         this.user = new User();
         this.register = function () {
             if (!_isValidatedUser())
                 return false;
             self.user.registered = new Date();
             self.user.$save(function (data) {
-                if (+data.userId > 0) {
-                    $location.path('login');
+                if (data.success) {
+                    self.isRegisted = true;
                 } else {
                     self.notification = errorMsg[data.errorCode];
                 }

@@ -19,7 +19,7 @@ Helper.prototype = {
 
         return text;
     },
-    sendEmail: function (to, subject, content) {
+    sendEmail: function (to, subject, content, callback) {
         var mailer = require("nodemailer");
         var smtpTransport = mailer.createTransport("SMTP", {
             service: "Gmail",
@@ -33,13 +33,7 @@ Helper.prototype = {
             subject: subject,
             text: content
         };
-        smtpTransport.sendMail(mailOptions, function (error, response) {
-            if (error) {
-                throw error;
-            } else {
-                console.log("Message sent: " + response.message);
-            }
-        });
+		smtpTransport.sendMail(mailOptions, callback);
     }
 };
 module.exports = new Helper();

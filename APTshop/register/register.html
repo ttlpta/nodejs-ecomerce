@@ -9,7 +9,7 @@
     <div class="container">
         <div class="login">
             <span style="color: red">{{registerCtrl.notification}}</span>
-            <form ng-submit="registerCtrl.register()">
+            <form ng-if="!registerCtrl.isRegisted" ng-submit="registerCtrl.register()">
                 <div class="col-md-6 login-do">
                     <div class="login-mail">
                         <span class="notification">{{registerCtrl.validateUsernameNotification}}</span>
@@ -63,19 +63,20 @@
                         <input type="submit" value="Submit">
                     </label>
                 </div>
-                <div class="col-md-6 login-right">
-                    <h3>Completely Free Account</h3>
-
-                    <p>Pellentesque neque leo, dictum sit amet accumsan non, dignissim ac mauris. Mauris rhoncus, lectus
-                        tincidunt tempus aliquam, odio
-                        libero tincidunt metus, sed euismod elit enim ut mi. Nulla porttitor et dolor sed condimentum.
-                        Praesent porttitor lorem dui, in pulvinar enim rhoncus vitae. Curabitur tincidunt, turpis ac
-                        lobortis hendrerit, ex elit vestibulum est, at faucibus erat ligula non neque.</p>
-                    <a href="login.html" class="hvr-skew-backward">Login</a>
-
-                </div>
-                <div class="clearfix"></div>
             </form>
+			<div ng-if="registerCtrl.isRegisted" class="col-md-6 login-right">
+				<h3>Confirm your registed</h3>
+				<p>We've already sent you the email to confirm. Please check your inbox and confirm your registed. <br />
+				Your registed will expire in 30 days. 
+				</p>
+			</div>
+			<div class="col-md-6 login-right">
+				<h3>.. Or you already have a account ?</h3>
+				<p>Faster checkout with your accout. Let's Shopping !</p>
+				<a href="login.html" class="hvr-skew-backward">Login</a>
+
+			</div>
+			<div class="clearfix"></div>
         </div>
         <apt-brand></apt-brand>
     </div>

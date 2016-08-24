@@ -103,12 +103,9 @@ User.prototype.totalUser = function () {
 };
 User.prototype.getUser = function(options) {
 	var self = this;
-	var condition = '';
-	if ( typeof options['salt'] != 'undefined') {
-		condition = connection.format('`salt` = ?', [options['salt']]); 
-	}
+	var condition = _perpareCondition(options);
 	if (condition) {
-		connection.query('SELECT `id`, `email`, `username`, `group`, `street`, `registered`, `city`, `country`, `state`, `zipcode`' +
+		connection.query('SELECT `id`, `salt`, `email`, `username`, `group`, `street`, `registered`, `city`, `country`, `state`, `zipcode`' +
 		'FROM `apt_user` WHERE '+condition, function (err, rows) {
 			var result = {};
 			if (typeof rows[0] != 'undefined' && rows[0]) {
@@ -122,5 +119,16 @@ User.prototype.getUser = function(options) {
 	} else {
 		self.emit('get_user', []);
 	}
+}
+var _perpareCondition = function(options){
+	var condition = '';
+	for (var index in options) {
+		if (condition) {
+			condition += ' AND ';
+		}
+		condition += connection.format('`'+index+'` = ?', [options[index]]);
+	}
+	
+	return condition;
 }
 module.exports = new User();
