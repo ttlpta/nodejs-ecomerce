@@ -108,8 +108,8 @@ User.prototype.getUser = function(options) {
 		connection.query('SELECT `id`, `salt`, `email`, `username`, `group`, `street`, `registered`, `city`, `country`, `state`, `zipcode`' +
 		'FROM `apt_user` WHERE '+condition, function (err, rows) {
 			var result = {};
-			if (rows[0]) {
-				result = {user: rows[0]};
+			if (rows) {
+				result = rows;
 			} else {
 				if (err) throw err;
 				result = [];

@@ -1,7 +1,8 @@
 aptShopModule.component('aptHeader', {
     templateUrl : 'inc/header.html',
     controllerAs : 'headerCtrl',
-    controller: ['aptShopAuthenticate', function headerController(aptShopAuthenticate) {
+    controller: ['aptShopAuthenticate', '$rootScope',
+	function headerController(aptShopAuthenticate, $rootScope) {
         this.isLogin = aptShopAuthenticate.isLogin();
         this.username = aptShopAuthenticate.visitor.username;
     }]

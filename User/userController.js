@@ -129,9 +129,14 @@ module.exports = function (app) {
         if (typeof req.query.id != 'undefined' && typeof req.query.salt != 'undefined') {
             var id = req.query.id;
             var salt = req.query.salt;
-            user.once('get_user', function (user) {
-                if (user && delete user.salt) {
-                    res.json({success: true, hash: helper.encodeBase64(JSON.stringify(user))});
+            user.once('get_user', function (userDatas) {
+				userData = helper.getFirstItemArray(userDatas);
+                if (userData && delete userData.salt) {
+					userData.group = 2;
+					user.once('save_user', function (result) {
+						res.json({success: true, hash: helper.encodeBase64(JSON.stringify(userData))});
+					});
+					user.saveUser(userData);
                 } else
                     res.json({success: false});
             });

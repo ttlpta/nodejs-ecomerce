@@ -34,6 +34,9 @@ Helper.prototype = {
             text: content
         };
 		smtpTransport.sendMail(mailOptions, callback);
-    }
+    }, 
+	getFirstItemArray : function(arr){
+		return arr[0];
+	}
 };
 module.exports = new Helper();
