@@ -108,18 +108,18 @@ User.prototype.getUser = function(options) {
 		connection.query('SELECT `id`, `salt`, `email`, `username`, `group`, `street`, `registered`, `city`, `country`, `state`, `zipcode`' +
 		'FROM `apt_user` WHERE '+condition, function (err, rows) {
 			var result = {};
-			if (typeof rows[0] != 'undefined' && rows[0]) {
+			if (rows[0]) {
 				result = {user: rows[0]};
 			} else {
 				if (err) throw err;
 				result = [];
 			}
 			self.emit('get_user', result);
-		}); 
+		});
 	} else {
 		self.emit('get_user', []);
 	}
-}
+};
 var _perpareCondition = function(options){
 	var condition = '';
 	for (var index in options) {
@@ -130,5 +130,5 @@ var _perpareCondition = function(options){
 	}
 	
 	return condition;
-}
+};
 module.exports = new User();

@@ -30,7 +30,8 @@
 	"util": "0.10.3",
 	"bluebird" : "3.4.1",
 	"validator" : "5.5.0",
-	"nodemailer" : "0.7.1"
+	"nodemailer" : "0.7.1",
+	"angular-base64" : "2.0.5"
   },
   "devDependencies": {
   },

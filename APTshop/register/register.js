@@ -17,6 +17,7 @@ aptShopRegisterModule.component('register', {
                     self.isRegisted = true;
                 } else {
                     self.notification = errorMsg[data.errorCode];
+                    self.user = new User();
                 }
             });
         };

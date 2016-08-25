@@ -15,6 +15,6 @@ require('./User/userController')(app);
 require('./Usergroup/usergroupController')(app);
 // Permission module
 require('./Permission/permissionController')(app);
-var server = app.listen(8081, function () {
+var server = app.listen(80, function () {
     console.log('Running....');
 });

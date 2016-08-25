@@ -2,20 +2,24 @@
     <div class="container">
         <div class="head">
             <div class=" logo">
-                <a href="index.html"><img src="assert/images/logo.png" alt=""></a>
+                <a href="/"><img src="assert/images/logo.png" alt=""></a>
             </div>
         </div>
     </div>
     <div class="header-top">
         <div class="container">
             <div class="col-sm-5 col-md-offset-2  header-login">
-                <ul>
+                <ul ng-if="!headerCtrl.isLogin">
                     <li><a href="#/login">Login</a></li>
                     <li><a href="#/register">Register</a></li>
                     <li><a href="#/checkout">Checkout</a></li>
                 </ul>
+                <ul ng-if="headerCtrl.isLogin">
+                    <li><a href="#/myaccount">{{headerCtrl.username}}'s account</a></li>
+                    <li><a href="#/myaccount">My cart</a></li>
+                    <li><a href="#/mycart">Logout</a></li>
+                </ul>
             </div>
-
             <div class="col-sm-5 header-social">
                 <ul>
                     <li><a href="#"><i></i></a></li>
@@ -24,7 +28,6 @@
                     <li><a href="#"><i class="ic3"></i></a></li>
                     <li><a href="#"><i class="ic4"></i></a></li>
                 </ul>
-
             </div>
             <div class="clearfix"></div>
         </div>

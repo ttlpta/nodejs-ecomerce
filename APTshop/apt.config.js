@@ -1,12 +1,11 @@
-aptShopModule.config(['$routeProvider', '$controllerProvider',
-    function ($routeProvider, $controllerProvider) {
+aptShopModule.config(['$routeProvider',
+    function ($routeProvider) {
         $routeProvider
             .when('/home', {
                 template: '<home></home>'
             })
-			.when('/confirmRegisted', {
-				template: '<login></login>',
-				controller : 'confirmRegistedCtrl'
+            .when('/confirmRegisted', {
+                template: ''
             })
             .when('/login', {
                 template: '<login></login>'
@@ -17,6 +16,3 @@ aptShopModule.config(['$routeProvider', '$controllerProvider',
             .otherwise('/home');
     }
 ]);
-aptShopModule.controller('confirmRegistedCtrl', function ($scope) {
-    console.log('asdasd');
-});
