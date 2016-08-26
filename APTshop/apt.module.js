@@ -12,15 +12,15 @@ aptShopModule.provider('aptShopAuthenticate', [function () {
             }
             return JSON.parse($base64.decode($cookies.get('apt_session_user')));
         };
-        $auth.visitor = $auth.getCurrentUser();
+
         return $auth;
     }];
-}]).run(function ($rootScope, $location, $http, aptShopAuthenticate, $cookies, $window) {
+}]).run(function ($rootScope, $location, $http, aptShopAuthenticate, $cookies) {
     $rootScope.$on('$locationChangeStart',
         function () {
             var path = $location.path().replace('/', '');
             switch (path) {
-				case 'home':
+                case 'home':
                     $rootScope.title = 'Home';
                     break;
                 case 'login':
@@ -35,13 +35,15 @@ aptShopModule.provider('aptShopAuthenticate', [function () {
                         $http.get("/confirmRegisted", {params: param}).then(function (response) {
                             if (response.data.success) {
                                 $cookies.put('apt_session_user', response.data.hash);
-                                $window.location.href = '/APTshop/';
+                                $rootScope.$emit('isLogging', true);
+                                $location.search({}).path('/home');
                             } else {
-                                $location.path('#/login');
+                                $location.search({}).path('/login');
                             }
                         });
                     } else {
-                        $window.location.href = '/APTshop/';
+                        $rootScope.$emit('isLogging', true);
+                        $location.search({}).path('/home');
                     }
                     break;
             }
