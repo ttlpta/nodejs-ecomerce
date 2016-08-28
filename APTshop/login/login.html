@@ -8,19 +8,20 @@
 <div class="content">
     <div class="container">
         <div class="login">
-
-            <form>
+            <form ng-submit="loginCtrl.login()">
                 <div class="col-md-6 login-do">
                     <div class="login-mail">
-                        <input type="text" placeholder="Email" required="">
+						<span class="notification">{{loginCtrl.validateUsernameNotification}}</span>
+                        <input type="text" ng-model="loginCtrl.username" placeholder="Username" ng-blur ="loginCtrl.validateField('username')">
                         <i class="glyphicon glyphicon-envelope"></i>
                     </div>
-                    <div class="login-mail">
-                        <input type="password" placeholder="Password" required="">
+                    <div class="login-mail" >
+                        <span class="notification">{{loginCtrl.validatePasswordNotification}}</span>
+						<input type="password" ng-model="loginCtrl.password" placeholder="Password" required ng-blur="loginCtrl.validateField('password')">
                         <i class="glyphicon glyphicon-lock"></i>
                     </div>
                     <a class="news-letter " href="#">
-                        <label class="checkbox1"><input type="checkbox" name="checkbox"><i> </i>Forget Password</label>
+                        <label class="checkbox1">Forget Password ?</label>
                     </a>
                     <label class="hvr-skew-backward">
                         <input type="submit" value="login">
@@ -32,7 +33,6 @@
                     <a href="#/register" class=" hvr-skew-backward">Register</a>
 
                 </div>
-
                 <div class="clearfix"></div>
             </form>
         </div>
