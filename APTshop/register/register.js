@@ -24,7 +24,8 @@ aptShopRegisterModule.component('register', {
 			this.validateField = function (field) {
 				switch (field) {
 				case 'username':
-					self.validateUsernameNotification = aptShopService.validate('username', self.user.username, 'required|existed');
+				console.log(aptShopService.validate('username', self.user.username, 'required|existed', 'Username'));
+					self.validateUsernameNotification = aptShopService.validate('username', self.user.username, 'required|existed', 'Username');
 					break;
 				case 'email':
 					self.validateEmailNotification = aptShopService.validate('email', self.user.email, 'required|existed');
