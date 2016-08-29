@@ -27,4 +27,10 @@ aptShopForgotModule.component('forgot', {
             return !self.validateEmailNotification;
         };
     }]
+}).component('updatePassword', {
+    templateUrl: 'forgot/update.html',
+    controllerAs: 'updateCtrl',
+    controller: ['$http', 'aptShopService', function ($http, aptShopService) {
+
+    }]
 });

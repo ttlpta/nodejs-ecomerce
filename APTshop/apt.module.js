@@ -34,6 +34,9 @@ aptShopModule.provider('aptShopAuthenticate', [function () {
                 case 'register':
                     $rootScope.title = 'Register';
                     break;
+                case 'forgotPassword':
+                    $rootScope.title = 'Forgot Password';
+                    break;
                 case 'logout':
                     $cookies.remove('apt_session_user');
                     $rootScope.$emit('refresh_header');
