@@ -3,11 +3,9 @@ aptShopModule.component('aptHeader', {
     controllerAs: 'headerCtrl',
     controller: ['aptShopAuthenticate', '$rootScope', function headerController(aptShopAuthenticate, $rootScope) {
         var self = this;
-        $rootScope.$on('isLogging', function (e, data) {
-            if (data) {
-                self.isLogin = aptShopAuthenticate.isLogin();
-                self.username = aptShopAuthenticate.getCurrentUser().username;
-            }
+        $rootScope.$on('refresh_header', function () {
+            self.isLogin = aptShopAuthenticate.isLogin();
+            self.username = aptShopAuthenticate.getCurrentUser().username;
         });
         this.isLogin = aptShopAuthenticate.isLogin();
         this.username = aptShopAuthenticate.getCurrentUser().username;

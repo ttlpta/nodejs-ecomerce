@@ -79,8 +79,8 @@ aptUserModule.component('user', {
 						$http.get("/validateUser", {
 							params : param
 						}).then(function (response) {
-							self.validateUsernameNotification = (response.data.isExisted) ?
-							errorMsg[response.data.errorCode] : '';
+							self.validateUsernameNotification = (response.data.isNotValid) ?
+							'Username is existed' : '';
 						});
 					} else {
 						self.validateUsernameNotification = 'Username is required';
@@ -94,8 +94,16 @@ aptUserModule.component('user', {
 						$http.get("/validateUser", {
 							params : param
 						}).then(function (response) {
-							self.validateEmailNotification = (response.data.isNotValid) ?
-							errorMsg[response.data.errorCode] : '';
+                            if (response.data.isNotValid){
+                                if(+response.data.errorCode == 2){
+                                    self.validateEmailNotification = 'Email is existed';
+                                } else if (+response.data.errorCode == 3) {
+                                    self.validateEmailNotification = 'Email is wrong format';
+                                }
+                            } else {
+                                self.validateEmailNotification = '';
+                            }
+
 						});
 					} else {
 						self.validateEmailNotification = 'Email is required';
@@ -111,7 +119,7 @@ aptUserModule.component('user', {
 				case 'confpass':
 					if (self.confpass) {
 						self.validateConfirmPassNotification = (self.user.password != self.confpass) ?
-						errorMsg['5'] : '';
+                        'Confirm password is incorrect' : '';
 					} else if (!self.user.id && !self.confpass) {
 						self.validateConfirmPassNotification = 'Retype Password is required';
 					} else {

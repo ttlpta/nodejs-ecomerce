@@ -3,6 +3,11 @@ var connection = require('../connection'),
     EventEmitter = require('events').EventEmitter,
     helper = require('../helper');
 var User = function () {
+    this.ADMIN = 1;
+    this.CUSTOMER = 2;
+    this.SUPER_CUSTOMER = 3;
+    this.SELLER = 4;
+    this.UNCONFIRM = 5;
 };
 util.inherits(User, EventEmitter);
 User.prototype.listUser = function (limit, offset, orderBy, sort) {
@@ -10,7 +15,7 @@ User.prototype.listUser = function (limit, offset, orderBy, sort) {
     var sql = 'SELECT `id`, `email`, `username`, `group`, `street`, `registered`, `city`, `country`, `state`, `zipcode`' +
         ' FROM `apt_user` ORDER BY `' + orderBy + '` ' + sort + ' LIMIT ? OFFSET ? ';
     connection.query(sql, [+limit, +offset], function (err, rows) {
-		if(err) throw err;
+        if (err) throw err;
         self.emit('list_user', rows);
     });
 };
@@ -28,12 +33,12 @@ User.prototype.saveUser = function (user) {
         user.salt = helper.randomString();
         user.password = helper.encodeBase64(user.password) + user.salt;
         connection.query('INSERT INTO `apt_user` SET ?', user, function (err, res) {
-			if (err) throw err;
+            if (err) throw err;
             self.emit('save_user', res.insertId);
         });
     }
 };
-User.prototype.showUser = function (userId) {
+User.prototype.showUserById = function (userId) {
     var self = this;
     connection.query('SELECT `id`, `salt`, `email`, `username`, `group`, `street`, `registered`, `city`, `country`, `state`, `zipcode`' +
         'FROM `apt_user` WHERE `id` = ?', [userId], function (err, rows) {
@@ -45,7 +50,7 @@ User.prototype.showUser = function (userId) {
             result = {success: false, errorCode: 6};
         }
         self.emit('show_user', result);
-    }); 
+    });
 };
 User.prototype.deleteUser = function (userId) {
     var self = this;
@@ -101,34 +106,52 @@ User.prototype.totalUser = function () {
         self.emit('total_user', rows[0]);
     });
 };
-User.prototype.getUser = function(options) {
-	var self = this;
-	var condition = _perpareCondition(options);
-	if (condition) {
-		connection.query('SELECT `id`, `salt`, `email`, `username`, `group`, `street`, `registered`, `city`, `country`, `state`, `zipcode`' +
-		'FROM `apt_user` WHERE '+condition, function (err, rows) {
-			var result = {};
-			if (rows) {
-				result = rows;
-			} else {
-				if (err) throw err;
-				result = [];
-			}
-			self.emit('get_user', result);
-		});
-	} else {
-		self.emit('get_user', []);
-	}
+User.prototype.userLogin = function (data) {
+    var self = this;
+    var sql = connection.format('SELECT `id`, `password`, `salt`, `email`, `username`, `group`, `street`,' +
+        ' `registered`, `city`, `country`, `state`, `zipcode` FROM `apt_user` WHERE `username` = ? AND `group` !=  5', data.username);
+    connection.query(sql, function (err, rows) {
+        if (rows[0]) {
+            var encryptPassword = helper.encodeBase64(data.password) + rows[0].salt;
+            if (encryptPassword === rows[0].password && delete rows[0].password) {
+                self.emit('user_login', rows[0]);
+            } else {
+                self.emit('user_login', false);
+            }
+        } else {
+            self.emit('user_login', false);
+        }
+    });
 };
-var _perpareCondition = function(options){
-	var condition = '';
-	for (var index in options) {
-		if (condition) {
-			condition += ' AND ';
-		}
-		condition += connection.format('`'+index+'` = ?', [options[index]]);
-	}
-	
-	return condition;
+User.prototype.getUser = function (options) {
+    var self = this;
+    var condition = _perpareCondition(options);
+    if (condition) {
+        connection.query('SELECT `id`, `salt`, `email`, `username`, `group`, `street`,' +
+            ' `registered`, `city`, `country`, `state`, `zipcode`' +
+            'FROM `apt_user` WHERE ' + condition, function (err, rows) {
+            var result = {};
+            if (rows) {
+                result = rows;
+            } else {
+                if (err) throw err;
+                result = [];
+            }
+            self.emit('get_user', result);
+        });
+    } else {
+        self.emit('get_user', []);
+    }
+};
+var _perpareCondition = function (options) {
+    var condition = '';
+    for (var index in options) {
+        if (condition) {
+            condition += ' AND ';
+        }
+        condition += connection.format('`' + index + '` = ?', [options[index]]);
+    }
+
+    return condition;
 };
 module.exports = new User();

@@ -13,6 +13,9 @@ aptShopModule.config(['$routeProvider',
             .when('/register', {
                 template: '<register></register>'
             })
+            .when('/forgotPassword', {
+                template: '<forgot></forgot>'
+            })
             .otherwise('/home');
     }
 ]);

@@ -1,0 +1,38 @@
+<div class="banner-top">
+    <div class="container">
+        <h1>Login</h1>
+        <em></em>
+
+        <h2><a href="#/home">Home</a><label>/</label>Forgot Password</a></h2>
+    </div>
+</div>
+<div class="content">
+    <div class="container">
+        <div class="login">
+            <span class="notification">{{forgotCtrl.notification}}</span>
+
+            <form ng-if="!forgotCtrl.isSent" ng-submit="forgotCtrl.forgotEmail()">
+                <div class="col-md-6 login-do">
+                    <h3>Please fill your email that you have use to register. We will send you new password..</h3>
+                    <br/>
+                    <div class="login-mail">
+                        <span class="notification">{{forgotCtrl.validateEmailNotification}}</span>
+                        <input type="text" ng-model="forgotCtrl.email" placeholder="Email"
+                               ng-blur="forgotCtrl.validateField()">
+                        <i class="glyphicon glyphicon-envelope"></i>
+                    </div>
+                    <label class="hvr-skew-backward">
+                        <input type="submit" value="Send">
+                    </label>
+                </div>
+                <div class="clearfix"></div>
+            </form>
+            <div ng-if="forgotCtrl.isSent" class="col-md-6 login-right">
+                <h3>Check your email to update your new password</h3>
+
+                <p>We've already sent you the email to let you update your password. Please check your inbox.</p>
+            </div>
+        </div>
+        <apt-brand></apt-brand>
+    </div>
+</div>
