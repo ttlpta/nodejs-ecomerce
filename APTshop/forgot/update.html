@@ -10,20 +10,20 @@
     <div class="container">
         <div class="login">
             <span class="notification">{{updateCtrl.notification}}</span>
-            <form ng-if="!updateCtrl.isSent" ng-submit="updateCtrl.updatePassword()">
+            <form ng-submit="updateCtrl.updatePassword()">
                 <div class="col-md-6 login-do">
-                    <h3>Please fill your email that you have use to register. We will send you new password..</h3>
+                    <h4>Fill your new password</h4>
                     <br/>
                     <div class="login-mail">
-                        <span class="notification">{{updateCtrl.validateEmailNotification}}</span>
-                        <input type="text" ng-model="updateCtrl.email" placeholder="New Password"
-                               ng-blur="updateCtrl.validateField()">
+                        <span class="notification">{{updateCtrl.validatePasswordNotification}}</span>
+                        <input type="password" ng-model="updateCtrl.password" placeholder="New Password"
+                               ng-blur="updateCtrl.validateField('password')">
                         <i class="glyphicon glyphicon-lock"></i>
                     </div>
                     <div class="login-mail">
-                        <span class="notification">{{updateCtrl.validateEmailNotification}}</span>
-                        <input type="text" ng-model="updateCtrl.email" placeholder="Confirm new password"
-                               ng-blur="updateCtrl.validateField()">
+                        <span class="notification">{{updateCtrl.validateConfirmNotification}}</span>
+                        <input type="password" ng-model="updateCtrl.confpass" placeholder="Confirm new password"
+                               ng-blur="updateCtrl.validateField('confirm')">
                         <i class="glyphicon glyphicon-lock"></i>
                     </div>
                     <label class="hvr-skew-backward">
@@ -32,11 +32,6 @@
                 </div>
                 <div class="clearfix"></div>
             </form>
-            <div ng-if="updateCtrl.isSent" class="col-md-6 login-right">
-                <h3>Check your email to update your new password</h3>
-
-                <p>We've already sent you the email to let you update your password. Please check your inbox.</p>
-            </div>
         </div>
         <apt-brand></apt-brand>
     </div>
