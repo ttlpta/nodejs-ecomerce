@@ -7,14 +7,17 @@ app.use(bodyParser.json());
 app.use(express.static(__dirname));
 app.use(express.static(__dirname + '/admin/asserts'));
 app.use(express.static(__dirname + '/APTshop/asserts'));
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
 // Login module
 require('./User/adminController')(app);
 // User module
-require('./User/userController')(app);
+require('./User/userController')(app, io);
 // User Group module
 require('./Usergroup/usergroupController')(app);
 // Permission module
 require('./Permission/permissionController')(app);
-var server = app.listen(80, function () {
+
+server.listen(80, function () {
     console.log('Running....');
 });
