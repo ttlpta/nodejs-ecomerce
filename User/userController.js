@@ -6,7 +6,6 @@ user.setMaxListeners(0);
 module.exports = function (app, io) {
     io.on('connection', function (socket) {
         socket.on('user_is_logging', function (data) {
-            console.log('User/userController.js');
             socket.broadcast.emit('user_online', data);
         });
     });
