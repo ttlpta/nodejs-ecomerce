@@ -11,13 +11,17 @@ aptUserModule.component('user', {
             this.limitItemPerPage = '10';
             this.orderBy = 'id';
             this.sort = 'asc';
-            var _listUser = function () {
-                return userService.query({
+            var _listUser = function (condition) {
+                var params = {
                     offset: (self.currentPage - 1) * self.limitItemPerPage,
                     limit: self.limitItemPerPage,
                     orderBy: self.orderBy,
                     sort: self.sort
-                }, function () {
+                };
+                if (typeof condition != 'undefined') {
+                    params = Object.assign(condition, params)
+                }
+                return userService.query(params, function () {
                     _preparePagination();
                 });
             };
@@ -162,6 +166,7 @@ aptUserModule.component('user', {
             };
             this.findUser = function () {
                 var username = self.findingUsername;
+                self.users = _listUser({username: username});
 
             };
             var _preparePagination = function () {

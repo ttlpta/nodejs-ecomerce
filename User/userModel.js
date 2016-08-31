@@ -10,10 +10,19 @@ var User = function () {
     this.UNCONFIRM = 5;
 };
 util.inherits(User, EventEmitter);
-User.prototype.listUser = function (limit, offset, orderBy, sort) {
+User.prototype.listUser = function (limit, offset, orderBy, sort, username) {
     var self = this;
-    var sql = 'SELECT `id`, `email`, `username`, `group`, `street`, `registered`, `city`, `country`, `state`, `zipcode`' +
-        ' FROM `apt_user` ORDER BY `' + orderBy + '` ' + sort + ' LIMIT ? OFFSET ? ';
+    var sql;
+    if (username) {
+        sql = 'SELECT `id`, `email`, `username`, `group`, `street`, `registered`, `city`, `country`, `state`, `zipcode`' +
+            ' FROM `apt_user`' +
+            ' WHERE `username` LIKE "%' + username + '%"' +
+            ' ORDER BY `' + orderBy + '` ' + sort + ' LIMIT ? OFFSET ? ';
+    } else {
+        sql = 'SELECT `id`, `email`, `username`, `group`, `street`, `registered`, `city`, `country`, `state`, `zipcode`' +
+            ' FROM `apt_user` ORDER BY `' + orderBy + '` ' + sort + ' LIMIT ? OFFSET ? ';
+    }
+    console.log(connection.format(sql, [+limit, +offset]));
     connection.query(sql, [+limit, +offset], function (err, rows) {
         if (err) throw err;
         self.emit('list_user', rows);
