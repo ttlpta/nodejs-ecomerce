@@ -6,7 +6,18 @@ user.setMaxListeners(0);
 module.exports = function (app, io) {
     io.on('connection', function (socket) {
         socket.on('user_is_logging', function (data) {
-            socket.broadcast.emit('user_online', data);
+            socket.user = data;
+            socket.broadcast.emit('user_online', JSON.parse(data));
+        });
+        socket.on('forceDisconnect', function () {
+            if (typeof this.user != 'undefined') {
+                socket.broadcast.emit('user_offline', JSON.parse(this.user));
+            }
+        });
+        socket.on('disconnect', function () {
+            if (typeof this.user != 'undefined') {
+                socket.broadcast.emit('user_offline', JSON.parse(this.user));
+            }
         });
     });
     app.get('/user', function (req, res) {

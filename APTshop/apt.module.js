@@ -20,21 +20,15 @@ aptShopModule.provider('aptShopAuthenticate', [function () {
     ];
 }
 ]).run(function ($rootScope, $location, $http, aptShopAuthenticate, $cookies) {
+    var socket = io();
     $rootScope.$on('refresh_header', function () {
         if (aptShopAuthenticate.isLogin()) {
-            var socket = io();
+            console.log();
             socket.emit('user_is_logging', aptShopAuthenticate.getCurrentUser(false));
         }
     });
     $rootScope.$on('$locationChangeStart',
         function () {
-            if (aptShopAuthenticate.isLogin()) {
-                var socket = io();
-                socket.on('connect', function () {
-                    socket.emit('user_is_logging', aptShopAuthenticate.getCurrentUser(false));
-                });
-            }
-
             var path = $location.path().replace('/', '');
             switch (path) {
                 case 'home':
@@ -56,6 +50,7 @@ aptShopModule.provider('aptShopAuthenticate', [function () {
                     $cookies.remove('apt_session_user');
                     $rootScope.$emit('refresh_header');
                     $location.path('/home');
+                    socket.emit('forceDisconnect');
                     break;
                 case 'confirmRegisted':
                     var param = $location.search();

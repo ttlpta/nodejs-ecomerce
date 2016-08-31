@@ -1,5 +1,8 @@
 var aptAdminModule = angular.module('aptAdminModule',
-    ['ngRoute', 'ngResource', 'ngCookies', 'aptLoginModule', 'aptDashboardModule', 'aptUserModule', 'aptUserGroupModule']);
+    ['ngRoute', 'ngResource', 'ngCookies', 'aptLoginModule',
+        'aptDashboardModule', 'aptUserModule', 'aptUserGroupModule',
+        'aptCategoriesModule'
+    ]);
 aptAdminModule.provider('adminAuthenticate', [function () {
     this.$get = ['$http', '$cookies', function ($http, $cookies) {
         var $auth = {};
@@ -30,6 +33,22 @@ aptAdminModule.provider('adminAuthenticate', [function () {
     }];
 }]);
 aptAdminModule.run(function ($rootScope, $location, adminAuthenticate) {
+    var socket = io();
+    $rootScope.userOnline = [];
+    socket.on('user_online', function (data) {
+        $rootScope.$apply(function () {
+            $rootScope.userOnline.push(data);
+        });
+    });
+    socket.on('user_offline', function (data) {
+        $rootScope.$apply(function () {
+            for (var i = 0; i < $rootScope.userOnline.length; i++) {
+                if ($rootScope.userOnline[i].id == data.id) {
+                    $rootScope.userOnline.splice(i, 1);
+                }
+            }
+        });
+    });
     $rootScope.$on('$locationChangeStart',
         function () {
             var isAuth = adminAuthenticate.isAuthenticated();

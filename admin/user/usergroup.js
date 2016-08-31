@@ -1,9 +1,9 @@
 var aptUserGroupModule = angular.module('aptUserGroupModule', ['aptUserGroupHelper']);
 aptUserModule.component('usergroup', {
-    templateUrl: 'usergroup/usergroup.html',
+    templateUrl: 'user/usergroup.html',
     controllerAs: 'userGroupCrl',
     controller: ['userGroupService', 'permissionService', 'validateAddGroupErrorCode', '$http',
-        function userGroupController(userGroupService, permissionService, errorMsg, $http) {
+        function (userGroupService, permissionService, errorMsg, $http) {
             var self = this;
             var ALLOW_PERMISSION = 1;
             var DENY_PERMISSION = 2;

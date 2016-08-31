@@ -11,6 +11,11 @@
     <div id="content">
         <div id="box">
             <h3>Users</h3>
+            <form ng-submit="userCtrl.findUser()">
+                <label>Find user : </label>
+                <input type="text" ng-model="userCtrl.findingUsername" placeholder="Find by username"/>
+                <input type="submit" value="Find"/>
+            </form>
             <table width="100%">
                 <thead>
                 <tr>
