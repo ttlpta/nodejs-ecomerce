@@ -30,7 +30,6 @@ aptUserModule.component('user', {
             this.saveUser = function () {
                 if (!_isValidatedUser())
                     return false;
-                self.user.registered = new Date();
                 self.user.$save(function (data) {
                     if (+data.userId > 0) {
                         alert('Insert user success');

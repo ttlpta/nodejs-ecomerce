@@ -133,12 +133,13 @@ module.exports = function (app, io) {
         }
     });
     app.post('/user', function (req, res) {
-        if (typeof req.body != 'undefined') {
+        if (typeof req.body != 'undefined' && !helper.isEmptyObject(req.body)) {
             user.once('save_user', function (userId) {
                 res.json({
                     userId: userId
                 });
             });
+            req.body.registered = new Date();
             user.saveUser(req.body);
         }
     });

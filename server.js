@@ -17,6 +17,8 @@ require('./User/userController')(app, io);
 require('./Usergroup/usergroupController')(app);
 // Permission module
 require('./Permission/permissionController')(app);
+// Categories module
+require('./Categories/categoriesController')(app);
 
 server.listen(80, function () {
     console.log('Running....');

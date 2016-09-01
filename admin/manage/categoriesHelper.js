@@ -1,3 +1,12 @@
-/**
- * Created by Admin on 8/31/2016.
- */
+var aptCategoriesHelper = angular.module('aptCategoriesHelper', []);
+aptCategoriesHelper.factory('catService', ['$resource', function ($resource) {
+    return $resource('/categories', {}, {
+        query: {
+            method: 'GET',
+            params: {
+                action: 'listCat'
+            },
+            isArray: true
+        }
+    });
+}]);

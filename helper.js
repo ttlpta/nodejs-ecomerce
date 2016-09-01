@@ -5,13 +5,18 @@ function Helper() {
         query: '',
         select: function (params) {
             var sql = 'SELECT ';
-            params.forEach(function (value) {
-                if (params[params.length - 1] == value) {
-                    sql += '`' + value + '` ';
-                } else {
-                    sql += '`' + value + '`, ';
-                }
-            });
+            if (params !== '*') {
+                params.forEach(function (value) {
+                    if (params[params.length - 1] == value) {
+                        sql += '`' + value + '` ';
+                    } else {
+                        sql += '`' + value + '`, ';
+                    }
+                });
+            } else {
+                sql += '*';
+            }
+
             self.buildQuery.query = sql;
 
             return self.buildQuery;
@@ -88,6 +93,12 @@ Helper.prototype = {
     },
     getFirstItemArray: function (arr) {
         return arr[0];
+    },
+    isEmptyObject: function (obj) {
+        return Object.keys(obj).length === 0 && obj.constructor === Object;
+    },
+    isUndefined: function (arg) {
+        return typeof arg == 'undefined';
     }
 };
 module.exports = new Helper();
