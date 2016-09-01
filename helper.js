@@ -1,4 +1,55 @@
+var connection = require('./connection');
 function Helper() {
+    var self = this;
+    this.buildQuery = {
+        query: '',
+        select: function (params) {
+            var sql = 'SELECT ';
+            params.forEach(function (value) {
+                if (params[params.length - 1] == value) {
+                    sql += '`' + value + '` ';
+                } else {
+                    sql += '`' + value + '`, ';
+                }
+            });
+            self.buildQuery.query = sql;
+
+            return self.buildQuery;
+        },
+        from: function (tbl) {
+            self.buildQuery.query += ' FROM `' + tbl + '`';
+            return self.buildQuery;
+        },
+        where: function (conditions) {
+            if (typeof conditions == 'object') {
+                conditions = self.buildQuery._perpareCondition(conditions);
+            }
+            self.buildQuery.query += (conditions) ? ' WHERE ' + conditions : '';
+            return self.buildQuery;
+        },
+        orderBy: function (field, sort) {
+            self.buildQuery.query += ' ORDER BY `' + field + '` ' + sort;
+            return self.buildQuery;
+        },
+        limit: function (limit, offset) {
+            self.buildQuery.query += connection.format(' LIMIT ? OFFSET ?', [limit, offset]);
+            return self.buildQuery;
+        },
+        render: function () {
+            return self.buildQuery.query;
+        },
+        _perpareCondition: function (conditions) {
+            var condition = '';
+            for (var index in conditions) {
+                if (condition) {
+                    condition += ' AND ';
+                }
+                condition += connection.format('`' + index + '` = ?', [conditions[index]]);
+            }
+
+            return condition;
+        }
+    }
 }
 Helper.prototype = {
     encodeBase64: function (str) {
@@ -33,10 +84,10 @@ Helper.prototype = {
             subject: subject,
             text: content
         };
-		smtpTransport.sendMail(mailOptions, callback);
-    }, 
-	getFirstItemArray : function(arr){
-		return arr[0];
-	}
+        smtpTransport.sendMail(mailOptions, callback);
+    },
+    getFirstItemArray: function (arr) {
+        return arr[0];
+    }
 };
 module.exports = new Helper();

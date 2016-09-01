@@ -10,19 +10,25 @@ var User = function () {
     this.UNCONFIRM = 5;
 };
 util.inherits(User, EventEmitter);
-User.prototype.listUser = function (limit, offset, orderBy, sort, username) {
+User.prototype.listUser = function (limit, offset, orderBy, sort, condition) {
     var self = this;
     var sql;
-    if (username) {
-        sql = 'SELECT `id`, `email`, `username`, `group`, `street`, `registered`, `city`, `country`, `state`, `zipcode`' +
-            ' FROM `apt_user`' +
-            ' WHERE `username` LIKE "%' + username + '%"' +
-            ' ORDER BY `' + orderBy + '` ' + sort + ' LIMIT ? OFFSET ? ';
+    if (condition) {
+        sql = helper.buildQuery
+            .select(['id', 'email', 'username', 'group', 'street', 'city', 'country', 'state', 'zipcode'])
+            .from('apt_user')
+            .where(condition)
+            .orderBy(orderBy, sort)
+            .limit(+limit, +offset)
+            .render();
     } else {
-        sql = 'SELECT `id`, `email`, `username`, `group`, `street`, `registered`, `city`, `country`, `state`, `zipcode`' +
-            ' FROM `apt_user` ORDER BY `' + orderBy + '` ' + sort + ' LIMIT ? OFFSET ? ';
+        sql = helper.buildQuery
+            .select(['id', 'email', 'username', 'group', 'street', 'city', 'country', 'state', 'zipcode'])
+            .from('apt_user')
+            .orderBy(orderBy, sort)
+            .limit(+limit, +offset)
+            .render();
     }
-    console.log(connection.format(sql, [+limit, +offset]));
     connection.query(sql, [+limit, +offset], function (err, rows) {
         if (err) throw err;
         self.emit('list_user', rows);
@@ -152,13 +158,13 @@ User.prototype.getUser = function (options) {
         self.emit('get_user', []);
     }
 };
-var _perpareCondition = function (options) {
+var _perpareCondition = function (conditions) {
     var condition = '';
-    for (var index in options) {
+    for (var index in conditions) {
         if (condition) {
             condition += ' AND ';
         }
-        condition += connection.format('`' + index + '` = ?', [options[index]]);
+        condition += connection.format('`' + index + '` = ?', [conditions[index]]);
     }
 
     return condition;

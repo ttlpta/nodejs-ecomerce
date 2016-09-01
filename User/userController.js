@@ -24,7 +24,7 @@ module.exports = function (app, io) {
         if (typeof req.query.action != 'undefined') {
             switch (req.query.action) {
                 case 'listUser':
-                    var username = (typeof req.query.username != 'undefined') ? req.query.username : '';
+                    var condition = (typeof req.query.username != 'undefined') ? '`username` LIKE "%' + req.query.username + '%"' : '';
                     user.once('list_user', function (users) {
                         var listUsers = [];
                         users.forEach(function (value) {
@@ -33,7 +33,7 @@ module.exports = function (app, io) {
                         });
                         res.json(listUsers);
                     });
-                    user.listUser(req.query.limit, req.query.offset, req.query.orderBy, req.query.sort, username);
+                    user.listUser(req.query.limit, req.query.offset, req.query.orderBy, req.query.sort, condition);
                     break;
                 case 'showUser':
                     var userId = req.query.id;
