@@ -30,7 +30,16 @@ Category.prototype.saveCategory = function (data, parentId) {
             self.emit('save_category', false);
         });
     } else {
-        //update
+        var updatePromise = new Promise(function (resolve, reject) {
+            nestSet.once('get_node_info', function (result) {
+                if (helper.isEmptyObject(result)) {
+                    reject();
+                } else {
+                    resolve(helper.getFirstItemArray(result));
+                }
+            });
+            nestSet.getNodeInfo(parentId);
+        });
     }
 };
 Category.prototype.listCat = function () {
