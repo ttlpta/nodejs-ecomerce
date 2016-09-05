@@ -336,6 +336,7 @@ form#form #button1, form#form #button2 {
 	width:205px;
 	margin-left:8px;
 	font-weight:bold;
+    text-align: center;
 }
 form#form #button1:hover, form#form #button2:hover {
 	background-position:center left;

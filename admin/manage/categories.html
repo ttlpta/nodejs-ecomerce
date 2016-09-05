@@ -15,27 +15,25 @@
             <table width="100%">
                 <thead>
                 <tr>
-                    <th width="40px"><a ng-click="categoriesCtrl.sortItem('id')" href="javascript:void(0)">ID<img
-                            src="asserts/img/icons/arrow_down_mini.gif" width="16"
-                            height="16"
-                            align="absmiddle"/></a></th>
+                    <th width="40px"><a ng-click="categoriesCtrl.sortItem('id')" href="javascript:void(0)">
+                        Display Order</th>
                     <th><a href="javascript:void(0)">Name</a></th>
-                    <th><a href="javascript:void(0)">Parent</a></th>
                     <th width="60px"><a href="javascript:void(0)">Action</a></th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td class="a-center"></td>
-                    <td><a href="javascript:void(0)"></a></td>
-                    <td></td>
+                <tr ng-repeat="category in categoriesCtrl.categories">
+                    <td class="a-center">{{$index + 1}}</td>
+                    <td>{{'--| '.repeat(category.level - 1)}}<a href="javascript:void(0)">{{category.name}}</a></td>
                     <td>
                         <a href="javascript:void(0)">
-                            <img src="asserts/img/icons/user_edit.png" ng-click="categoriesCtrl.showUser(user.id)"
+                            <img src="asserts/img/icons/user_edit.png"
+                                 ng-click="categoriesCtrl.editCat(category.id, category.name)"
                                  title="Edit user" width="16" height="16"/>
                         </a>
                         <a href="javascript:void(0)">
-                            <img src="asserts/img/icons/user_delete.png" ng-click="categoriesCtrl.deleteUser(user.id)"
+                            <img src="asserts/img/icons/user_delete.png"
+                                 ng-click="categoriesCtrl.deleteUser(category.id, category.name)"
                                  title="Delete user" width="16" height="16"/>
                         </a>
                     </td>
@@ -80,7 +78,10 @@
                     <br/>
                     <label for="choice">Parent Group(*) : </label>
                     <select name="choice" ng-model="categoriesCtrl.category.parent_id">
-                        <option label="Root" ng-value="" >Root</option>
+                        <option label="Root" value="1">Root</option>
+                        <option ng-repeat="category in categoriesCtrl.categories" value="{{category.id}}">
+                            {{category.name}}
+                        </option>
                     </select>
                     <br/>
                 </fieldset>
@@ -89,7 +90,7 @@
 
                 <div align="center">
                     <input id="button1" type="submit" value="Send"/>
-                    <input id="button2" type="submit" value="Change to add user"/>
+                    <input id="button2" ng-click="categoriesCtrl.changeToAddCat()" value="Change to add category"/>
                 </div>
             </form>
         </div>
