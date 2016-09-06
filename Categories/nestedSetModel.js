@@ -52,14 +52,11 @@ nestSetModel.prototype.updateNode = function (data, moveNodeInfo) {
     var self = this;
     connection.query('UPDATE `apt_categories` SET ? WHERE `id` = ?', [data, data.id], function (err, row) {
         if (err) throw err;
-        console.log(+data.parent_id);
-        console.log(+moveNodeInfo.parent_id);
-        if (+data.parent_id != +parent.id) {
-            //self.once('move_node', function (success) {
-            //    self.emit('update_node', success);
-            //});
-            console.log('asdasdsad');
-            //self.moveNode(data.id, parent.id);
+        if (+data.parent_id != +moveNodeInfo.parent_id) {
+            self.once('move_node', function (success) {
+                self.emit('update_node', success);
+            });
+            self.moveNode(data.id, moveNodeInfo.id);
         }
         self.emit('update_node', row.changedRows);
     });
