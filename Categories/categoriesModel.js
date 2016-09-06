@@ -9,38 +9,33 @@ var Category = function () {
 util.inherits(Category, EventEmitter);
 Category.prototype.saveCategory = function (data, parentId) {
     var self = this;
-    if (helper.isUndefined(data.id)) {
-        var insertPromise = new Promise(function (resolve, reject) {
-            nestSet.once('get_node_info', function (result) {
-                if (helper.isEmptyObject(result)) {
-                    reject();
-                } else {
-                    resolve(helper.getFirstItemArray(result));
-                }
-            });
-            nestSet.getNodeInfo(parentId);
+    var savePromise = new Promise(function (resolve, reject) {
+        nestSet.once('get_node_info', function (result) {
+            if (helper.isEmptyObject(result)) {
+                reject();
+            } else {
+                resolve(helper.getFirstItemArray(result));
+            }
         });
+        var nodeId = helper.isUndefined(data.id) ? parentId : data.id;
+        nestSet.getNodeInfo(nodeId);
+    });
 
-        insertPromise.then(function (parentInfo) {
+    savePromise.then(function (nodeInfo) {
+        if (helper.isUndefined(data.id)) {
             nestSet.once('insert_node', function (insertId) {
                 self.emit('save_category', (insertId) ? true : false);
             });
-            nestSet.insertNode(data, parentInfo);
-        }).catch(function () {
-            self.emit('save_category', false);
-        });
-    } else {
-        var updatePromise = new Promise(function (resolve, reject) {
-            nestSet.once('get_node_info', function (result) {
-                if (helper.isEmptyObject(result)) {
-                    reject();
-                } else {
-                    resolve(helper.getFirstItemArray(result));
-                }
+            nestSet.insertNode(data, nodeInfo);
+        } else {
+            nestSet.once('update_node', function (changedRows) {
+                self.emit('save_category', (changedRows) ? true : false);
             });
-            nestSet.getNodeInfo(parentId);
-        });
-    }
+            nestSet.updateNode(data, nodeInfo);
+        }
+    }).catch(function () {
+        self.emit('save_category', false);
+    });
 };
 Category.prototype.listCat = function () {
     var self = this;

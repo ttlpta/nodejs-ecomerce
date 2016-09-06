@@ -23,6 +23,7 @@ aptCategoriesModule.component('categories', {
             });
         };
         this.editCat = function (catId, catName) {
+            self.validateNameNotification = '';
             self.formTitle = 'Edit Category ' + catName;
             self.category = catService.get({
                 action: 'editCat',
