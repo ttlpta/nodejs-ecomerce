@@ -50,35 +50,29 @@ nestSetModel.prototype.getNodeInfo = function (id) {
 };
 nestSetModel.prototype.updateNode = function (data, moveNodeInfo) {
     var self = this;
-    connection.query('UPDATE `apt_categories` SET ? WHERE `id` = ?', [data, data.id], function (err, row) {
-        if (err) throw err;
-        if (+data.parent_id != +moveNodeInfo.parent_id) {
-            self.once('move_node', function (success) {
-                self.emit('update_node', success);
-            });
-            self.moveNode(data.id, moveNodeInfo.id);
-        }
-        self.emit('update_node', row.changedRows);
-    });
+    // connection.query('UPDATE `apt_categories` SET ? WHERE `id` = ?', [data, data.id], function (err, row) {
+        // if (err) throw err;
+        // if (+data.parent_id != +moveNodeInfo.parent_id) {
+            // self.once('move_node', function (success) {
+                // self.emit('update_node', success);
+            // });
+            self.moveNode(moveNodeInfo, data.parent_id);
+        // }
+        // self.emit('update_node', true);
+    // });
 };
-nestSetModel.prototype.moveNode = function (nodeId, newParentId) {
+nestSetModel.prototype.moveNode = function (moveNodeInfo, newParentId) {
     var self = this;
     var moveNodePromise = new Promise(function (resolve, reject) {
-        var here = this;
-        self.once('get_node_info', function (result) {
-            if (helper.isEmptyObject(result)) {
-                reject();
-            } else {
-                var moveNodeInfo = helper.getFirstItemArray(result);
-                console.log(moveNodeInfo);
-                here.levelMoveNode = moveNodeInfo.level;
-                here.leftMoveNode = moveNodeInfo.left;
-                here.rightMoveNode = moveNodeInfo.right;
-                here.widthMoveNode = self.widthNode(here.leftMoveNode, here.rightMoveNode);
-                //resolve();
-            }
-        });
-        self.getNodeInfo(nodeId);
+		console.log('aa');
+		var here = this;
+		if (helper.isEmptyObject(moveNodeInfo)) reject();
+		console.log(moveNodeInfo);
+		here.levelMoveNode = moveNodeInfo.level;
+		here.leftMoveNode = moveNodeInfo.left;
+		here.rightMoveNode = moveNodeInfo.right;
+		here.widthMoveNode = self.widthNode(here.leftMoveNode, here.rightMoveNode);
+		resolve();
     });
 
     moveNodePromise.then(function () {
