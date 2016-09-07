@@ -12,7 +12,7 @@ module.exports = function (app) {
         }
     });
     app.get('/categories', function (req, res) {
-        if (!helper.isUndefined(req.query.action)) {
+        if (!helper.isEmptyObject(req.query)) {
             switch (req.query.action) {
                 case 'listCat' :
                     categories.once('list_category', function (result) {
@@ -28,6 +28,14 @@ module.exports = function (app) {
                     categories.showCatById(req.query.id);
                     break;
             }
+        }
+    });
+    app.delete('/categories', function (req, res) {
+        if (!helper.isEmptyObject(req.query)) {
+            categories.once('delete_category', function (result) {
+                res.json(result);
+            });
+            categories.deleteCat(req.query.id);
         }
     });
 };

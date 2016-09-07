@@ -95,7 +95,7 @@ Helper.prototype = {
         return arr[0];
     },
     isEmptyObject: function (obj) {
-        return Object.keys(obj).length === 0 && obj.constructor === Object;
+        return typeof obj != 'object' || (Object.keys(obj).length === 0 && obj.constructor === Object);
     },
     isUndefined: function (arg) {
         return typeof arg == 'undefined';

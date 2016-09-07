@@ -28,8 +28,8 @@ Category.prototype.saveCategory = function (data, parentId) {
             });
             nestSet.insertNode(data, nodeInfo);
         } else {
-            nestSet.once('update_node', function (changedRows) {
-                self.emit('save_category', (changedRows) ? true : false);
+            nestSet.once('update_node', function (success) {
+                self.emit('save_category', success);
             });
             nestSet.updateNode(data, nodeInfo);
         }
@@ -59,5 +59,11 @@ Category.prototype.showCatById = function (id) {
             if (err) throw err;
             self.emit('show_category', helper.getFirstItemArray(res));
         });
+};
+Category.prototype.deleteCat = function (id) {
+    nestSet.once('remove_one', function (success) {
+        console.log(success);
+    });
+    nestSet.removeOne(id);
 };
 module.exports = new Category();

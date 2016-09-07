@@ -3,9 +3,9 @@ aptCategoriesModule.component('categories', {
     templateUrl: 'manage/categories.html',
     controllerAs: 'categoriesCtrl',
     controller: ['catService', function (catService) {
-        this.formTitle = 'Add Category';
         var self = this;
         var _initForm = function () {
+            self.formTitle = 'Add Category';
             self.category = new catService({parent_id: '1'});
             self.categories = catService.query();
         };
@@ -31,6 +31,16 @@ aptCategoriesModule.component('categories', {
             }, function (result) {
                 self.category = result;
             });
+        };
+        this.deleteCat = function (catId) {
+            //var yes = confirm('Are you sure?');
+            //if (yes) {
+                catService.delete({id: catId}, function (result) {
+                    if (result.success) {
+                        _initForm();
+                    }
+                });
+            //}
         };
         this.changeToAddCat = function () {
             self.formTitle = 'Add Category';

@@ -33,7 +33,7 @@
                         </a>
                         <a href="javascript:void(0)">
                             <img src="asserts/img/icons/user_delete.png"
-                                 ng-click="categoriesCtrl.deleteUser(category.id, category.name)"
+                                 ng-click="categoriesCtrl.deleteCat(category.id)"
                                  title="Delete user" width="16" height="16"/>
                         </a>
                     </td>
@@ -77,7 +77,7 @@
                     <span class="help-block adduser-notification">{{categoriesCtrl.validateNameNotification}}</span>
                     <br/>
                     <label for="choice">Parent Group(*) : </label>
-                    <select name="choice" ng-model="categoriesCtrl.category.parent_id">
+                        <select name="choice" ng-model="categoriesCtrl.category.parent_id">
                         <option label="Root" value="1">Root</option>
                         <option ng-repeat="category in categoriesCtrl.categories" value="{{category.id}}">
                             {{category.name}}
