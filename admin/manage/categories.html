@@ -77,13 +77,15 @@
                     <span class="help-block adduser-notification">{{categoriesCtrl.validateNameNotification}}</span>
                     <br/>
                     <label for="choice">Parent Group(*) : </label>
-                        <select name="choice" ng-model="categoriesCtrl.category.parent_id">
+                    <select name="choice" ng-model="categoriesCtrl.category.parent_id">
                         <option label="Root" value="1">Root</option>
                         <option ng-repeat="category in categoriesCtrl.categories" value="{{category.id}}">
                             {{category.name}}
                         </option>
                     </select>
                     <br/>
+                    <label for="router">Router : </label>
+                    <input type="text" ng-model="categoriesCtrl.router"/>
                 </fieldset>
                 <div align="center">(*) is required field</div>
                 <br/>

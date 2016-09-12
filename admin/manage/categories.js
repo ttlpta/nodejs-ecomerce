@@ -33,13 +33,14 @@ aptCategoriesModule.component('categories', {
             });
         };
         this.deleteCat = function (catId) {
+            alert('Feature is updating');
             //var yes = confirm('Are you sure?');
             //if (yes) {
-                catService.delete({id: catId}, function (result) {
-                    if (result.success) {
-                        _initForm();
-                    }
-                });
+            //    catService.delete({id: catId}, function (result) {
+            //        if (result.success) {
+            //            _initForm();
+            //        }
+            //    });
             //}
         };
         this.changeToAddCat = function () {

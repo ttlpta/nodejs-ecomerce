@@ -3,7 +3,7 @@ aptLoginModule.component('login', {
 	templateUrl : 'login/login.html',
 	controllerAs : 'loginCrl',
 	controller : ['adminAuthenticate', '$location', 'loginErrorCode',
-		function loginController(adminAuthenticate, $location, loginErrorCode) {
+		function (adminAuthenticate, $location, loginErrorCode) {
 			var isAuth = adminAuthenticate.isAuthenticated();
 			if (typeof isAuth != 'undefined' && true == isAuth) {
 				$location.path('dashboard');
