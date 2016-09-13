@@ -33,7 +33,7 @@ module.exports = function (app) {
     app.delete('/categories', function (req, res) {
         if (!helper.isEmptyObject(req.query)) {
             categories.once('delete_category', function (result) {
-                res.json(result);
+                res.json({success: result});
             });
             categories.deleteCat(req.query.id);
         }

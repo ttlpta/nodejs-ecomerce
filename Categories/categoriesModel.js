@@ -61,8 +61,9 @@ Category.prototype.showCatById = function (id) {
         });
 };
 Category.prototype.deleteCat = function (id) {
+	var self = this;
     nestSet.once('remove_one', function (success) {
-        console.log(success);
+        if (true == success) self.emit('delete_category', true);
     });
     nestSet.removeOne(id);
 };
