@@ -1,5 +1,8 @@
 var aptShopModule = angular.module('aptShopModule',
-    ['ngResource', 'ngRoute', 'aptShopHomeModule', 'aptShopLoginModule', 'aptShopRegisterModule', 'ngCookies', 'base64', 'aptShopForgotModule']);
+    ['ngResource', 'ngRoute', 'aptShopHomeModule', 'aptShopLoginModule',
+        'aptShopRegisterModule', 'ngCookies', 'base64', 'aptShopForgotModule',
+        'aptProductsModule'
+    ]);
 aptShopModule.provider('aptShopAuthenticate', [function () {
     this.$get = ['$cookies', '$base64', function ($cookies, $base64) {
         var $auth = {};

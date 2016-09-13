@@ -1,9 +1,9 @@
 <div id="top-panel">
     <div id="panel">
         <ul>
-            <li><a href="#/categories" class="folder active">Categories</a></li>
+            <li><a href="#/categories" class="folder">Categories</a></li>
             <li><a href="#" class="manage_page">Pages</a></li>
-            <li><a href="#/product" class="cart">Products</a></li>
+            <li><a href="#/product" class="cart active">Products</a></li>
             <li><a href="#" class="promotions">Promotions</a></li>
         </ul>
     </div>
@@ -11,29 +11,29 @@
 <div id="wrapper">
     <div id="content">
         <div id="box">
-            <h3>Categories</h3>
+            <h3>Products</h3>
             <table width="100%">
                 <thead>
                 <tr>
-                    <th width="40px"><a ng-click="categoriesCtrl.sortItem('id')" href="javascript:void(0)">
+                    <th width="40px"><a ng-click="productCtrl.sortItem('id')" href="javascript:void(0)">
                         Display Order</th>
                     <th><a href="javascript:void(0)">Name</a></th>
                     <th width="60px"><a href="javascript:void(0)">Action</a></th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="category in categoriesCtrl.categories">
+                <tr ng-repeat="category in productCtrl.categories">
                     <td class="a-center">{{$index + 1}}</td>
                     <td>{{'--| '.repeat(category.level - 1)}}<a href="javascript:void(0)">{{category.name}}</a></td>
                     <td>
                         <a href="javascript:void(0)">
                             <img src="asserts/img/icons/user_edit.png"
-                                 ng-click="categoriesCtrl.editCat(category.id, category.name)"
+                                 ng-click="productCtrl.editCat(category.id, category.name)"
                                  title="Edit user" width="16" height="16"/>
                         </a>
                         <a href="javascript:void(0)">
                             <img src="asserts/img/icons/user_delete.png"
-                                 ng-click="categoriesCtrl.deleteCat(category.id)"
+                                 ng-click="productCtrl.deleteCat(category.id)"
                                  title="Delete user" width="16" height="16"/>
                         </a>
                     </td>
@@ -41,49 +41,49 @@
                 </tbody>
             </table>
             <div id="pager">
-                Page <a ng-show="categoriesCtrl.currentPage > 1" href="javascript:void(0)"
-                        ng-click="categoriesCtrl.movePage('previous')"><img src="asserts/img/icons/arrow_left.gif"
+                Page <a ng-show="productCtrl.currentPage > 1" href="javascript:void(0)"
+                        ng-click="productCtrl.movePage('previous')"><img src="asserts/img/icons/arrow_left.gif"
                                                                             width="16"
                                                                             height="16"/></a>
-                <input ng-keypress="$event.keyCode == 13 && categoriesCtrl.movePage('specific')" size="1"
-                       ng-model="categoriesCtrl.currentPage" type="text" name="page" id="page"/>
-                <a ng-show="categoriesCtrl.currentPage < categoriesCtrl.totalPage" href="javascript:void(0)"
-                   ng-click="categoriesCtrl.movePage('next')"><img
+                <input ng-keypress="$event.keyCode == 13 && productCtrl.movePage('specific')" size="1"
+                       ng-model="productCtrl.currentPage" type="text" name="page" id="page"/>
+                <a ng-show="productCtrl.currentPage < productCtrl.totalPage" href="javascript:void(0)"
+                   ng-click="productCtrl.movePage('next')"><img
                         src="asserts/img/icons/arrow_right.gif" width="16" height="16"/></a>of
-                {{categoriesCtrl.totalPage}}
+                {{productCtrl.totalPage}}
                 pages | View
-                <select ng-model="categoriesCtrl.limitItemPerPage" ng-change="categoriesCtrl.changeLimitItemPerPage()">
+                <select ng-model="productCtrl.limitItemPerPage" ng-change="productCtrl.changeLimitItemPerPage()">
                     <option>10</option>
                     <option>20</option>
                     <option>50</option>
                 </select>
-                per page | Total <strong>{{categoriesCtrl.totalUser}}</strong> records found
+                per page | Total <strong>{{productCtrl.totalUser}}</strong> records found
             </div>
         </div>
         <br/>
 
         <div id="box">
-            <h3 id="adduser">{{categoriesCtrl.formTitle}}</h3>
+            <h3 id="adduser">{{productCtrl.formTitle}}</h3>
 
-            <p class="adduser-notification">{{categoriesCtrl.notification}}</p>
+            <p class="adduser-notification">{{productCtrl.notification}}</p>
 
-            <form id="form" name="addUserForm" ng-submit="categoriesCtrl.saveCategory()">
+            <form id="form" name="addUserForm" ng-submit="productCtrl.saveCategory()">
                 <fieldset id="personal">
                     <legend>CATEGORY INFORMATION</legend>
-                    <input type="hidden" ng-model="categoriesCtrl.category.id"/>
+                    <input type="hidden" ng-model="productCtrl.category.id"/>
                     <label for="name">Name(*) : </label>
-                    <input ng-blur="categoriesCtrl.validateField()" ng-model="categoriesCtrl.category.name"
-                           name="name" id="lastname" type="text" tabindex="1" ng-keyup="categoriesCtrl.convertUrlSlug()"/>
-                    <span class="help-block adduser-notification">{{categoriesCtrl.validateNameNotification}}</span>
+                    <input ng-blur="productCtrl.validateField()" ng-model="productCtrl.category.name"
+                           name="name" id="lastname" type="text" tabindex="1" ng-keyup="productCtrl.convertUrlSlug()"/>
+                    <span class="help-block adduser-notification">{{productCtrl.validateNameNotification}}</span>
                     <br/>
                     <label for="router">Router : </label>
-                    <input type="text" ng-model="categoriesCtrl.category.slug"/>
-                    <span class="help-block adduser-notification">{{categoriesCtrl.validateUrlSlugNotification}}</span>
+                    <input type="text" ng-model="productCtrl.category.slug"/>
+                    <span class="help-block adduser-notification">{{productCtrl.validateUrlSlugNotification}}</span>
                     <br/>
                     <label for="choice">Parent Group(*) : </label>
-                    <select name="choice" ng-model="categoriesCtrl.category.parent_id">
+                    <select name="choice" ng-model="productCtrl.category.parent_id">
                         <option label="Root" value="1">Root</option>
-                        <option ng-repeat="category in categoriesCtrl.categories" value="{{category.id}}">
+                        <option ng-repeat="category in productCtrl.categories" value="{{category.id}}">
                             {{category.name}}
                         </option>
                     </select>
@@ -92,7 +92,7 @@
                 <br/>
                 <div align="center">
                     <input id="button1" type="submit" value="Send"/>
-                    <input id="button2" ng-click="categoriesCtrl.changeToAddCat()" value="Change to add category"/>
+                    <input id="button2" ng-click="productCtrl.changeToAddCat()" value="Change to add category"/>
                 </div>
             </form>
         </div>

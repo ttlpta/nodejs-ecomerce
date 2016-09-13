@@ -2,7 +2,7 @@ var aptCategoriesModule = angular.module('aptCategoriesModule', ['aptCategoriesH
 aptCategoriesModule.component('categories', {
     templateUrl: 'manage/categories.html',
     controllerAs: 'categoriesCtrl',
-    controller: ['catService', function (catService) {
+    controller: ['catService', 'urlSlugService', function (catService, urlSlugService) {
         var self = this;
         var _initForm = function () {
             self.formTitle = 'Add Category';
@@ -33,22 +33,28 @@ aptCategoriesModule.component('categories', {
             });
         };
         this.deleteCat = function (catId) {
-            alert('Feature is updating');
             //var yes = confirm('Are you sure?');
             //if (yes) {
-            //    catService.delete({id: catId}, function (result) {
-            //        if (result.success) {
-            //            _initForm();
-            //        }
-            //    });
+                catService.delete({id: catId}, function (result) {
+                    if (result.success) {
+                        _initForm();
+                    }
+                });
             //}
         };
         this.changeToAddCat = function () {
             self.formTitle = 'Add Category';
             _initForm();
         };
+        this.convertUrlSlug = function () {
+            var catName = self.category.name;
+            self.category.slug = urlSlugService.toUrlSlug(catName);
+        };
         var _isValidatedUser = function () {
-            return !self.validateNameNotification;
+            if (!self.category.slug) {
+                self.validateUrlSlugNotification = 'Url Slug is require';
+            }
+            return !self.validateNameNotification && !self.validateUrlSlugNotification;
         };
     }]
 });

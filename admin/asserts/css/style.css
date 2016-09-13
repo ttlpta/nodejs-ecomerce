@@ -133,6 +133,9 @@ margin-top:20px;
 	margin:0 3px;
 	display:inline-block;
 }
+#top-panel ul li a.active{
+    text-decoration: underline;
+}
 #top-panel a:hover{
 	text-decoration:underline;
 }

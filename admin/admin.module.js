@@ -1,7 +1,7 @@
 var aptAdminModule = angular.module('aptAdminModule',
     ['ngRoute', 'ngResource', 'ngCookies', 'aptLoginModule',
         'aptDashboardModule', 'aptUserModule', 'aptUserGroupModule',
-        'aptCategoriesModule'
+        'aptCategoriesModule', 'aptProductModule'
     ]);
 aptAdminModule.provider('adminAuthenticate', [function () {
     this.$get = ['$http', '$cookies', function ($http, $cookies) {

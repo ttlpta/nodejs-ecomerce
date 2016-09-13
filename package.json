@@ -14,23 +14,24 @@
     "angular": "^1.5.5",
     "angular-animate": "^1.5.5",
     "angular-aria": "^1.5.5",
+    "angular-base64": "2.0.5",
+    "angular-cookies": "1.5.8",
     "angular-resource": "^1.5.7",
     "angular-route": "^1.5.7",
+    "bluebird": "3.4.1",
+    "body-parser": "1.15.2",
+    "ejs": "2.5.1",
     "express": "^4.14.0",
     "jquery": "^3.0.0",
-	"angular-cookies": "1.5.8",
-	"body-parser": "1.15.2",
-	"ejs": "2.5.1",
-	"mysql": "2.11.1",
-	"util": "0.10.3",
-	"bluebird" : "3.4.1",
-	"validator" : "5.5.0",
-	"nodemailer" : "0.7.1",
-	"angular-base64" : "2.0.5", 
-	"socket.io" : "1.4.8"
-},
-  "devDependencies": {
+    "multer": "^1.2.0",
+    "mysql": "2.11.1",
+    "nodemailer": "0.7.1",
+    "socket.io": "1.4.8",
+    "util": "0.10.3",
+    "validator": "5.5.0",
+	"multer": "1.2.0"
   },
+  "devDependencies": {},
   "scripts": {
     "prestart": "npm update"
   }

@@ -195,12 +195,6 @@ nestSetModel.prototype.removeOne = function (id) {
     });
     removeOnePromise.then(function (deleteNode) {
         return new Promise(function (resolve) {
-            console.log(helper.buildQuery
-                .select(['id'])
-                .from('apt_categories')
-                .where({parent_id: deleteNode.id})
-                .orderBy('left', 'asc')
-                .render());
             connection.query(helper.buildQuery
                     .select(['id'])
                     .from('apt_categories')
@@ -211,22 +205,76 @@ nestSetModel.prototype.removeOne = function (id) {
                     if (err) throw err;
                     resolve(res.reverse());
                 });
-        }).then(function (childNodesInfo) {
-                var count = 1;
-                console.log(childNodesInfo);
-                //childNodesInfo.forEach(function (nodeInfo) {
-                    //var parentId = deleteNode.parent_id;
-                    //self.once('move_node_after', function (success) {
-                    //    if (success) {
-                    //        count++;
-                    //    }
-                    //    if (count == childNodesInfo.length) {
-                    //        self.emit('remove_one');
-                    //    }
-                    //});
-                    //self.moveNodeAfter(nodeInfo, parentId, deleteNode.id);
-                //});
+        });
+    }).then(function (childNodesInfo) {
+        if (childNodesInfo.length > 0) {
+            childNodesInfo.forEach(function (nodeInfo) {
+                var parentId = deleteNode.parent_id;
+                self.once('move_node_after', function (success) {
+                    if (success) {
+                        count++;
+                    }
+                    if (count == childNodesInfo.length) {
+                        self.emit('remove_one');
+                    }
+                });
+                self.moveNodeAfter(nodeInfo, parentId, deleteNode.id);
             });
+        } else {
+            self.removeBrand(id);
+        }
+    });
+};
+nestSetModel.prototype.removeBrand = function (deletedId) {
+    var self = this;
+    var removeBrandPromise = new Promise(function (resolve, reject) {
+        self.once('get_node_info', function (result) {
+            if (helper.isEmptyObject(result)) {
+                reject();
+            } else {
+                resolve(helper.getFirstItemArray(result));
+            }
+        });
+        self.getNodeInfo(deletedId);
+    });
+    removeBrandPromise.then(function (delNode) {
+        return new Promise(function (resolve) {
+            this.rightDelNode = delNode.right;
+            this.leftDelNode = delNode.left;
+            this.widthDelNode = self.widthNode(+this.rightDelNode, +this.leftDelNode);
+            connection.query('DELETE FROM `apt_categories`' +
+                ' WHERE `left` BETWEEN ? AND ?',
+                [+this.rightDelNode, +this.leftDelNode],
+                function (err) {
+                    if (err) throw err;
+                    resolve();
+                }
+            );
+        });
+    }).then(function () {
+        return new Promise(function (resolve) {
+            connection.query('UPDATE `apt_categories`' +
+                ' SET left = (left - ?)' +
+                ' WHERE left > ?',
+                [+this.widthDelNode, +this.rightDelNode],
+                function (err) {
+                    if (err) throw err;
+                    resolve();
+                }
+            );
+        });
+    }).then(function () {
+        return new Promise(function (resolve) {
+            connection.query('UPDATE `apt_categories`' +
+                ' SET right = (right - ?)' +
+                ' WHERE right > ?',
+                [+this.widthDelNode, +this.rightDelNode],
+                function (err) {
+                    if (err) throw err;
+                    resolve();
+                }
+            );
+        });
     });
 };
 nestSetModel.prototype.moveNodeAfter = function (moveNodeInfo, newParentId, brotherId) {

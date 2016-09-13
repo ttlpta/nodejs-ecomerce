@@ -13,6 +13,9 @@ aptShopModule.config(['$routeProvider',
             .when('/register', {
                 template: '<register></register>'
             })
+            .when('/category', {
+                template: '<products></products>'
+            })
             .when('/forgotPassword', {
                 template: '<forgot></forgot>'
             })
