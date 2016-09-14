@@ -319,7 +319,9 @@ form#form input {
 	margin-bottom:5px;
 }
 form#form select {
-	margin-left:5px;
+    margin-left: 5px;
+    margin-bottom: 5px;
+    min-width: 170px;
 }
 form#form textarea {
 	width:410px;

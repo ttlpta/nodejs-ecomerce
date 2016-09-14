@@ -113,6 +113,9 @@ ul.nav_1 li a {
 ul.nav_1 li {
     border-right:1px solid #EFEFEF;
 }
+ul.nav_1 li.mega-dropdown.active:hover .dropdown-menu {
+    display: block;
+}
 .navbar {
     margin-bottom: 0px;
 	border:none;

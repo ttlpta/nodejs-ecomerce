@@ -15,25 +15,30 @@
             <table width="100%">
                 <thead>
                 <tr>
-                    <th width="40px"><a ng-click="productCtrl.sortItem('id')" href="javascript:void(0)">
-                        Display Order</th>
+                    <th width="40px">
+                        <a ng-click="productCtrl.sortItem('id')" href="javascript:void(0)">ID</a>
+                    </th>
+                    <th><a href="javascript:void(0)">Model</a></th>
                     <th><a href="javascript:void(0)">Name</a></th>
+                    <th><a href="javascript:void(0)">Quantity</a></th>
                     <th width="60px"><a href="javascript:void(0)">Action</a></th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="category in productCtrl.categories">
-                    <td class="a-center">{{$index + 1}}</td>
-                    <td>{{'--| '.repeat(category.level - 1)}}<a href="javascript:void(0)">{{category.name}}</a></td>
+                <tr>
+                    <td class="a-center"></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                     <td>
                         <a href="javascript:void(0)">
                             <img src="asserts/img/icons/user_edit.png"
-                                 ng-click="productCtrl.editCat(category.id, category.name)"
+                                 ng-click=""
                                  title="Edit user" width="16" height="16"/>
                         </a>
                         <a href="javascript:void(0)">
                             <img src="asserts/img/icons/user_delete.png"
-                                 ng-click="productCtrl.deleteCat(category.id)"
+                                 ng-click=""
                                  title="Delete user" width="16" height="16"/>
                         </a>
                     </td>
@@ -43,8 +48,8 @@
             <div id="pager">
                 Page <a ng-show="productCtrl.currentPage > 1" href="javascript:void(0)"
                         ng-click="productCtrl.movePage('previous')"><img src="asserts/img/icons/arrow_left.gif"
-                                                                            width="16"
-                                                                            height="16"/></a>
+                                                                         width="16"
+                                                                         height="16"/></a>
                 <input ng-keypress="$event.keyCode == 13 && productCtrl.movePage('specific')" size="1"
                        ng-model="productCtrl.currentPage" type="text" name="page" id="page"/>
                 <a ng-show="productCtrl.currentPage < productCtrl.totalPage" href="javascript:void(0)"
@@ -69,27 +74,54 @@
 
             <form id="form" name="addUserForm" ng-submit="productCtrl.saveCategory()">
                 <fieldset id="personal">
-                    <legend>CATEGORY INFORMATION</legend>
+                    <legend>PRODUCT INFORMATION</legend>
                     <input type="hidden" ng-model="productCtrl.category.id"/>
-                    <label for="name">Name(*) : </label>
+                    <label>Name(*) : </label>
                     <input ng-blur="productCtrl.validateField()" ng-model="productCtrl.category.name"
                            name="name" id="lastname" type="text" tabindex="1" ng-keyup="productCtrl.convertUrlSlug()"/>
                     <span class="help-block adduser-notification">{{productCtrl.validateNameNotification}}</span>
                     <br/>
-                    <label for="router">Router : </label>
+                    <label>Model(*) : </label>
                     <input type="text" ng-model="productCtrl.category.slug"/>
                     <span class="help-block adduser-notification">{{productCtrl.validateUrlSlugNotification}}</span>
                     <br/>
-                    <label for="choice">Parent Group(*) : </label>
+                    <label>Price(*) : </label>
+                    <input type="text" ng-model="productCtrl.category.slug"/>
+                    <span class="help-block adduser-notification">{{productCtrl.validateUrlSlugNotification}}</span>
+                    <br/>
+                    <label>Quantity(*) : </label>
+                    <input type="text" ng-model="productCtrl.category.slug"/>
+                    <span class="help-block adduser-notification">{{productCtrl.validateUrlSlugNotification}}</span>
+                    <br/>
+                    <label>Promotion(*) : </label>
                     <select name="choice" ng-model="productCtrl.category.parent_id">
-                        <option label="Root" value="1">Root</option>
-                        <option ng-repeat="category in productCtrl.categories" value="{{category.id}}">
-                            {{category.name}}
-                        </option>
+                        <option label="None" value="1">None</option>
+                    </select>
+                    <span class="help-block adduser-notification">{{productCtrl.validateUrlSlugNotification}}</span>
+                    <br/>
+                    <label>Brand(*) : </label>
+                    <select name="choice" ng-model="productCtrl.category.parent_id">
+                        <option label="Hand-made" value="1">Hand-made</option>
+                    </select>
+                    <span class="help-block adduser-notification">{{productCtrl.validateUrlSlugNotification}}</span>
+                    <br/>
+                    <label>Category(*) : </label>
+                    <select name="choice" ng-model="productCtrl.category.parent_id">
+                    </select>
+                    <br/>
+                    <label>Image(*) : </label>
+                    <input type="text" ng-model="productCtrl.category.slug"/>
+                    <span class="help-block adduser-notification">{{productCtrl.validateUrlSlugNotification}}</span>
+                    <label>Status : </label>
+                    <select name="choice" ng-model="productCtrl.category.parent_id">
+                        <option label="Available" value="1">Available</option>
+                        <option label="Stop Selling" value="2">Stop Selling</option>
+                        <option label="Out of stock" value="2">Out of stock</option>
                     </select>
                 </fieldset>
                 <div align="center">(*) is required field</div>
                 <br/>
+
                 <div align="center">
                     <input id="button1" type="submit" value="Send"/>
                     <input id="button2" ng-click="productCtrl.changeToAddCat()" value="Change to add category"/>

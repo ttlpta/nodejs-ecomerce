@@ -33,14 +33,14 @@ aptCategoriesModule.component('categories', {
             });
         };
         this.deleteCat = function (catId) {
-            //var yes = confirm('Are you sure?');
-            //if (yes) {
+            var yes = confirm('Are you sure?');
+            if (yes) {
                 catService.delete({id: catId}, function (result) {
                     if (result.success) {
                         _initForm();
                     }
                 });
-            //}
+            }
         };
         this.changeToAddCat = function () {
             self.formTitle = 'Add Category';

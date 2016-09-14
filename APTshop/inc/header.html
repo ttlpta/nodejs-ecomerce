@@ -56,8 +56,7 @@
                         <ul class="nav navbar-nav nav_1">
                             <li ng-repeat="category in headerCtrl.parentCategories"
                                 class="dropdown mega-dropdown active">
-                                <a href="#/category#{{category.slug}}.{{category.id}}"
-                                   data-toggle="{{headerCtrl.subCategories(category.id) ? 'dropdown' : ''}}">{{category.name}}
+                                <a href="#/category#{{category.slug}}.{{category.id}}" >{{category.name}}
                                     <span ng-show="headerCtrl.subCategories(category.id).length > 0" class="caret"></span>
                                 </a>
 
@@ -68,7 +67,7 @@
                                                 <h4>Submenu1</h4>
                                                 <ul>
                                                     <li ng-repeat="subCat in headerCtrl.subCategories(category.id)">
-                                                        <a href="product.html">{{subCat.name}}</a>
+                                                        <a href="#/category#{{subCat.slug}}.{{subCat.id}}">{{subCat.name}}</a>
                                                     </li>
                                                 </ul>
                                             </div>

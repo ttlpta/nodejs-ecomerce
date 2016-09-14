@@ -15,8 +15,9 @@
             <table width="100%">
                 <thead>
                 <tr>
-                    <th width="40px"><a ng-click="categoriesCtrl.sortItem('id')" href="javascript:void(0)">
-                        Display Order</th>
+                    <th width="40px">
+                        <a href="javascript:void(0)">Display Order</a>
+                    </th>
                     <th><a href="javascript:void(0)">Name</a></th>
                     <th width="60px"><a href="javascript:void(0)">Action</a></th>
                 </tr>
@@ -73,7 +74,8 @@
                     <input type="hidden" ng-model="categoriesCtrl.category.id"/>
                     <label for="name">Name(*) : </label>
                     <input ng-blur="categoriesCtrl.validateField()" ng-model="categoriesCtrl.category.name"
-                           name="name" id="lastname" type="text" tabindex="1" ng-keyup="categoriesCtrl.convertUrlSlug()"/>
+                           name="name" id="lastname" type="text" tabindex="1"
+                           ng-keyup="categoriesCtrl.convertUrlSlug()"/>
                     <span class="help-block adduser-notification">{{categoriesCtrl.validateNameNotification}}</span>
                     <br/>
                     <label for="router">Router : </label>
@@ -90,6 +92,7 @@
                 </fieldset>
                 <div align="center">(*) is required field</div>
                 <br/>
+
                 <div align="center">
                     <input id="button1" type="submit" value="Send"/>
                     <input id="button2" ng-click="categoriesCtrl.changeToAddCat()" value="Change to add category"/>
