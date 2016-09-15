@@ -18,6 +18,7 @@ module.exports = function (app) {
                     categories.once('list_category', function (result) {
                         res.json(result);
                     });
+                    categories.listCat
                     categories.listCat();
                     break;
                 case 'editCat':

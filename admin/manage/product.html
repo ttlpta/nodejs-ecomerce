@@ -72,48 +72,49 @@
 
             <p class="adduser-notification">{{productCtrl.notification}}</p>
 
-            <form id="form" name="addUserForm" ng-submit="productCtrl.saveCategory()">
+            <form id="form" name="addProductForm" ng-submit="productCtrl.saveProduct()">
                 <fieldset id="personal">
                     <legend>PRODUCT INFORMATION</legend>
                     <input type="hidden" ng-model="productCtrl.category.id"/>
                     <label>Name(*) : </label>
-                    <input ng-blur="productCtrl.validateField()" ng-model="productCtrl.category.name"
-                           name="name" id="lastname" type="text" tabindex="1" ng-keyup="productCtrl.convertUrlSlug()"/>
-                    <span class="help-block adduser-notification">{{productCtrl.validateNameNotification}}</span>
+                    <input ng-blur="productCtrl.validateField()" ng-model="productCtrl.product.name"
+                           name="name" id="lastname" type="text" tabindex="1"/>
                     <br/>
                     <label>Model(*) : </label>
-                    <input type="text" ng-model="productCtrl.category.slug"/>
-                    <span class="help-block adduser-notification">{{productCtrl.validateUrlSlugNotification}}</span>
+                    <input type="text" ng-model="productCtrl.product.model"/>
                     <br/>
                     <label>Price(*) : </label>
-                    <input type="text" ng-model="productCtrl.category.slug"/>
-                    <span class="help-block adduser-notification">{{productCtrl.validateUrlSlugNotification}}</span>
+                    <input type="text" ng-model="productCtrl.product.price"/>
                     <br/>
                     <label>Quantity(*) : </label>
-                    <input type="text" ng-model="productCtrl.category.slug"/>
-                    <span class="help-block adduser-notification">{{productCtrl.validateUrlSlugNotification}}</span>
+                    <input type="text" ng-model="productCtrl.product.quantity"/>
+                    <br/>
+
+                    <div ng-repeat="index in productCtrl.imageNames">
+                        <label>Image {{index}}(*) : </label>
+                        <input type="file" file-image name="image_{{index}}"/>
+                        <span><a href="javascript:void(0)" ng-click="productCtrl.delImageInput()">Delete</a></span>
+                        <img/>
+                        <br/>
+                    </div>
+                    <label></label><input type="button" value="More Image" ng-click="productCtrl.addImageInput()"/>
                     <br/>
                     <label>Promotion(*) : </label>
-                    <select name="choice" ng-model="productCtrl.category.parent_id">
+                    <select name="choice" ng-model="productCtrl.product.promotion">
                         <option label="None" value="1">None</option>
                     </select>
-                    <span class="help-block adduser-notification">{{productCtrl.validateUrlSlugNotification}}</span>
                     <br/>
                     <label>Brand(*) : </label>
-                    <select name="choice" ng-model="productCtrl.category.parent_id">
+                    <select name="choice" ng-model="productCtrl.product.brand">
                         <option label="Hand-made" value="1">Hand-made</option>
                     </select>
-                    <span class="help-block adduser-notification">{{productCtrl.validateUrlSlugNotification}}</span>
                     <br/>
                     <label>Category(*) : </label>
-                    <select name="choice" ng-model="productCtrl.category.parent_id">
+                    <select name="choice" ng-model="productCtrl.product.category">
                     </select>
                     <br/>
-                    <label>Image(*) : </label>
-                    <input type="text" ng-model="productCtrl.category.slug"/>
-                    <span class="help-block adduser-notification">{{productCtrl.validateUrlSlugNotification}}</span>
                     <label>Status : </label>
-                    <select name="choice" ng-model="productCtrl.category.parent_id">
+                    <select name="choice" ng-model="productCtrl.product.status">
                         <option label="Available" value="1">Available</option>
                         <option label="Stop Selling" value="2">Stop Selling</option>
                         <option label="Out of stock" value="2">Out of stock</option>
@@ -124,7 +125,7 @@
 
                 <div align="center">
                     <input id="button1" type="submit" value="Send"/>
-                    <input id="button2" ng-click="productCtrl.changeToAddCat()" value="Change to add category"/>
+                    <input id="button2" ng-click="productCtrl.changeToAddCat()" value="Change to add product"/>
                 </div>
             </form>
         </div>
