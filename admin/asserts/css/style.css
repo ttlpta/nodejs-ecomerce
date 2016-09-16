@@ -473,3 +473,9 @@ form#form #button1:hover, form#form #button2:hover {
 .container .info span .fa {
   color: #EF3B3A;
 }
+.imageDisplay {
+    display: inline-block;
+}
+.imageDisplay img {
+    max-width: 235px;
+}

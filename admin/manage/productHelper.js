@@ -1,3 +1,1 @@
-/**
- * Created by Admin on 9/13/2016.
- */
+var aptProductHelper = angular.module('aptProductHelper', []);

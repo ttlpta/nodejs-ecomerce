@@ -2,7 +2,7 @@
     <div id="panel">
         <ul>
             <li><a href="#/categories" class="folder">Categories</a></li>
-            <li><a href="#" class="manage_page">Pages</a></li>
+            <li><a href="#/brand" class="manage_page">Brands</a></li>
             <li><a href="#/product" class="cart active">Products</a></li>
             <li><a href="#" class="promotions">Promotions</a></li>
         </ul>
@@ -89,12 +89,17 @@
                     <label>Quantity(*) : </label>
                     <input type="text" ng-model="productCtrl.product.quantity"/>
                     <br/>
-
-                    <div ng-repeat="index in productCtrl.imageNames">
-                        <label>Image {{index}}(*) : </label>
-                        <input type="file" file-image name="image_{{index}}"/>
-                        <span><a href="javascript:void(0)" ng-click="productCtrl.delImageInput()">Delete</a></span>
-                        <img/>
+                    <div ng-repeat="index in productCtrl.imageNames track by $index">
+                        <label>Image {{$index + 1}}(*) : </label>
+                        <div class="imageDisplay">
+                            <input type="file" file-image name="image_{{index}}"/>
+                            <span>
+                                <a href="javascript:void(0)" ng-click="productCtrl.delImageInput(index)">Delete</a>
+                            </span>
+                            <br />
+                            <img src="{{srcImg}}"/>
+                            <span class="help-block adduser-notification">{{imageUploadStatus}}</span>
+                        </div>
                         <br/>
                     </div>
                     <label></label><input type="button" value="More Image" ng-click="productCtrl.addImageInput()"/>

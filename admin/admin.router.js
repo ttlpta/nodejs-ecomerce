@@ -22,6 +22,9 @@ aptAdminModule.config(['$routeProvider',
             .when('/product', {
                 template : '<apt-header></apt-header><product></product><apt-footer></apt-footer>'
             })
+            .when('/brand', {
+                template : '<apt-header></apt-header><brand></brand><apt-footer></apt-footer>'
+            })
 			.otherwise('/login');
 		}
 	]);
