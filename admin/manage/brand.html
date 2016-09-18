@@ -1,7 +1,7 @@
 <div id="top-panel">
     <div id="panel">
         <ul>
-            <li><a href="#/categories" class="folder active">Categories</a></li>
+            <li><a href="#/categories" class="folder">Categories</a></li>
             <li><a href="#/brand" class="manage_page active">Brands</a></li>
             <li><a href="#/product" class="cart">Products</a></li>
             <li><a href="#" class="promotions">Promotions</a></li>
@@ -76,6 +76,12 @@
                     <input ng-blur="brandCtrl.validateField()" ng-model="brandCtrl.brand.name"
                            name="name" id="lastname" type="text" tabindex="1"/>
                     <span class="help-block adduser-notification">{{brandCtrl.validateNameNotification}}</span>
+                    <br/>
+                    <label for="name">Logo(*) : </label>
+                    <input type="file" file-image name="logo"/>
+                    <br />
+                    <img src="{{srcImg}}"/>
+                    <span class="help-block adduser-notification">{{imageUploadStatus}}</span>
                     <br/>
                 </fieldset>
                 <div align="center">(*) is required field</div>
