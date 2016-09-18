@@ -1,0 +1,13 @@
+{
+"compileOnSave": true,
+"compilerOptions": {
+        "target": "es6", 
+        "module": "es6",
+        "declaration": false,
+        "noImplicitAny": false,
+        "inlineSourceMap": true,
+        "removeComments": true,
+        "noLib": false,
+        "sourceMap": true 
+    }
+}

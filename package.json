@@ -1,8 +1,8 @@
 {
-  "name": "material-start",
+  "name": "NodeJs ecommerce",
   "private": true,
   "version": "0.0.4",
-  "description": "A starter project for AngularJS Material",
+  "description": "A starter project for Nodejs",
   "repository": "https://github.com/angular/material-start",
   "licenses": [
     {
@@ -27,9 +27,9 @@
     "mysql": "2.11.1",
     "nodemailer": "0.7.1",
     "socket.io": "1.4.8",
+    "typescript": "^1.8.10",
     "util": "0.10.3",
-    "validator": "5.5.0",
-	"multer": "1.2.0"
+    "validator": "5.5.0"
   },
   "devDependencies": {},
   "scripts": {
