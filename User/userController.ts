@@ -1,4 +1,7 @@
-var validator = require('validator'), helper = require('../helper'), Promise = require('bluebird'), user = require('./userModel');
+var validator = require('validator'),
+    helper = require('../helper'),
+    Promise = require('bluebird'),
+    user = require('./userModel');
 user.setMaxListeners(0);
 module.exports = function (app, io) {
     io.on('connection', function (socket) {
@@ -38,8 +41,7 @@ module.exports = function (app, io) {
                         if (result.success) {
                             result.user.group = result.user.group.toString();
                             res.json(result.user);
-                        }
-                        else {
+                        } else {
                             res.json(result);
                         }
                     });
@@ -66,21 +68,20 @@ module.exports = function (app, io) {
                             isNotValid: true,
                             errorCode: EXISTED_CODE
                         });
-                    }
-                    else {
+                    } else {
                         res.json({
                             isNotValid: false
                         });
                     }
                 });
                 user.validateUser(req.query);
-            }
-            else {
+            } else {
                 res.json({
                     isNotValid: true,
                     errorCode: CONTAIN_SPECIAL_CODE
                 });
             }
+
         }
         if (typeof req.query.email != 'undefined') {
             if (validator.isEmail(req.query.email)) {
@@ -90,16 +91,14 @@ module.exports = function (app, io) {
                             isNotValid: true,
                             errorCode: EXISTED_CODE
                         });
-                    }
-                    else {
+                    } else {
                         res.json({
                             isNotValid: false
                         });
                     }
                 });
                 user.validateUser(req.query);
-            }
-            else {
+            } else {
                 res.json({
                     isNotValid: true,
                     errorCode: WRONG_FORMAT_CODE
@@ -112,12 +111,12 @@ module.exports = function (app, io) {
                     isNotValid: true,
                     errorCode: WRONG_FORMAT_CODE
                 });
-            }
-            else {
+            } else {
                 res.json({
                     isNotValid: false
                 });
             }
+
         }
         if (typeof req.query.password != 'undefined') {
             if (!validator.isAlphanumeric(req.query.password)) {
@@ -125,12 +124,12 @@ module.exports = function (app, io) {
                     isNotValid: true,
                     errorCode: CONTAIN_SPECIAL_CODE
                 });
-            }
-            else {
+            } else {
                 res.json({
                     isNotValid: false
                 });
             }
+
         }
     });
     app.post('/user', function (req, res) {
@@ -150,8 +149,7 @@ module.exports = function (app, io) {
                 user.once('save_user', function (userId) {
                     if (+userId) {
                         resolve(+userId);
-                    }
-                    else {
+                    } else {
                         reject();
                     }
                 });
@@ -164,8 +162,7 @@ module.exports = function (app, io) {
                     user.once('show_user', function (result) {
                         if (result.success) {
                             resolve(result);
-                        }
-                        else {
+                        } else {
                             reject();
                         }
                     });
@@ -173,17 +170,19 @@ module.exports = function (app, io) {
                 });
             }).then(function (result) {
                 return new Promise(function (resolve, reject) {
-                    helper.sendEmail(result.user.email, '[Apt Shop] Confirm your password', 'Click this url to confirm your registed : ' + '' + req.protocol + '://' + req.hostname + '/APTshop/#/confirmRegisted?id=' + result.user.id + '&salt=' + result.user.salt, function (error, response) {
-                        if (error) {
-                            reject();
-                            throw error;
-                        }
-                        else {
-                            res.json({
-                                success: true
-                            });
-                        }
-                    });
+                    helper.sendEmail(result.user.email,
+                        '[Apt Shop] Confirm your password',
+                        'Click this url to confirm your registed : ' +
+                        '' + req.protocol + '://' + req.hostname + '/APTshop/#/confirmRegisted?id=' + result.user.id + '&salt=' + result.user.salt, function (error, response) {
+                            if (error) {
+                                reject();
+                                throw error;
+                            } else {
+                                res.json({
+                                    success: true
+                                });
+                            }
+                        });
                 });
             }).catch(function () {
                 res.json({
@@ -218,13 +217,11 @@ module.exports = function (app, io) {
                             });
                         });
                         user.saveUser(userData);
-                    }
-                    else
+                    } else
                         res.json({
                             success: false
                         });
-                }
-                else {
+                } else {
                     res.json({
                         success: false
                     });
@@ -234,8 +231,7 @@ module.exports = function (app, io) {
                 salt: salt,
                 id: id
             });
-        }
-        else {
+        } else {
             res.json({
                 success: false
             });
@@ -249,12 +245,12 @@ module.exports = function (app, io) {
                         success: true,
                         hash: helper.encodeBase64(JSON.stringify(result))
                     });
-                }
-                else {
+                } else {
                     res.json({
                         success: false
                     });
                 }
+
             });
             user.userLogin(req.body);
         }
@@ -264,18 +260,19 @@ module.exports = function (app, io) {
             user.once('get_user', function (results) {
                 var userData = helper.getFirstItemArray(results);
                 if (typeof userData != 'undefined') {
-                    helper.sendEmail(userData.email, '[Apt Shop] Update your new password', 'Click this url to update your password : ' + '' + req.protocol + '://' + req.hostname + '/APTshop/#/updatePassword?id=' + userData.id, function (error) {
-                        if (error) {
-                            throw error;
-                        }
-                        else {
-                            res.json({
-                                success: true
-                            });
-                        }
-                    });
-                }
-                else {
+                    helper.sendEmail(userData.email,
+                        '[Apt Shop] Update your new password',
+                        'Click this url to update your password : ' +
+                        '' + req.protocol + '://' + req.hostname + '/APTshop/#/updatePassword?id=' + userData.id, function (error) {
+                            if (error) {
+                                throw error;
+                            } else {
+                                res.json({
+                                    success: true
+                                });
+                            }
+                        });
+                } else {
                     res.json({
                         success: false
                     });
@@ -285,4 +282,3 @@ module.exports = function (app, io) {
         }
     });
 };
-//# sourceMappingURL=userController.js.map

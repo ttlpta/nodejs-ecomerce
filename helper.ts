@@ -20,11 +20,11 @@ function Helper() {
 
             return this.buildQuery;
         },
-        from: (tbl) => {
+        from: (tbl:string) => {
             this.buildQuery.query += ' FROM `' + tbl + '`';
             return this.buildQuery;
         },
-        where: (conditions) => {
+        where: (conditions:any) => {
             if (typeof conditions == 'object') {
                 conditions = this.buildQuery._perpareCondition(conditions);
             }
