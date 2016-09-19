@@ -2,14 +2,20 @@ var aptUserGroupModule = angular.module('aptUserGroupModule', ['aptUserGroupHelp
 aptUserModule.component('usergroup', {
     templateUrl: 'user/usergroup.html',
     controllerAs: 'userGroupCrl',
-    controller: ['userGroupService', 'permissionService', 'validateAddGroupErrorCode', '$http',
-        function (userGroupService, permissionService, errorMsg, $http) {
+    controller: ['userGroupService', 'permissionService', 'validateAddGroupErrorCode', '$http', 'adminAuthenticate', '$location',
+        function (userGroupService, permissionService, errorMsg, $http, adminAuthenticate, $location) {
+            adminAuthenticate.isSuperAdmin(function (isSuperAdmin) {
+                if (!isSuperAdmin) {
+                    alert('You do not have permission to access');
+                    $location.path('user');
+                }
+            });
             var self = this;
             var ALLOW_PERMISSION = 1;
             var DENY_PERMISSION = 2;
             this.formTitle = 'Add User Group';
             this.groupPermissionCodes = {};
-            var _init = function(){
+            var _init = function () {
                 self.group = new userGroupService();
                 self.groups = userGroupService.query();
                 self.permissions = permissionService.query(function (permissions) {
@@ -73,19 +79,19 @@ aptUserModule.component('usergroup', {
                 });
             };
             this.deleteGroup = function (groupId) {
-				var confirm = window.confirm("Are you sure?");
+                var confirm = window.confirm("Are you sure?");
                 if (confirm) {
                     userGroupService.delete({id: groupId}, function (result) {
-                        if(result.success){
-							_init();
-						} else {
-							alert('Error');
-							location.reload();
-						}
+                        if (result.success) {
+                            _init();
+                        } else {
+                            alert('Error');
+                            location.reload();
+                        }
                     });
                 }
-			};
-			var _isValidatedGroup = function () {
+            };
+            var _isValidatedGroup = function () {
                 return !self.validateGroupnameNotification;
             };
             var _setDefaultStatusPermission = function (permissions) {

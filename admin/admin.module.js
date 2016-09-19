@@ -6,28 +6,42 @@ var aptAdminModule = angular.module('aptAdminModule',
 aptAdminModule.provider('adminAuthenticate', [function () {
     this.$get = ['$http', '$cookies', function ($http, $cookies) {
         var $auth = {};
-        $auth.isAuthenticated = function () {
-            return (typeof $cookies.get('apt_session_admin') != 'undefined')
+        $auth.isLogin = function (callback) {
+            if (typeof $cookies.get('apt_session_admin') != 'undefined') {
+                $http.get('/admin/checkAdminIsLogin', {params: {sessionId: $cookies.get('apt_session_admin')}})
+                    .then(function (response) {
+                        callback(response.data.success)
+                    });
+            } else {
+                callback(false);
+            }
         };
         $auth.login = function (username, password, callback) {
             if (!username || !password) {
-                callback({success: false, message: 'password/username is required'});
+                callback({success: false, message: 'Password / Username is required'});
             } else {
                 $http.post('/admin/login', {username: username, password: password})
                     .then(function (response) {
                         if (response.data.success) {
-                            $cookies.put('apt_session_admin', response.data.hash);
+                            $cookies.put('apt_session_admin', response.data.sessionId);
                             callback({success: true});
                         } else {
-                            callback({success: false, errorCode: '1'})
+                            callback({success: false, message: 'Password / Username is incorrect'});
                         }
-                    }, function () {
-                        callback({success: false, errorCode: '1'});
+                    }).catch(function () {
+                        callback({success: false, message: 'Error has happened'});
                     });
             }
         };
-        $auth.isSuperAdmin = function () {
-            return (this.isAuthenticated() && $cookies.get('apt_session_admin') == 'superAdmin');
+        $auth.isSuperAdmin = function (callback) {
+            if (typeof $cookies.get('apt_session_admin') != 'undefined') {
+                $http.get('/admin/checkIsSuperAdmin', {params: {sessionId: $cookies.get('apt_session_admin')}})
+                    .then(function (response) {
+                        callback(response.data.success)
+                    });
+            } else {
+                callback(false);
+            }
         };
         return $auth;
     }];
@@ -51,15 +65,13 @@ aptAdminModule.run(function ($rootScope, $location, adminAuthenticate) {
     });
     $rootScope.$on('$locationChangeStart',
         function () {
-            var isAuth = adminAuthenticate.isAuthenticated();
-            if (typeof isAuth == 'undefined' || false == isAuth) {
-                $location.path('login');
-            } else if (!adminAuthenticate.isSuperAdmin()) {
-                var path = $location.path().replace('/', '');
-                if (path == 'usergroup') {
-                    alert('You do not have permission to access');
-                    $location.path('user');
-                }
+            var path = $location.path().replace('/', '');
+            if (path !== 'login') {
+                adminAuthenticate.isLogin(function (isLogin) {
+                    if (!isLogin) {
+                        $location.path('login');
+                    }
+                });
             }
         });
 });
