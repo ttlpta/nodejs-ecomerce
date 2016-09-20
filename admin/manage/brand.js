@@ -2,10 +2,20 @@ var aptBrandModule = angular.module('aptBrandModule', ['aptBrandHelper']);
 aptBrandModule.component('brand', {
     templateUrl: 'manage/brand.html',
     controllerAs: 'brandCtrl',
-    controller: ['brandService', function (Brand) {
+    controller: ['brandService', '$scope', '$location', function (Brand, $scope, $location) {
         var self = this;
-        this.formTitle = 'Add New Brand';
-        self.brands = Brand.query();
+        this.brand = new Brand();
+        this.brands = Brand.query();
+        $scope.$watch('srcImg', function (newValue, oldValue) {
+            if (typeof newValue != 'undefined') {
+                var imgName = function (imgSrc) {
+                    var imgSrcArr = imgSrc.split('/');
+                    return imgSrcArr[imgSrcArr.length - 1];
+                };
+                self.brand.logo_image = imgName(newValue);
+                self.srcImg = newValue;
+            }
+        });
         this.saveBrand = function () {
             self.brand.$save(function (data) {
                 if (data.success) {
@@ -14,34 +24,42 @@ aptBrandModule.component('brand', {
                 _changeAddBrandForm();
             });
         };
-        var _changeAddBrandForm = function () {
-            self.formTitle = 'Add New Brand';
-            self.brand = new Brand();
+        this.editBrand = function (brandId) {
+            self.formTitle = 'Edit Brand ' + brandId;
+            self.brand = Brand.get({
+                action: 'getBrand',
+                id: brandId
+            }, function (result) {
+                if (result.success == false) {
+                    location.reload();
+                } else if (result.id) {
+                    self.srcImg = _buildImageSource(result.logo_image);
+                }
+            });
         };
-    }]
-}).directive('fileImage', ['$http', '$location', '$parse', function ($http, $location) {
-    return {
-        restrict: 'A',
-        link: function (scope, element) {
-            element.bind('change', function () {
-                scope.$apply(function () {
-                    var imagePath = element[0].files[0];
-                    if (typeof imagePath != 'undefined') {
-                        var fd = new FormData();
-                        fd.append('file', imagePath);
-                        $http.post('../brand/upload', fd, {
-                            transformRequest: angular.identity,
-                            headers: {'Content-Type': undefined}
-                        }).then(function (response) {
-                            if (response.data.success) {
-                                scope.srcImg = $location.protocol() + '://' + $location.host() + '/' + response.data.srcImage;
-                            } else {
-                                scope.imageUploadStatus = 'Upload image fail';
-                            }
-                        });
+        this.deleteBrand = function (brandId) {
+            var delConfirm = confirm('Are you sure?');
+            if (delConfirm) {
+                Brand.delete({
+                    id: brandId
+                }, function (result) {
+                    if (result.success) {
+                        self.brands = Brand.query();
                     }
                 });
-            });
-        }
-    };
-}]);;
+            }
+        };
+        this.changeToAddBrand = function () {
+            _changeAddBrandForm();
+        };
+        var _changeAddBrandForm = function () {
+            self.srcImg = '';
+            $('#logo').val('');
+            self.brand = new Brand();
+            self.formTitle = 'Add New Brand';
+        };
+        var _buildImageSource = function (logo_image) {
+            return $location.protocol() + '://' + $location.host() + '/uploads/logos/' + logo_image;
+        };
+    }]
+});

@@ -1,8 +1,7 @@
-var express = require('express'), app = express(),
-    bodyParser = require('body-parser');
+var express = require('express'), app = express(), bodyParser = require('body-parser');
 app.set('view engine', 'html');
 app.engine('html', require('ejs').renderFile);
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static(__dirname));
 app.use(express.static(__dirname + '/admin/asserts'));
@@ -10,20 +9,48 @@ app.use(express.static(__dirname + '/APTshop/asserts'));
 app.use(express.static(__dirname + '/uploads/product-image'));
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
-// Login module
+var fs = require('fs');
+var multer = require('multer');
+var upload = multer({
+    dest: 'uploads/',
+    fileFilter: function (req, file, cb) {
+        var allowType = ['image/jpeg', 'image/png'];
+        cb(null, allowType.indexOf(file.mimetype) != -1);
+    }
+});
+app.post('/imageUpload/:type', upload.single('file'), function (req, res) {
+    var imageStorage;
+    switch (req.params.type) {
+        case 'image':
+            imageStorage = 'uploads/product-image/';
+            break;
+        case 'logo':
+            imageStorage = 'uploads/logos/';
+            break;
+    }
+    var extension = req.file.originalname.split(".");
+    var file = './' + imageStorage + req.file.filename + '.' + extension[extension.length - 1];
+    fs.rename(req.file.path, file, function (err) {
+        if (err) {
+            res.json({ success: false });
+            throw err;
+        }
+        else {
+            res.json({
+                success: true,
+                srcImage: imageStorage + req.file.filename + '.' + extension[extension.length - 1]
+            });
+        }
+    });
+});
 require('./User/adminController')(app);
-// User module
 require('./User/userController')(app, io);
-// User Group module
 require('./Usergroup/usergroupController')(app);
-// Permission module
 require('./Permission/permissionController')(app);
-// Categories module
 require('./Categories/categoriesController')(app);
-// Product module
 require('./Product/productController')(app);
-// Brand module
 require('./Brand/brandController')(app);
 server.listen(80, function () {
     console.log('Running....');
 });
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2VydmVyLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiU291cmNlL3NlcnZlci50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxJQUFJLE9BQU8sR0FBRyxPQUFPLENBQUMsU0FBUyxDQUFDLEVBQUUsR0FBRyxHQUFHLE9BQU8sRUFBRSxFQUM3QyxVQUFVLEdBQUcsT0FBTyxDQUFDLGFBQWEsQ0FBQyxDQUFDO0FBQ3hDLEdBQUcsQ0FBQyxHQUFHLENBQUMsYUFBYSxFQUFFLE1BQU0sQ0FBQyxDQUFDO0FBQy9CLEdBQUcsQ0FBQyxNQUFNLENBQUMsTUFBTSxFQUFFLE9BQU8sQ0FBQyxLQUFLLENBQUMsQ0FBQyxVQUFVLENBQUMsQ0FBQztBQUM5QyxHQUFHLENBQUMsR0FBRyxDQUFDLFVBQVUsQ0FBQyxVQUFVLENBQUMsRUFBQyxRQUFRLEVBQUUsS0FBSyxFQUFDLENBQUMsQ0FBQyxDQUFDO0FBQ2xELEdBQUcsQ0FBQyxHQUFHLENBQUMsVUFBVSxDQUFDLElBQUksRUFBRSxDQUFDLENBQUM7QUFDM0IsR0FBRyxDQUFDLEdBQUcsQ0FBQyxPQUFPLENBQUMsTUFBTSxDQUFDLFNBQVMsQ0FBQyxDQUFDLENBQUM7QUFDbkMsR0FBRyxDQUFDLEdBQUcsQ0FBQyxPQUFPLENBQUMsTUFBTSxDQUFDLFNBQVMsR0FBRyxnQkFBZ0IsQ0FBQyxDQUFDLENBQUM7QUFDdEQsR0FBRyxDQUFDLEdBQUcsQ0FBQyxPQUFPLENBQUMsTUFBTSxDQUFDLFNBQVMsR0FBRyxrQkFBa0IsQ0FBQyxDQUFDLENBQUM7QUFDeEQsR0FBRyxDQUFDLEdBQUcsQ0FBQyxPQUFPLENBQUMsTUFBTSxDQUFDLFNBQVMsR0FBRyx3QkFBd0IsQ0FBQyxDQUFDLENBQUM7QUFDOUQsSUFBSSxNQUFNLEdBQUcsT0FBTyxDQUFDLE1BQU0sQ0FBQyxDQUFDLE1BQU0sQ0FBQyxHQUFHLENBQUMsQ0FBQztBQUN6QyxJQUFJLEVBQUUsR0FBRyxPQUFPLENBQUMsV0FBVyxDQUFDLENBQUMsTUFBTSxD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

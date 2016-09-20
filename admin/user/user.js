@@ -26,7 +26,6 @@ aptUserModule.component('user', {
                 });
             };
             this.users = _listUser();
-            this.formTitle = 'Add user';
             this.saveUser = function () {
                 if (!_isValidatedUser())
                     return false;
@@ -41,11 +40,7 @@ aptUserModule.component('user', {
                 });
             };
             this.showUser = function (userId) {
-                self.validateUsernameNotification = '';
-                self.validateEmailNotification = '';
-                self.validatePasswordNotification = '';
-                self.validateConfirmPassNotification = '';
-                self.validateGroupNotification = '';
+                _reInitValidateMessage();
                 self.formTitle = 'Edit user ' + userId;
                 self.user = userService.get({
                     action: 'showUser',
@@ -184,6 +179,13 @@ aptUserModule.component('user', {
                 && !self.validateConfirmPassNotification
                 && !self.validatePasswordNotification
                 && !self.validateGroupNotification);
+            };
+            var _reInitValidateMessage = function(){
+                self.validateUsernameNotification = '';
+                self.validateEmailNotification = '';
+                self.validatePasswordNotification = '';
+                self.validateConfirmPassNotification = '';
+                self.validateGroupNotification = '';
             };
         }
     ]

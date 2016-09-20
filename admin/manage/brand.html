@@ -24,8 +24,8 @@
                 </thead>
                 <tbody>
                 <tr ng-repeat="brand in brandCtrl.brands">
-                    <td class="a-center"></td>
-                    <td><a href="javascript:void(0)"></a></td>
+                    <td class="a-center">{{brand.id}}</td>
+                    <td><a href="javascript:void(0)">{{brand.name}}</a></td>
                     <td>
                         <a href="javascript:void(0)">
                             <img src="asserts/img/icons/user_edit.png"
@@ -62,9 +62,8 @@
             </div>
         </div>
         <br/>
-
         <div id="box">
-            <h3 id="adduser">{{brandCtrl.formTitle}}</h3>
+            <h3 id="adduser">{{(brandCtrl.formTitle)? brandCtrl.formTitle: 'Add Brand'}}</h3>
 
             <p class="adduser-notification">{{brandCtrl.notification}}</p>
 
@@ -78,9 +77,11 @@
                     <span class="help-block adduser-notification">{{brandCtrl.validateNameNotification}}</span>
                     <br/>
                     <label for="name">Logo(*) : </label>
-                    <input type="file" file-image name="logo"/>
+                    <input type="file" file-image name="logo" id="logo"/>
                     <br />
-                    <img src="{{srcImg}}"/>
+                    <label></label>
+                    <input type="hidden" ng-model="brandCtrl.brand.logo_image"/>
+                    <div class="imageDisplay"><img ng-show="brandCtrl.srcImg" ng-src="{{brandCtrl.srcImg}}"/></div>
                     <span class="help-block adduser-notification">{{imageUploadStatus}}</span>
                     <br/>
                 </fieldset>

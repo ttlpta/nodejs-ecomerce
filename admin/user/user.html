@@ -75,7 +75,7 @@
         <br/>
 
         <div id="box">
-            <h3 id="adduser">{{userCtrl.formTitle}}</h3>
+            <h3 id="adduser">{{(userCtrl.formTitle) ? userCtrl.formTitle : 'Add User'}}</h3>
 
             <p class="adduser-notification">{{userCtrl.notification}}</p>
 

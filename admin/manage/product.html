@@ -92,7 +92,7 @@
                     <div ng-repeat="index in productCtrl.imageNames track by $index">
                         <label>Image {{$index + 1}}(*) : </label>
                         <div class="imageDisplay">
-                            <input type="file" file-image name="image_{{index}}"/>
+                            <input type="file" file-image name="image"/>
                             <span>
                                 <a href="javascript:void(0)" ng-click="productCtrl.delImageInput(index)">Delete</a>
                             </span>

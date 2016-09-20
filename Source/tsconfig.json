@@ -1,5 +1,5 @@
 {
-"compilerOptions": {
+    "compilerOptions": {
         "target": "es6", 
         "module": "es6",
         "declaration": false,
@@ -7,6 +7,6 @@
         "inlineSourceMap": true,
         "removeComments": true,
         "noLib": false,
-        "sourceMap": true 
+        "outDir": ".."
     }
 }

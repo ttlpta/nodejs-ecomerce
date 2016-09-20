@@ -21,31 +21,34 @@ module.exports = function (app, io) {
         });
     });
     app.get('/user', function (req, res) {
-        if (typeof req.query.action != 'undefined') {
+        if (!helper.isUndefined(req.query.action)) {
             switch (req.query.action) {
                 case 'listUser':
-                    var condition = (typeof req.query.username != 'undefined') ? '`username` LIKE "%' + req.query.username + '%"' : '';
+                    var condition: string = (typeof req.query.username != 'undefined') ? '`username` LIKE "%' + req.query.username + '%"' : '';
                     user.once('list_user', function (users) {
                         var listUsers = [];
-                        users.forEach(function (value) {
-                            value.address = value.street + ',' + value.city + ',' + value.country + ',' + value.state + ',' + value.zipcode;
-                            listUsers.push(value);
-                        });
+                        for (var user of users) {
+                            user.address = user.street + ',' + user.city + ',' + user.country + ',' + user.state + ',' + user.zipcode;
+                            listUsers.push(user);
+                        }
                         res.json(listUsers);
                     });
                     user.listUser(req.query.limit, req.query.offset, req.query.orderBy, req.query.sort, condition);
                     break;
                 case 'showUser':
-                    var userId = req.query.id;
-                    user.once('show_user', function (result) {
-                        if (result.success) {
-                            result.user.group = result.user.group.toString();
-                            res.json(result.user);
-                        } else {
-                            res.json(result);
-                        }
-                    });
-                    user.showUserById(userId);
+                    if (helper.isUndefined(req.query.id) || !req.query.id) {
+                        res.json({ success: false, errorCode: 6 });
+                    } else {
+                        user.once('show_user', function (result) {
+                            if (result.success) {
+                                result.user.group = result.user.group.toString();
+                                res.json(result.user);
+                            } else {
+                                res.json(result);
+                            }
+                        });
+                        user.showUserById(req.query.id);
+                    }
                     break;
                 case 'getTotalUser':
                     user.once('total_user', function (result) {

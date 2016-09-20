@@ -45,8 +45,7 @@ aptAdminModule.provider('adminAuthenticate', [function () {
         };
         return $auth;
     }];
-}]);
-aptAdminModule.run(function ($rootScope, $location, adminAuthenticate) {
+}]).run(function ($rootScope, $location, adminAuthenticate) {
     var socket = io();
     $rootScope.userOnline = [];
     socket.on('user_online', function (data) {
@@ -74,5 +73,30 @@ aptAdminModule.run(function ($rootScope, $location, adminAuthenticate) {
                 });
             }
         });
-});
+}).directive('fileImage', ['$http', '$location', function ($http, $location) {
+    return {
+        restrict: 'A',
+        link: function (scope, element, attr) {
+            element.bind('change', function () {
+                scope.$apply(function () {
+                    var imagePath = element[0].files[0];
+                    if (typeof imagePath != 'undefined') {
+                        var fd = new FormData();
+                        fd.append('file', imagePath);
+                        $http.post('../imageUpload/'+attr.name, fd, {
+                            transformRequest: angular.identity,
+                            headers: {'Content-Type': undefined}
+                        }).then(function (response) {
+                            if (response.data.success) {
+                                scope.srcImg = $location.protocol() + '://' + $location.host() + '/' + response.data.srcImage;
+                            } else {
+                                scope.imageUploadStatus = 'Upload image fail';
+                            }
+                        });
+                    }
+                });
+            });
+        }
+    };
+}]);
 

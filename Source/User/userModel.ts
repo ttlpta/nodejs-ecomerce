@@ -10,11 +10,11 @@ var User = function () {
     this.UNCONFIRM = 5;
 };
 util.inherits(User, EventEmitter);
-User.prototype.listUser = function (limit:number, offset:number, orderBy:string, sort:string, condition:string):void {
+User.prototype.listUser = function (limit: number, offset: number, orderBy: string, sort: string, condition: string): void {
     var sql = helper.buildQuery
         .select(['id', 'email', 'username', 'group', 'street', 'city', 'country', 'state', 'zipcode'])
         .from('apt_user');
-    if (condition){
+    if (condition) {
         sql = sql.where(condition);
     }
     sql = sql.orderBy(orderBy, sort).limit(+limit, +offset).render();
@@ -43,27 +43,26 @@ User.prototype.saveUser = function (user) {
     }
 };
 User.prototype.showUserById = function (userId) {
-    var self = this;
     connection.query('SELECT `id`, `salt`, `email`, `username`, `group`, `street`, `registered`, `city`, `country`, `state`, `zipcode`' +
-        'FROM `apt_user` WHERE `id` = ?', [userId], function (err, rows) {
-        var result = {};
-        if (typeof rows[0] != 'undefined' && rows[0]) {
-            result = {success: true, user: rows[0]};
-        } else {
-            if (err) throw err;
-            result = {success: false, errorCode: 6};
-        }
-        self.emit('show_user', result);
-    });
+        'FROM `apt_user` WHERE `id` = ?', [userId], (err, rows) => {
+            var result = {};
+            if (typeof rows[0] != 'undefined' && rows[0]) {
+                result = { success: true, user: rows[0] };
+            } else {
+                if (err) throw err;
+                result = { success: false, errorCode: 6 };
+            }
+            this.emit('show_user', result);
+        });
 };
 User.prototype.deleteUser = function (userId) {
     var self = this;
     connection.query('DELETE FROM `apt_user` WHERE `id` = ?', [userId], function (err, res) {
         var result = {};
         if (res.affectedRows)
-            result = {success: true};
+            result = { success: true };
         else
-            result = {success: false, errorMsg: err};
+            result = { success: false, errorMsg: err };
         self.emit('delete_user', result);
     });
 };
@@ -134,15 +133,15 @@ User.prototype.getUser = function (options) {
         connection.query('SELECT `id`, `salt`, `email`, `username`, `group`, `street`,' +
             ' `registered`, `city`, `country`, `state`, `zipcode`' +
             'FROM `apt_user` WHERE ' + condition, function (err, rows) {
-            var result = {};
-            if (rows) {
-                result = rows;
-            } else {
-                if (err) throw err;
-                result = [];
-            }
-            self.emit('get_user', result);
-        });
+                var result = {};
+                if (rows) {
+                    result = rows;
+                } else {
+                    if (err) throw err;
+                    result = [];
+                }
+                self.emit('get_user', result);
+            });
     } else {
         self.emit('get_user', []);
     }

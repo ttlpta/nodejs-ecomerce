@@ -1,19 +1,53 @@
-var connection = require('../connection'),
-    util = require('util'),
-    EventEmitter = require('events').EventEmitter,
-    helper = require('../helper');
+var connection = require('../connection'), util = require('util'), EventEmitter = require('events').EventEmitter, helper = require('../helper');
 var Brand = function () {
 };
+;
 util.inherits(Brand, EventEmitter);
 Brand.prototype.listBrand = function () {
-    var self = this;
     var sql = helper.buildQuery
         .select('*')
         .from('apt_brand')
         .render();
-    connection.query(sql, function (err, rows) {
-        if (err) throw err;
-        self.emit('list_brand', rows);
+    connection.query(sql, (err, rows) => {
+        if (err)
+            throw err;
+        this.emit('list_brand', rows);
+    });
+};
+Brand.prototype.getBrandById = function (brandId) {
+    var sql = helper.buildQuery
+        .select('*')
+        .from('apt_brand')
+        .where({ id: brandId })
+        .render();
+    connection.query(sql, (err, rows) => {
+        if (err)
+            throw err;
+        this.emit('get_brand_by_id', helper.getFirstItemArray(rows));
+    });
+};
+Brand.prototype.saveBrand = function (brand) {
+    if (!helper.isUndefined(brand.id)) {
+        connection.query('UPDATE `apt_brand` SET ? WHERE `id` = ?', [brand, brand.id], (err, res) => {
+            if (err)
+                throw err;
+            this.emit('save_brand', (res.changedRows) ? true : false);
+        });
+    }
+    else {
+        connection.query('INSERT INTO `apt_brand` SET ?', brand, (err, res) => {
+            if (err)
+                throw err;
+            this.emit('save_brand', (res.insertId) ? true : false);
+        });
+    }
+};
+Brand.prototype.deleteBrand = function (brandId) {
+    connection.query('DELETE FROM `apt_brand` WHERE `id` = ?', [brandId], (err, res) => {
+        if (err)
+            throw err;
+        this.emit('delete_brand', (res.affectedRows) ? true : false);
     });
 };
 module.exports = new Brand();
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYnJhbmRNb2RlbC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uL1NvdXJjZS9CcmFuZC9icmFuZE1vZGVsLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLElBQUksVUFBVSxHQUFHLE9BQU8sQ0FBQyxlQUFlLENBQUMsRUFDckMsSUFBSSxHQUFHLE9BQU8sQ0FBQyxNQUFNLENBQUMsRUFDdEIsWUFBWSxHQUFHLE9BQU8sQ0FBQyxRQUFRLENBQUMsQ0FBQyxZQUFZLEVBQzdDLE1BQU0sR0FBRyxPQUFPLENBQUMsV0FBVyxDQUFDLENBQUM7QUFDbEMsSUFBSSxLQUFLLEdBQUc7QUFFWixDQUFDLENBQUM7QUFLRCxDQUFDO0FBQ0YsSUFBSSxDQUFDLFFBQVEsQ0FBQyxLQUFLLEVBQUUsWUFBWSxDQUFDLENBQUM7QUFDbkMsS0FBSyxDQUFDLFNBQVMsQ0FBQyxTQUFTLEdBQUc7SUFDeEIsSUFBSSxHQUFHLEdBQUcsTUFBTSxDQUFDLFVBQVU7U0FDdEIsTUFBTSxDQUFDLEdBQUcsQ0FBQztTQUNYLElBQUksQ0FBQyxXQUFXLENBQUM7U0FDakIsTUFBTSxFQUFFLENBQUM7SUFDZCxVQUFVLENBQUMsS0FBSyxDQUFDLEdBQUcsRUFBRSxDQUFDLEdBQUcsRUFBRSxJQUFJO1FBQzVCLEVBQUUsQ0FBQyxDQUFDLEdBQUcsQ0FBQztZQUFDLE1BQU0sR0FBRyxDQUFDO1FBQ25CLElBQUksQ0FBQyxJQUFJLENBQUMsWUFBWSxFQUFFLElBQUksQ0FBQyxDQUFDO0lBQ2xDLENBQUMsQ0FBQyxDQUFDO0FBQ1AsQ0FBQyxDQUFDO0FBQ0YsS0FBSyxDQUFDLFNBQVMsQ0FBQyxZQUFZLEdBQUcsVUFBVSxPQUFlO0lBQ3BELElBQUksR0FBRyxHQUFHLE1BQU0sQ0FBQyxVQUFVO1NBQ3RCLE1BQU0sQ0FBQyxHQUFHLENBQUM7U0FDWCxJQUFJLENBQUMsV0FBVyxDQUFDO1NBQ2pCLEtBQUssQ0FBQyxFQUFFLEVBQUUsRUFBRSxPQUFPLEVBQUUsQ0FBQztTQUN0QixNQUFNLEVBQUUsQ0FBQztJQUNkLFVBQVUsQ0FBQyxLQUFLLENBQUMsR0FBRyxFQUFFLENBQUMsR0FBRyxFQUFFLElBQUk7UUFDNUIsRUFBRSxDQUFDLENBQUMsR0FBRyxDQUFDO1lBQUMsTUFBTSxHQUFHLENBQUM7UUFDbkIsSUFBSSxDQUFDLElBQUksQ0FBQyxpQkFBaUIsRUFBRSxNQUFNLENBQUMsaUJBQWlCLENBQUMsSUFBSSxDQUFDLENBQUMsQ0FBQztJQUNqRSxDQUFDLENBQUMsQ0FBQztBQUNQLENBQUMsQ0FBQztBQUNGLEtBQUssQ0FBQyxTQUFTLENBQUMsU0FBUyxHQUFHLFVBQVUsS0FBaUI7SUFDbkQsRUFBRSxDQUFDLENBQUMsQ0FBQyxNQUFNLENBQUMsV0FBVyxDQUFDLEtBQUssQ0FBQyxFQUFFLENBQUMsQ0FBQyxDQUFDLENBQUM7UUFDaEMsVUFBVSxDQUFDLEtBQUssQ0FBQyx5Q0FBeUMsRUFBRSxDQUFDLEtBQUssRUFBRSxLQUFLLENBQUMsRUFBRSxDQUFDLEVBQUUsQ0FBQyxHQUFHLEVBQUUsR0FBRztZQUNwRixFQUFFLENBQUMsQ0FBQyxHQUFHLENBQUM7Z0JBQUMsTUFBTSxHQUFHLENBQUM7WUFDbkIsSUFBSSxDQUFDLElBQUksQ0FBQyxZQUFZLEVBQUUsQ0FBQyxHQUFHLENBQUMsV0FBVyxDQUFDLEdBQUcsSUFBSSxHQUFHLEtBQUssQ0FBQyxDQUFDO1FBQzlELENBQUMsQ0FBQyxDQUFDO0lBQ1AsQ0FBQztJQUFDLElBQUksQ0FBQyxDQUFDO1FBQ0osVUFBVSxDQUFDLEtBQUssQ0FBQywrQkFBK0IsRUFBRSxLQUFLLEVBQUUsQ0FBQyxHQUFHLEVBQUUsR0FBRztZQUM5RCxFQUFFLENBQUMsQ0FBQyxHQUFHLENBQUM7Z0JBQUMsTUFBTSxHQUFHLENBQUM7WUFDbkIsSUFBSSxDQUFDLElBQUksQ0FBQyxZQUFZLEVBQUUsQ0FBQyxHQUFHLENBQUMsUUFBUSxDQUFDLEdBQUcsSUFBSSxHQUFHLEtBQUssQ0FBQyxDQUFDO1FBQzNELENBQUMsQ0FBQyxDQUFDO0lBQ1AsQ0FBQztBQUVMLENBQUMsQ0FBQztBQUNGLEtBQUssQ0FBQyxTQUFTLENBQUMsV0FBVyxHQUFHLFVBQVUsT0FBZTtJQUNuRCxVQUFVLENBQUMsS0FBSyxDQUFDLHdDQUF3QyxFQUFFLENBQUMsT0FBTyxDQUFDLEVBQUUsQ0FBQyxHQUFHLEVBQUUsR0FBRztRQUMzRSxFQUFFLENBQUMsQ0FBQyxHQUFHLENBQUM7WUFBQyxNQUFNLEdBQUcsQ0FBQztRQUNuQixJQUFJLENBQUMsSUFBSSxDQUFDLGNBQWMsRUFBRSxDQUFDLEdBQUcsQ0FBQyxZQUFZLENBQUMsR0FBRyxJQUFJLEdBQUcsS0FBSyxDQUFDLENBQUM7SUFDakUsQ0FBQyxDQUFDLENBQUM7QUFDUCxDQUFDLENBQUM7QUFDRixNQUFNLENBQUMsT0FBTyxHQUFHLElBQUksS0FBSyxFQUFFLENBQUMifQ==
