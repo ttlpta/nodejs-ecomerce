@@ -21,24 +21,34 @@
                     <th><a href="javascript:void(0)">Model</a></th>
                     <th><a href="javascript:void(0)">Name</a></th>
                     <th><a href="javascript:void(0)">Quantity</a></th>
+                    <th><a href="javascript:void(0)">Price</a></th>
+                    <th><a href="javascript:void(0)">Brand</a></th>
+                    <th><a href="javascript:void(0)">Category</a></th>
+                    <th><a href="javascript:void(0)">Status</a></th>
+                    <th><a href="javascript:void(0)">Date Add</a></th>
                     <th width="60px"><a href="javascript:void(0)">Action</a></th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td class="a-center"></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                <tr ng-repeat="product in productCtrl.products">
+                    <td class="a-center">{{product.id}}</td>
+                    <td>{{product.model}}</td>
+                    <td>{{product.name}}</td>
+                    <td>{{product.quantity}}</td>
+                    <td>{{product.price}}</td>
+                    <td>{{product.brand_name}}</td>
+                    <td>{{product.category_name}}</td>
+                    <td>{{product.status}}</td>
+                    <td>{{product.date_added}}</td>
                     <td>
                         <a href="javascript:void(0)">
                             <img src="asserts/img/icons/user_edit.png"
-                                 ng-click=""
+                                 ng-click="productCtrl.editProduct(product.id)"
                                  title="Edit user" width="16" height="16"/>
                         </a>
                         <a href="javascript:void(0)">
                             <img src="asserts/img/icons/user_delete.png"
-                                 ng-click=""
+                                 ng-click="productCtrl.deleteProduct(product.id)"
                                  title="Delete user" width="16" height="16"/>
                         </a>
                     </td>
@@ -68,14 +78,14 @@
         <br/>
 
         <div id="box">
-            <h3 id="adduser">{{productCtrl.formTitle}}</h3>
+            <h3 id="adduser">{{(productCtrl.formTitle) ? productCtrl.formTitle : 'Add new product'}}</h3>
 
             <p class="adduser-notification">{{productCtrl.notification}}</p>
 
             <form id="form" name="addProductForm" ng-submit="productCtrl.saveProduct()">
                 <fieldset id="personal">
                     <legend>PRODUCT INFORMATION</legend>
-                    <input type="hidden" ng-model="productCtrl.category.id"/>
+                    <input type="hidden" ng-model="productCtrl.product.id"/>
                     <label>Name(*) : </label>
                     <input ng-blur="productCtrl.validateField()" ng-model="productCtrl.product.name"
                            name="name" id="lastname" type="text" tabindex="1"/>
@@ -89,15 +99,15 @@
                     <label>Quantity(*) : </label>
                     <input type="text" ng-model="productCtrl.product.quantity"/>
                     <br/>
-                    <div ng-repeat="index in productCtrl.imageNames track by $index">
+                    <div ng-repeat="imageName in productCtrl.imageNames track by $index">
                         <label>Image {{$index + 1}}(*) : </label>
                         <div class="imageDisplay">
                             <input type="file" file-image name="image"/>
                             <span>
-                                <a href="javascript:void(0)" ng-click="productCtrl.delImageInput(index)">Delete</a>
+                                <a href="javascript:void(0)" ng-click="productCtrl.delImageInput($index)">Delete</a>
                             </span>
                             <br />
-                            <img src="{{srcImg}}"/>
+                            <img ng-show="srcImg || imageName" ng-src="{{(srcImg) ? srcImg : imageName}}"/> 
                             <span class="help-block adduser-notification">{{imageUploadStatus}}</span>
                         </div>
                         <br/>
@@ -105,19 +115,23 @@
                     <label></label><input type="button" value="More Image" ng-click="productCtrl.addImageInput()"/>
                     <br/>
                     <label>Brand(*) : </label>
-                    <select name="choice" ng-model="productCtrl.product.brand">
-                        <option label="Hand-made" value="1">Hand-made</option>
+                    <select name="choice" ng-model="productCtrl.product.brand_id">
+                        <option value="">-- Select a Brand --</option>
+                        <option ng-repeat="brand in productCtrl.brands" value="{{brand.id}}">{{brand.name}}</option>
                     </select>
                     <br/>
                     <label>Category(*) : </label>
-                    <select name="choice" ng-model="productCtrl.product.category">
+                    <select name="choice" ng-model="productCtrl.product.category_id">
+                        <option value="">-- Select a Category --</option>
+                        <option ng-repeat="category in productCtrl.categories" value="{{category.id}}">{{category.name}}</option>
                     </select>
                     <br/>
                     <label>Status : </label>
                     <select name="choice" ng-model="productCtrl.product.status">
-                        <option label="Available" value="1">Available</option>
-                        <option label="Stop Selling" value="2">Stop Selling</option>
-                        <option label="Out of stock" value="2">Out of stock</option>
+                        <option label="-- Select a Status --" value="">-- Select a Status --</option>
+                        <option label="Available" value="available">Available</option>
+                        <option label="Stop Selling" value="stop">Stop Selling</option>
+                        <option label="Out of stock" value="out-of-stock">Out of stock</option>
                     </select>
                 </fieldset>
                 <div align="center">(*) is required field</div>

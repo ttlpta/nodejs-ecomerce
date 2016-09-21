@@ -42,13 +42,16 @@ aptUserModule.component('user', {
             this.showUser = function (userId) {
                 _reInitValidateMessage();
                 self.formTitle = 'Edit user ' + userId;
-                self.user = userService.get({
+                userService.get({
                     action: 'showUser',
                     id: userId
                 }, function (result) {
                     if (result.success == false) {
                         alert(errorMsg[result.errorCode]);
                         location.reload();
+                    } else if (result.id) {
+                        result.group = result.group.toString();
+                        self.user = result;
                     }
                 });
             };

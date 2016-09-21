@@ -41,7 +41,6 @@ module.exports = function (app, io) {
                     } else {
                         user.once('show_user', function (result) {
                             if (result.success) {
-                                result.user.group = result.user.group.toString();
                                 res.json(result.user);
                             } else {
                                 res.json(result);
