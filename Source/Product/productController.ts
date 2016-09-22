@@ -34,4 +34,14 @@ module.exports = function (app) {
             product.saveProduct(req.body);
         }
     });
+    app.delete('/product', function (req, res) {
+        if (!helper.isUndefined(req.query.id) && req.query.id) {
+            product.once('delete_product', function (result) {
+                res.json({ success: result });
+            });
+            product.deleteProduct(req.query.id);
+        } else {
+            res.json({ success: false });
+        }
+    });
 };

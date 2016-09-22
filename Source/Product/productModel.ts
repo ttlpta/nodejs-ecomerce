@@ -29,10 +29,17 @@ Product.prototype.listProduct = function (): void {
     });
 };
 Product.prototype.saveProduct = function (product: ProductModel): void {
-    connection.query('INSERT INTO `apt_product` SET ?', product, (err, res) => {
-        if (err) throw err;
-        this.emit('save_product', (res.insertId) ? true : false);
-    });
+    if (!helper.isUndefined(product.id)) {
+        connection.query('UPDATE `apt_product` SET ? WHERE `id` = ?', [product, product.id], (err, res) => {
+            if (err) throw err;
+            this.emit('save_product', (res.changedRows) ? true : false);
+        });
+    } else {
+        connection.query('INSERT INTO `apt_product` SET ?', product, (err, res) => {
+            if (err) throw err;
+            this.emit('save_product', (res.insertId) ? true : false);
+        });
+    }
 };
 Product.prototype.getProductById = function (productId: number): void {
     var sql = helper.buildQuery
@@ -43,6 +50,12 @@ Product.prototype.getProductById = function (productId: number): void {
     connection.query(sql, (err, rows) => {
         if (err) throw err;
         this.emit('get_product_by_id', helper.getFirstItemArray(rows));
+    });
+};
+Product.prototype.deleteProduct = function (productId: number): void {
+    connection.query('DELETE FROM `apt_product` WHERE `id` = ?', [productId], (err, res) => {
+        if (err) throw err;
+        this.emit('delete_product', (res.affectedRows) ? true : false);
     });
 };
 module.exports = new Product();

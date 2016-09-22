@@ -102,7 +102,7 @@
                     <div ng-repeat="imageName in productCtrl.imageNames track by $index">
                         <label>Image {{$index + 1}}(*) : </label>
                         <div class="imageDisplay">
-                            <input type="file" file-image name="image"/>
+                            <input type="file" file-image name="image" class="img-product" />
                             <span>
                                 <a href="javascript:void(0)" ng-click="productCtrl.delImageInput($index)">Delete</a>
                             </span>
@@ -129,9 +129,9 @@
                     <label>Status : </label>
                     <select name="choice" ng-model="productCtrl.product.status">
                         <option label="-- Select a Status --" value="">-- Select a Status --</option>
-                        <option label="Available" value="available">Available</option>
-                        <option label="Stop Selling" value="stop">Stop Selling</option>
-                        <option label="Out of stock" value="out-of-stock">Out of stock</option>
+                        <option label="Available" value="1">Available</option>
+                        <option label="Stop Selling" value="2">Stop Selling</option>
+                        <option label="Out of stock" value="3">Out of stock</option>
                     </select>
                 </fieldset>
                 <div align="center">(*) is required field</div>
@@ -139,7 +139,7 @@
 
                 <div align="center">
                     <input id="button1" type="submit" value="Send"/>
-                    <input id="button2" ng-click="productCtrl.changeToAddCat()" value="Change to add product"/>
+                    <input id="button2" ng-click="productCtrl.changeToAddProduct()" value="Change to add product"/>
                 </div>
             </form>
         </div>
