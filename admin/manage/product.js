@@ -82,9 +82,7 @@ aptProductModule.component('product', {
             };
             _changeAddProductForm = function () {
                 self.imageNames = [''];
-                $('.img-product').val('');
-                // $('.imageDisplay img').attr('ng-src', '');
-                // $('.imageDisplay img').attr('src', '');
+                $('.imageDisplay img').hide();
                 self.products = Product.query();
                 self.product = new Product();
             };
