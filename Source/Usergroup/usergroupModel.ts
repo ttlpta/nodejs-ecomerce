@@ -1,4 +1,4 @@
-var connection = require('../connection'),
+var connection = require('../../connection'),
     util = require('util'),
     Promise = require('bluebird'),
     EventEmitter = require('events').EventEmitter,

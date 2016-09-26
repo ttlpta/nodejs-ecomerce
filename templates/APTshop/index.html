@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html ng-app="aptShopModule">
+<head>
+    <title>{{title}} | Shopin A Ecommerce Category Flat Bootstrap Responsive Website Template</title>
+    <link href="assert/css/bootstrap.css" rel="stylesheet" type="text/css" media="all"/>
+    <link href="assert/css/style.css" rel="stylesheet" type="text/css" media="all"/>
+    <script type="application/x-javascript">
+        addEventListener("load", function () {
+            setTimeout(hideURLbar, 0);
+        }, false);
+        function hideURLbar() {
+            window.scrollTo(0, 1);
+        }
+    </script>
+    <link href="assert/css/style4.css" rel="stylesheet" type="text/css" media="all"/>
+    <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="assert/js/jstarbox.js"></script>
+    <link rel="stylesheet" href="assert/css/jstarbox.css" type="text/css" media="screen" charset="utf-8"/>
+    <script src="assert/js/simpleCart.min.js"></script>
+    <script src="assert/js/bootstrap.min.js"></script>
+    <script src="assert/js/jquery.chocolat.js"></script>
+    <link rel="stylesheet" href="assert/css/chocolat.css" type="text/css" media="screen" charset="utf-8">
+    <script type="text/javascript" charset="utf-8">
+        $(function () {
+            $('a.picture').Chocolat();
+        });
+    </script>
+    <script type="text/javascript">
+        jQuery(function () {
+            jQuery('.starbox').each(function () {
+                var starbox = jQuery(this);
+                starbox.starbox({
+                    average: starbox.attr('data-start-value'),
+                    changeable: starbox.hasClass('unchangeable') ? false : starbox.hasClass('clickonce') ? 'once' : true,
+                    ghosting: starbox.hasClass('ghosting'),
+                    autoUpdateAverage: starbox.hasClass('autoupdate'),
+                    buttons: starbox.hasClass('smooth') ? false : starbox.attr('data-button-count') || 5,
+                    stars: starbox.attr('data-star-count') || 5
+                }).bind('starbox-value-changed', function (event, value) {
+                    if (starbox.hasClass('random')) {
+                        var val = Math.random();
+                        starbox.next().text(' ' + val);
+                        return val;
+                    }
+                })
+            });
+        });
+    </script>
+    <script src="../node_modules/angular/angular.min.js"></script>
+    <script src="../node_modules/angular-resource/angular-resource.js"></script>
+    <script src="../node_modules/angular-route/angular-route.min.js"></script>
+    <script src="../node_modules/angular-cookies/angular-cookies.min.js"></script>
+    <script src="../node_modules/angular-base64/angular-base64.min.js"></script>
+    <script src="../socket.io/socket.io.js"></script>
+    <script src="./apt.module.js"></script>
+    <script src="./apt.router.js"></script>
+
+    <script src="./inc/inc.js"></script>
+
+    <script src="./home/home.js"></script>
+    <script src="./home/homeHelper.js"></script>
+
+    <script src="./login/login.js"></script>
+    <script src="./login/loginHelper.js"></script>
+
+    <script src="./register/register.js"></script>
+    <script src="./register/registerHelper.js"></script>
+
+    <script src="./forgot/forgot.js"></script>
+
+    <script src="./products/products.js"></script>
+    <script src="./products/productsHelper.js"></script>
+</head>
+<body>
+<apt-header></apt-header>
+<div ng-view></div>
+<apt-footer></apt-footer>
+</body>
+</html>

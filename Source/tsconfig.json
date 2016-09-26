@@ -7,6 +7,6 @@
         "inlineSourceMap": true,
         "removeComments": true,
         "noLib": false,
-        "outDir": ".."
+        "outDir": "../server"
     }
 }

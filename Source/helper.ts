@@ -1,4 +1,4 @@
-var connection = require('./connection');
+var connection = require('../connection');
 function Helper() {
     this.buildQuery = {
         query: '',
@@ -95,9 +95,6 @@ Helper.prototype = {
     },
     isEmptyObject: function (obj):boolean {
         return typeof obj != 'object' || (Object.keys(obj).length === 0 && obj.constructor === Object);
-    },
-    isUndefined: function (arg:any):boolean {
-        return typeof arg == 'undefined';
     }
 };
 module.exports = new Helper();

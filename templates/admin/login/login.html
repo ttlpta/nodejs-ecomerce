@@ -1,0 +1,14 @@
+<div class="login-page">
+    <div class="form">
+        <form name="loginForm" class="login-form" ng-submit="loginCrl.login()">
+            <span style="color: red">{{loginCrl.message}}</span>
+            <span ng-show="loginForm.usename.$touched && loginForm.usename.$invalid"
+                  class="help-block">Username is required</span>
+            <input type="text" placeholder="Username" ng-model="loginCrl.username" name="usename" required/>
+            <span ng-show="loginForm.password.$touched && loginForm.password.$invalid"
+                  class="help-block">Password is required</span>
+            <input type="password" placeholder="Password" ng-model="loginCrl.password" name="password" required/>
+            <button>Login</button>
+        </form>
+    </div>
+</div>

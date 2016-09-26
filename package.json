@@ -28,6 +28,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "prestart": "npm update"
+    "preinstall": "npm update",
+	  "start": "node server"
   }
 }

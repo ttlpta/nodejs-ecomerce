@@ -1,0 +1,83 @@
+<div class="banner-top">
+    <div class="container">
+        <h1>Register</h1>
+        <em></em>
+        <h2><a href="/">Home</a><label>/</label>Register</a></h2>
+    </div>
+</div>
+<div class="content">
+    <div class="container">
+        <div class="login">
+            <span style="color: red">{{registerCtrl.notification}}</span>
+            <form ng-if="!registerCtrl.isRegisted" ng-submit="registerCtrl.register()">
+                <div class="col-md-6 login-do">
+                    <div class="login-mail">
+                        <span class="notification">{{registerCtrl.validateUsernameNotification}}</span>
+                        <input type="text"
+                               placeholder="Name"
+                               ng-blur="registerCtrl.validateField('username')"
+                               ng-model="registerCtrl.user.username"
+                               required>
+                        <i class="glyphicon glyphicon-user"></i>
+                    </div>
+                    <div class="login-mail">
+                        <span class="notification">{{registerCtrl.validatePhoneNotification}}</span>
+                        <input type="text"
+                               placeholder="Phone Number"
+                               ng-blur="registerCtrl.validateField('phone')"
+                               ng-model="registerCtrl.user.phone"
+                               required>
+                        <i class="glyphicon glyphicon-phone"></i>
+                    </div>
+                    <div class="login-mail">
+                        <span class="notification">{{registerCtrl.validateEmailNotification}}</span>
+                        <input type="text"
+                               placeholder="Email"
+                               ng-blur="registerCtrl.validateField('email')"
+                               ng-model="registerCtrl.user.email"
+                               required>
+                        <i class="glyphicon glyphicon-envelope"></i>
+                    </div>
+                    <div class="login-mail">
+                        <span class="notification">{{registerCtrl.validatePasswordNotification}}</span>
+                        <input type="password"
+                               placeholder="Password"
+                               ng-blur="registerCtrl.validateField('password')"
+                               ng-model="registerCtrl.user.password"
+                               required>
+                        <i class="glyphicon glyphicon-lock"></i>
+                    </div>
+                    <div class="login-mail">
+                        <span class="notification">{{registerCtrl.validateConfirmPassNotification}}</span>
+                        <input type="password"
+                               placeholder="Confirm Password"
+                               ng-blur="registerCtrl.validateField('confpass')"
+                               ng-model="registerCtrl.confpass"
+                               required>
+                        <i class="glyphicon glyphicon-lock"></i>
+                    </div>
+                    <a class="news-letter " href="javascript:void(0)">
+                        <label class="checkbox1">Forget Password ?</label>
+                    </a>
+                    <label class="hvr-skew-backward">
+                        <input type="submit" value="Submit">
+                    </label>
+                </div>
+            </form>
+			<div ng-if="registerCtrl.isRegisted" class="col-md-6 login-right">
+				<h3>Confirm your registed</h3>
+				<p>We've already sent you the email to confirm. Please check your inbox and confirm your registed. <br />
+				Your registed will expire in 30 days. 
+				</p>
+			</div>
+			<div class="col-md-6 login-right">
+				<h3>.. Or you already have a account ?</h3>
+				<p>Faster checkout with your accout. Let's Shopping !</p>
+				<a href="#/login" class="hvr-skew-backward">Login</a>
+
+			</div>
+			<div class="clearfix"></div>
+        </div>
+        <apt-brand></apt-brand>
+    </div>
+</div>

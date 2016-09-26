@@ -1,0 +1,158 @@
+<div id="top-panel">
+    <div id="panel">
+        <ul>
+            <li><a href="javascript:void(0)" ng-click="userCtrl.changeAddUserForm()" class="useradd active">Add user</a></li>
+            <li><a href="#/usergroup" class="group">User groups</a></li>
+            <li><a href="#/useronline" class="online">Users online</a></li>
+        </ul>
+    </div>
+</div>
+<div id="wrapper">
+    <div id="content">
+        <div id="box">
+            <h3>Users</h3>
+            <form ng-submit="userCtrl.findUser()">
+                <label>Find user : </label>
+                <input type="text" ng-model="userCtrl.findingUsername" placeholder="Find by username"/>
+                <input type="submit" value="Find"/>
+            </form>
+            <table width="100%">
+                <thead>
+                <tr>
+                    <th width="40px"><a ng-click="userCtrl.sortItem('id')" href="javascript:void(0)">ID<img
+                            src="asserts/img/icons/arrow_down_mini.gif" width="16"
+                            height="16"
+                            align="absmiddle"/></a></th>
+                    <th><a href="javascript:void(0)">Username</a></th>
+                    <th><a href="javascript:void(0)">Email</a></th>
+                    <th width="70px"><a href="javascript:void(0)">Group</a></th>
+                    <th><a href="javascript:void(0)">Address</a></th>
+                    <th width="90px"><a href="javascript:void(0)">Registered</a></th>
+                    <th width="60px"><a href="javascript:void(0)">Action</a></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="user in userCtrl.users">
+                    <td class="a-center">{{user.id}}</td>
+                    <td><a href="javascript:void(0)">{{user.username}}</a></td>
+                    <td>{{user.email}}</td>
+                    <td>{{user.group}}</td>
+                    <td>{{user.address}}</td>
+                    <td>{{user.registered}}</td>
+                    <td>
+                        <a href="javascript:void(0)">
+                            <img src="asserts/img/icons/user_edit.png" ng-click="userCtrl.showUser(user.id)"
+                                 title="Edit user" width="16" height="16"/>
+                        </a>
+                        <a href="javascript:void(0)">
+                            <img src="asserts/img/icons/user_delete.png" ng-click="userCtrl.deleteUser(user.id)"
+                                 title="Delete user" width="16" height="16"/>
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div id="pager">
+                Page <a ng-show="userCtrl.currentPage > 1" href="javascript:void(0)"
+                        ng-click="userCtrl.movePage('previous')"><img src="asserts/img/icons/arrow_left.gif"
+                                                                      width="16"
+                                                                      height="16"/></a>
+                <input ng-keypress="$event.keyCode == 13 && userCtrl.movePage('specific')" size="1"
+                       ng-model="userCtrl.currentPage" type="text" name="page" id="page"/>
+                <a ng-show="userCtrl.currentPage < userCtrl.totalPage" href="javascript:void(0)"
+                   ng-click="userCtrl.movePage('next')"><img
+                        src="asserts/img/icons/arrow_right.gif" width="16" height="16"/></a>of
+                {{userCtrl.totalPage}}
+                pages | View
+                <select ng-model="userCtrl.limitItemPerPage" ng-change="userCtrl.changeLimitItemPerPage()">
+                    <option>10</option>
+                    <option>20</option>
+                    <option>50</option>
+                </select>
+                per page | Total <strong>{{userCtrl.totalUser}}</strong> records found
+            </div>
+        </div>
+        <br/>
+
+        <div id="box">
+            <h3 id="adduser">{{(userCtrl.formTitle) ? userCtrl.formTitle : 'Add User'}}</h3>
+
+            <p class="adduser-notification">{{userCtrl.notification}}</p>
+
+            <form id="form" name="addUserForm" ng-submit="userCtrl.saveUser()">
+                <fieldset id="personal">
+                    <legend>PERSONAL INFORMATION</legend>
+                    <input type="hidden" ng-model="userCtrl.user.id"/>
+                    <label for="username">Username(*) : </label>
+                    <input ng-blur="userCtrl.validateField('username')" ng-model="userCtrl.user.username"
+                           name="username" id="lastname" type="text" tabindex="1"/>
+                    <span class="help-block adduser-notification">{{userCtrl.validateUsernameNotification}}</span>
+                    <br/>
+                    <label for="email">Email(*) : </label>
+                    <input ng-blur="userCtrl.validateField('email')" ng-model="userCtrl.user.email" name="email"
+                           id="email" type="text"
+                           tabindex="2"/>
+                    <span class="help-block adduser-notification">{{userCtrl.validateEmailNotification}}</span>
+                    <br/>
+                    <label for="pass">Password(*) : </label>
+                    <input ng-model="userCtrl.user.password" name="pass" id="pass" type="password"
+                           tabindex="2" ng-blur="userCtrl.validateField('password')"/>
+                    <span class="help-block adduser-notification">{{userCtrl.validatePasswordNotification}}</span>
+                    <br/>
+                    <label for="pass-2">Confirm Password(*) : </label>
+                    <input ng-model="userCtrl.confpass" name="pass2" id="pass-2" type="password"
+                           tabindex="2" ng-blur="userCtrl.validateField('confpass')"/>
+                    <span class="help-block adduser-notification">{{userCtrl.validateConfirmPassNotification}}</span>
+                    <br/>
+                </fieldset>
+                <fieldset id="address">
+                    <legend>Address</legend>
+                    <label for="street">Street address : </label>
+                    <input ng-model="userCtrl.user.street" name="street" id="street" type="text"
+                           tabindex="1"/>
+                    <br/>
+                    <label for="city">City : </label>
+                    <input ng-model="userCtrl.user.city" name="city" id="city" type="text"
+                           tabindex="2"/>
+                    <br/>
+                    <label for="country">Country : </label>
+                    <input ng-model="userCtrl.user.country" name="country" id="country" type="text"
+                           tabindex="1"/>
+                    <br/>
+                    <label for="state">State/Province : </label>
+                    <input ng-model="userCtrl.user.state" name="state" id="state" type="text"
+                           tabindex="2"/>
+                    <br/>
+                    <label for="zip">Zip/Postal Code : </label>
+                    <input ng-model="userCtrl.user.zipcode  " name="zip" id="zip" type="text"
+                           tabindex="2"/>
+                    <br/>
+                </fieldset>
+                <fieldset id="opt">
+                    <legend>OPTIONS</legend>
+                    <label for="choice">Group(*) : </label>
+                    <select ng-model="userCtrl.user.group" name="choice"
+                            ng-change="userCtrl.validateField('group')">
+                        <option label="Choose a permission" value="">Choose a group</option>
+                        <option ng-repeat="group in userCtrl.groups"
+                                label="{{group.group_name}}"
+                                value="{{group.id}}">{{group.group_name}}
+                        </option>
+                    </select>
+                    <span class="help-block adduser-notification">{{userCtrl.validateGroupNotification}}</span>
+                </fieldset>
+                <div align="center">(*) is required field</div>
+                <br/>
+
+                <div align="center">
+                    <input id="button1" type="submit" value="Send"/>
+                    <input id="button2"
+                           ng-show="userCtrl.user.id > 0"
+                           type="submit"
+                           value="Change to add user" ng-click="userCtrl.changeAddUserForm()"/>
+                </div>
+            </form>
+        </div>
+    </div>
+    <apt-sidebar></apt-sidebar>
+</div>

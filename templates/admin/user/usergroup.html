@@ -1,0 +1,110 @@
+<div id="top-panel">
+    <div id="panel">
+        <ul>
+            <li><a href="#/user" class="useradd">Add user</a></li>
+            <li><a href="javascript:void(0)" class="group active">User groups</a></li>
+            <li><a href="#/useronline" class="online">Users online</a></li>
+        </ul>
+    </div>
+</div>
+<div id="wrapper">
+    <div id="content">
+        <div id="box">
+            <h3>User Group</h3>
+            <table width="100%">
+                <thead>
+                <tr>
+                    <th width="40px"><a ng-click="userCtrl.sortItem('id')" href="javascript:void(0)">ID<img
+                            src="asserts/img/icons/arrow_down_mini.gif" width="16"
+                            height="16"
+                            align="absmiddle"/></a></th>
+                    <th><a href="javascript:void(0)">Group name</a></th>
+                    <th width="60px"><a href="javascript:void(0)">Action</a></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="group in userGroupCrl.groups">
+                    <td class="a-center">{{group.id}}</td>
+                    <td><a href="javascript:void(0)">{{group.group_name}}</a></td>
+                    <td>
+                        <a href="javascript:void(0)">
+                            <img src="asserts/img/icons/user_edit.png" ng-click="userGroupCrl.showGroup(group.id)"
+                                 title="Edit user" width="16" height="16"/>
+                        </a>
+                        <a href="javascript:void(0)">
+                            <img src="asserts/img/icons/user_delete.png"
+                                 ng-click="userGroupCrl.deleteGroup(group.id)"
+                                 title="Delete user" width="16" height="16"/>
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <br/>
+
+        <div id="box">
+            <h3 id="adduser">{{userGroupCrl.formTitle}}</h3>
+
+            <p class="adduser-notification">{{userGroupCrl.notification}}</p>
+
+            <form id="form" name="addUserForm" ng-submit="userGroupCrl.saveGroup()">
+                <fieldset id="personal">
+                    <legend>GROUP INFORMATION</legend>
+                    <input type="hidden" ng-model="userGroupCrl.group.id"/>
+                    <label for="username">Group name(*) : </label>
+                    <input ng-blur="userGroupCrl.validateField('groupname')"
+                           ng-model="userGroupCrl.group.group_name"
+                           name="username" id="lastname" type="text" tabindex="1" style="width: 50%"/>
+                    <span class="help-block adduser-notification">{{userGroupCrl.validateGroupnameNotification}}</span>
+                    <br/>
+                </fieldset>
+                <fieldset>
+                    <legend>GROUP PERMISSION</legend>
+                    <table width="100%">
+                        <thead>
+                        <tr>
+                            <th><a href="javascript:void(0)">Permission</a></th>
+                            <th width="60px">
+                                <a href="javascript:void(0)" ng-click="userGroupCrl.checkAllPermission(1)">Allow</a>
+                            </th>
+                            <th width="60px">
+                                <a href="javascript:void(0)" ng-click="userGroupCrl.checkAllPermission(2)">Deny</a>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="permission in userGroupCrl.permissions">
+                            <td style="text-align: center;">{{permission.name}}</td>
+                            <td style="text-align: center;">
+                                <input
+                                        ng-model="userGroupCrl.groupPermissionCodes[permission.id]"
+                                        ng-value="1"
+                                        type="radio"/>
+                            </td>
+                            <td style="text-align: center;">
+                                <input
+                                        ng-model="userGroupCrl.groupPermissionCodes[permission.id]"
+                                        ng-value="2"
+                                        type="radio"/>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <br/>
+                </fieldset>
+                <div align="center">(*) is required field</div>
+                <br/>
+
+                <div align="center">
+                    <input id="button1" type="submit" value="Send"/>
+                    <input id="button2"
+                           ng-show="userGroupCrl.group.id > 0"
+                           type="submit"
+                           value="Change to add group" ng-click="userGroupCrl.changeAddGroupForm()"/>
+                </div>
+            </form>
+        </div>
+    </div>
+    <apt-sidebar></apt-sidebar>
+</div>

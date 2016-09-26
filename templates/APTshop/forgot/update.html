@@ -1,0 +1,38 @@
+<div class="banner-top">
+    <div class="container">
+        <h1>Login</h1>
+        <em></em>
+
+        <h2><a href="#/home">Home</a><label>/</label>Update Password</a></h2>
+    </div>
+</div>
+<div class="content">
+    <div class="container">
+        <div class="login">
+            <span class="notification">{{updateCtrl.notification}}</span>
+            <form ng-submit="updateCtrl.updatePassword()">
+                <div class="col-md-6 login-do">
+                    <h4>Fill your new password</h4>
+                    <br/>
+                    <div class="login-mail">
+                        <span class="notification">{{updateCtrl.validatePasswordNotification}}</span>
+                        <input type="password" ng-model="updateCtrl.password" placeholder="New Password"
+                               ng-blur="updateCtrl.validateField('password')">
+                        <i class="glyphicon glyphicon-lock"></i>
+                    </div>
+                    <div class="login-mail">
+                        <span class="notification">{{updateCtrl.validateConfirmNotification}}</span>
+                        <input type="password" ng-model="updateCtrl.confpass" placeholder="Confirm new password"
+                               ng-blur="updateCtrl.validateField('confirm')">
+                        <i class="glyphicon glyphicon-lock"></i>
+                    </div>
+                    <label class="hvr-skew-backward">
+                        <input type="submit" value="Send">
+                    </label>
+                </div>
+                <div class="clearfix"></div>
+            </form>
+        </div>
+        <apt-brand></apt-brand>
+    </div>
+</div>

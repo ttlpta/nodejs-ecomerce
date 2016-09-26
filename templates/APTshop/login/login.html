@@ -1,0 +1,42 @@
+<div class="banner-top">
+    <div class="container">
+        <h1>Login</h1>
+        <em></em>
+        <h2><a href="#/home">Home</a><label>/</label>Login</a></h2>
+    </div>
+</div>
+<div class="content">
+    <div class="container">
+        <div class="login">
+            <span class="notification">{{loginCtrl.notification}}</span>
+            <form ng-submit="loginCtrl.login()">
+                <div class="col-md-6 login-do">
+                    <div class="login-mail">
+						<span class="notification">{{loginCtrl.validateUsernameNotification}}</span>
+                        <input type="text" ng-model="loginCtrl.username" placeholder="Username" ng-blur ="loginCtrl.validateField('username')">
+                        <i class="glyphicon glyphicon-envelope"></i>
+                    </div>
+                    <div class="login-mail" >
+                        <span class="notification">{{loginCtrl.validatePasswordNotification}}</span>
+						<input type="password" ng-model="loginCtrl.password" placeholder="Password" required ng-blur="loginCtrl.validateField('password')">
+                        <i class="glyphicon glyphicon-lock"></i>
+                    </div>
+                    <a class="news-letter " href="#">
+                        <label class="checkbox1">Forget Password ?</label>
+                    </a>
+                    <label class="hvr-skew-backward">
+                        <input type="submit" value="login">
+                    </label>
+                </div>
+                <div class="col-md-6 login-right">
+                    <h3>Don't have your own account ?</h3>
+                    <p>Register an account to faster checkout...</p>
+                    <a href="#/register" class=" hvr-skew-backward">Register</a>
+
+                </div>
+                <div class="clearfix"></div>
+            </form>
+        </div>
+        <apt-brand></apt-brand>
+    </div>
+</div>

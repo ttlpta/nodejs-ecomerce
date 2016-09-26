@@ -1,0 +1,18 @@
+<div id="header">
+    <h2>My eCommerce Admin area</h2>
+
+    <div id="topmenu">
+        <ul>
+            <li ng-class="headerCtr.currentCat == 'dashboard'? 'current' : ''"><a href="#/dashboard">Dashboard</a></li>
+            <li ng-class="headerCtr.currentCat == 'order'? 'current' : ''"><a href="#/order">Orders</a></li>
+            <li ng-class="(headerCtr.isUserModule) ? 'current' : ''">
+                <a href="#/user">Users</a>
+            </li>
+            <li ng-class="(headerCtr.isManageModule) ? 'current' : ''"><a href="#/categories">Manage</a></li>
+            <li ng-class="headerCtr.currentCat == 'cms'? 'current' : ''"><a href="#/cms">CMS</a></li>
+            <li ng-class="headerCtr.currentCat == 'statistics'? 'current' : ''"><a href="#/statistics">Statistics</a>
+            </li>
+            <li ng-class="headerCtr.currentCat == 'settings'? 'current' : ''"><a href="#/setting">Settings</a></li>
+        </ul>
+    </div>
+</div>
