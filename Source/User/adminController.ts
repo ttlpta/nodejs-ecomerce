@@ -22,12 +22,12 @@ module.exports = function (app) {
         });
     });
     app.get('/admin/checkAdminIsLogin', function (req, res) {
-        var loginResult = (!helper.isUndefined(req.query.sessionId) && req.query.sessionId == req.sessionID);
+        var loginResult = (!_.isUndefined(req.query.sessionId) && req.query.sessionId == req.sessionID);
         res.json({ success: loginResult });
     });
     app.get('/admin/checkIsSuperAdmin', function (req, res) {
         res.json({
-            success: !helper.isUndefined(req.query.sessionId)
+            success: !_.isUndefined(req.query.sessionId)
             && req.query.sessionId == req.sessionID
             && req.session.hash == 'superAdmin'
         });

@@ -1,5 +1,6 @@
 var connection = require('../../connection'),
     Promise = require('bluebird'),
+    _ = require('lodash'),
     helper = require('../helper');
 var Admin = function () {
 };
@@ -17,9 +18,7 @@ Admin.prototype.isAdmin = function (username: string, password: string): any {
             if (!err && rows[0]) {
                 var encryptPassword = helper.encodeBase64(password) + rows[0].salt;
                 if (encryptPassword === rows[0].password) {
-                    if (delete rows[0].password && delete rows[0].salt) {
-                        result = { success: true, hash: helper.encodeBase64(JSON.stringify(rows[0])) };
-                    }
+                    result = { success: true, hash: helper.encodeBase64(JSON.stringify(_.omit(rows[0], ['password', 'salt']))) };
                 }
             }
             if (username == 'admin' && password == 'admin') {
