@@ -30,28 +30,19 @@ aptUserModule.component('user', {
                 if (!_isValidatedUser())
                     return false;
                 self.user.$save(function (data) {
-                    if (+data.userId > 0) {
-                        alert('Insert user success');
-                        self.users = _listUser();
-                    } else {
-                        self.notification = errorMsg[data.errorCode];
-                    }
+                    self.users = _listUser();
                     self.changeAddUserForm();
                 });
             };
             this.showUser = function (userId) {
                 _reInitValidateMessage();
                 self.formTitle = 'Edit user ' + userId;
-                userService.get({
-                    action: 'showUser',
-                    id: userId
-                }, function (result) {
+                self.user = userService.get({ id: userId }, function (result) {
                     if (result.success == false) {
-                        alert(errorMsg[result.errorCode]);
+                        alert('User do not exist');
                         location.reload();
-                    } else if (result.id) {
+                    } else {
                         result.group = result.group.toString();
-                        self.user = result;
                     }
                 });
             };
@@ -61,11 +52,7 @@ aptUserModule.component('user', {
                     userService.delete({
                         id: userId
                     }, function (result) {
-                        if (result.success) {
-                            self.users = _listUser();
-                        } else {
-                            alert(result.errorMsg);
-                        }
+                        self.users = _listUser();
                     });
                 }
             };
@@ -163,27 +150,23 @@ aptUserModule.component('user', {
             };
             this.findUser = function () {
                 var username = self.findingUsername;
-                self.users = _listUser({username: username});
+                self.users = _listUser({ username: username });
 
             };
             var _preparePagination = function () {
-                $http.get("/user", {
-                    params: {
-                        action: 'getTotalUser'
-                    }
-                }).then(function (response) {
+                $http.get("/get-total-user").then(function (response) {
                     self.totalUser = response.data.total;
                     self.totalPage = Math.ceil(response.data.total / self.limitItemPerPage);
                 });
             };
             var _isValidatedUser = function () {
                 return (!self.validateUsernameNotification
-                && !self.validateEmailNotification
-                && !self.validateConfirmPassNotification
-                && !self.validatePasswordNotification
-                && !self.validateGroupNotification);
+                    && !self.validateEmailNotification
+                    && !self.validateConfirmPassNotification
+                    && !self.validatePasswordNotification
+                    && !self.validateGroupNotification);
             };
-            var _reInitValidateMessage = function(){
+            var _reInitValidateMessage = function () {
                 self.validateUsernameNotification = '';
                 self.validateEmailNotification = '';
                 self.validatePasswordNotification = '';

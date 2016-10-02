@@ -92,9 +92,6 @@ Helper.prototype = {
     },
     getFirstItemArray: function (arr:any):any {
         return arr[0];
-    },
-    isEmptyObject: function (obj):boolean {
-        return typeof obj != 'object' || (Object.keys(obj).length === 0 && obj.constructor === Object);
     }
 };
 module.exports = new Helper();

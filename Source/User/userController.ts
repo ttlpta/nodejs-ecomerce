@@ -1,6 +1,7 @@
 var validator = require('validator'),
     helper = require('../helper'),
     Promise = require('bluebird'),
+    _ = require('lodash'),
     user = require('./userModel');
 user.setMaxListeners(0);
 module.exports = function (app, io) {
@@ -20,44 +21,31 @@ module.exports = function (app, io) {
             }
         });
     });
+
     app.get('/user', function (req, res) {
-        if (!helper.isUndefined(req.query.action)) {
-            switch (req.query.action) {
-                case 'listUser':
-                    var condition: string = (typeof req.query.username != 'undefined') ? '`username` LIKE "%' + req.query.username + '%"' : '';
-                    user.once('list_user', function (users) {
-                        var listUsers = [];
-                        for (var user of users) {
-                            user.address = user.street + ',' + user.city + ',' + user.country + ',' + user.state + ',' + user.zipcode;
-                            listUsers.push(user);
-                        }
-                        res.json(listUsers);
-                    });
-                    user.listUser(req.query.limit, req.query.offset, req.query.orderBy, req.query.sort, condition);
-                    break;
-                case 'showUser':
-                    if (helper.isUndefined(req.query.id) || !req.query.id) {
-                        res.json({ success: false, errorCode: 6 });
-                    } else {
-                        user.once('show_user', function (result) {
-                            if (result.success) {
-                                res.json(result.user);
-                            } else {
-                                res.json(result);
-                            }
-                        });
-                        user.showUserById(req.query.id);
-                    }
-                    break;
-                case 'getTotalUser':
-                    user.once('total_user', function (result) {
-                        res.json(result);
-                    });
-                    user.totalUser();
-                    break;
-            }
+        var condition: string = (typeof req.query.username != 'undefined') ? '`username` LIKE "%' + req.query.username + '%"' : '';
+        user.listUser(req.query.limit, req.query.offset, req.query.orderBy, req.query.sort, condition)
+            .then(function (users) {
+                res.json(users);
+            });
+    });
+
+    app.get('/user/:id', function (req, res) {
+        if (_.isInteger(+req.params.id)) {
+            user.showUserById(req.params.id).then(function (result) {
+                res.json(result);
+            });
+        } else {
+            res.status(403).end();
         }
     });
+
+    app.get('/get-total-user', function (req, res) {
+        user.totalUser().then(function (totalUser) {
+            res.json(totalUser);
+        });
+    });
+
     app.get('/validateUser', function (req, res) {
         var EXISTED_CODE = 2;
         var WRONG_FORMAT_CODE = 3;
@@ -134,17 +122,16 @@ module.exports = function (app, io) {
 
         }
     });
+
     app.post('/user', function (req, res) {
-        if (typeof req.body != 'undefined' && !helper.isEmptyObject(req.body)) {
-            user.once('save_user', function (userId) {
-                res.json({
-                    userId: userId
-                });
-            });
+        if (!_.isUndefined(req.body) && !_.isEmpty(req.body)) {
             req.body.registered = new Date();
-            user.saveUser(req.body);
+            user.saveUser(req.body).then(function (userId) {
+                res.status((userId) ? 204 : 403).end();
+            });
         }
     });
+
     app.post('/registerUser', function (req, res) {
         if (typeof req.body != 'undefined') {
             var saveUserPromise = new Promise(function (resolve, reject) {
@@ -194,15 +181,17 @@ module.exports = function (app, io) {
             });
         }
     });
-    app.delete('/user', function (req, res) {
-        if (typeof req.query.id != 'undefined' && req.query.id) {
-            var userId = req.query.id;
-            user.once('delete_user', function (result) {
-                res.json(result);
+
+    app.delete('/user/:id', function (req, res) {
+        if (_.isInteger(+req.params.id)) {
+            user.deleteUser(req.params.id).then(function (result) {
+                res.status((result) ? 204 : 403).end();
             });
-            user.deleteUser(userId);
+        } else {
+            res.status(403).end();
         }
     });
+
     app.get('/confirmRegisted', function (req, res) {
         if (typeof req.query.id != 'undefined' && typeof req.query.salt != 'undefined') {
             var id = req.query.id;
@@ -239,6 +228,7 @@ module.exports = function (app, io) {
             });
         }
     });
+
     app.post('/userLogin', function (req, res) {
         if (typeof req.body != 'undefined') {
             user.once('user_login', function (result) {
@@ -257,6 +247,7 @@ module.exports = function (app, io) {
             user.userLogin(req.body);
         }
     });
+
     app.post('/forgotPassword', function (req, res) {
         if (typeof req.body != 'undefined') {
             user.once('get_user', function (results) {

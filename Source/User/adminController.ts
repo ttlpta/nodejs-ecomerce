@@ -10,7 +10,7 @@ module.exports = function (app) {
     }));
     app.post('/admin/login', function (req, res) {
         admin.isAdmin(req.body.username, req.body.password).then(function (result) {
-            var loginResult;
+            var loginResult:Object;
             if (result.success) {
                 req.session.hash = (!_.isUndefined(result.isSuperAdmin)) ? 'superAdmin' : result.hash;
                 loginResult = { success: true, sessionId: req.sessionID };
