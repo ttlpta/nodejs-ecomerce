@@ -2,8 +2,8 @@ var aptUserModule = angular.module('aptUserModule', ['aptUserHelper', 'aptUserGr
 aptUserModule.component('user', {
     templateUrl: 'user/user.html',
     controllerAs: 'userCtrl',
-    controller: ['$http', 'userService', 'validateAddUserErrorCode', 'userGroupService',
-        function ($http, userService, errorMsg, userGroupService) {
+    controller: ['$http', 'userService', 'userGroupService',
+        function ($http, userService, userGroupService) {
             var self = this;
             this.user = new userService();
             this.groups = userGroupService.query();
@@ -64,11 +64,10 @@ aptUserModule.component('user', {
                             if (self.user.id) {
                                 param.userId = self.user.id;
                             }
-                            $http.get("/validateUser", {
+                            $http.get("/validate-user", {
                                 params: param
                             }).then(function (response) {
-                                self.validateUsernameNotification = (response.data.isNotValid) ?
-                                    'Username is existed' : '';
+                                self.validateUsernameNotification = (response.data.isNotValid) ? response.data.message : '';
                             });
                         } else {
                             self.validateUsernameNotification = 'Username is required';
@@ -79,19 +78,10 @@ aptUserModule.component('user', {
                             if (self.user.id) {
                                 param.userId = self.user.id;
                             }
-                            $http.get("/validateUser", {
+                            $http.get("/validate-user", {
                                 params: param
                             }).then(function (response) {
-                                if (response.data.isNotValid) {
-                                    if (+response.data.errorCode == 2) {
-                                        self.validateEmailNotification = 'Email is existed';
-                                    } else if (+response.data.errorCode == 3) {
-                                        self.validateEmailNotification = 'Email is wrong format';
-                                    }
-                                } else {
-                                    self.validateEmailNotification = '';
-                                }
-
+                                self.validateEmailNotification = (response.data.isNotValid) ? response.data.message : '';
                             });
                         } else {
                             self.validateEmailNotification = 'Email is required';

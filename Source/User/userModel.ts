@@ -17,7 +17,7 @@ User.prototype.listUser = function (limit: number, offset: number, orderBy: stri
         }
         sql = sql.orderBy(orderBy, sort).limit(+limit, +offset).render();
         connection.query(sql, (err, users) => {
-            if (err) throw err;
+            if (err) reject();
             var listUsers = [];
             for (var user of users) {
                 user.address = user.street + ',' + user.city + ',' + user.country + ',' + user.state + ',' + user.zipcode;
@@ -36,6 +36,7 @@ User.prototype.saveUser = function (user) {
         }
         if (!_.isUndefined(user.id)) {
             connection.query('UPDATE `apt_user` SET ? WHERE `id` = ?', [user, user.id], function (err, res) {
+                if (err) throw err;
                 resolve((res.changedRows) ? user.id : 0);
             });
         } else {
@@ -63,41 +64,30 @@ User.prototype.deleteUser = function (userId) {
     });
 };
 User.prototype.validateUser = function (field) {
-    var self = this;
-    if (typeof field.username != 'undefined') {
-        var sql, param;
-        if (typeof field.userId != 'undefined') {
-            sql = 'SELECT COUNT(*) as countUser FROM `apt_user` WHERE `username` LIKE ? AND `id` != ?';
-            param = [field.username, field.userId]
-        } else {
-            sql = 'SELECT COUNT(*) as countUser FROM `apt_user` WHERE `username` LIKE ?';
-            param = [field.username]
+    return new Promise(function (resolve, reject) {
+        var sql: string, param: string[];
+        if (!_.isUndefined(field.username)) {
+            if (!_.isUndefined(field.userId)) {
+                sql = 'SELECT COUNT(*) as countUser FROM `apt_user` WHERE `username` LIKE ? AND `id` != ?';
+                param = [field.username, field.userId]
+            } else {
+                sql = 'SELECT COUNT(*) as countUser FROM `apt_user` WHERE `username` LIKE ?';
+                param = [field.username]
+            }
+        }
+        if (!_.isUndefined(field.email)) {
+            if (!_.isUndefined(field.userId)) {
+                sql = 'SELECT COUNT(*) as countUser FROM `apt_user` WHERE `email` = ? AND `id` != ?';
+                param = [field.email, field.userId]
+            } else {
+                sql = 'SELECT COUNT(*) as countUser FROM `apt_user` WHERE `email` = ?';
+                param = [field.email]
+            }
         }
         connection.query(sql, param, function (err, rows) {
-            var isExisted = false;
-            if (!err && rows[0].countUser) {
-                isExisted = true;
-            }
-            self.emit('validate_user', isExisted);
+            resolve((!err && rows[0].countUser));
         });
-    }
-    if (typeof field.email != 'undefined') {
-        if (typeof field.userId != 'undefined') {
-            sql = 'SELECT COUNT(*) as countUser FROM `apt_user` WHERE `email` = ? AND `id` != ?';
-            param = [field.email, field.userId]
-        } else {
-            sql = 'SELECT COUNT(*) as countUser FROM `apt_user` WHERE `email` = ?';
-            param = [field.email]
-        }
-        connection.query(sql, param, function (err, rows) {
-            var isExisted = false;
-            if (!err && rows[0].countUser) {
-                isExisted = true;
-            }
-            self.emit('validate_user', isExisted);
-        });
-    }
-
+    });
 };
 User.prototype.totalUser = function () {
     return new Promise(function (resolve, reject) {
