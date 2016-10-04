@@ -1,10 +1,9 @@
 var aptUserGroupHelper = angular.module('aptUserGroupHelper', []);
 aptUserGroupHelper.factory('userGroupService', ['$resource',
     function ($resource) {
-        return $resource('/admin/usergroup', {}, {
+        return $resource('/admin/usergroup/:id', {}, {
             query: {
                 method: 'GET',
-                params: {action: 'listUserGroup'},
                 isArray: true
             }
         });

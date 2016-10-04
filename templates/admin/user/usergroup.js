@@ -26,15 +26,10 @@ aptUserModule.component('usergroup', {
             this.showGroup = function (groupId) {
                 _removeValidateNotice();
                 self.formTitle = 'Edit User Group ' + groupId;
-                self.group = userGroupService.get({action: 'showUserGroup', id: groupId}, function (result) {
-                    if (result.success == false) {
-                        alert(errorMsg[result.errorCode]);
-                        location.reload();
-                    } else {
-                        _setDefaultStatusPermission(self.permissions);
-                        result.permissionId.status = ALLOW_PERMISSION;
-                        angular.forEach(result.permissionId, _setStatusPermission);
-                    }
+                self.group = userGroupService.get({id: groupId}, function (result) {
+                    _setDefaultStatusPermission(self.permissions);
+                    result.permissionId.status = ALLOW_PERMISSION;
+                    angular.forEach(result.permissionId, _setStatusPermission);
                 });
             };
             this.validateField = function (field) {
@@ -73,9 +68,7 @@ aptUserModule.component('usergroup', {
                 group.allowPermission = allowPermissionId;
                 group.denyPermission = denyPermissionId;
                 group.$save().then(function (result) {
-                    if (result.success) {
-                        self.changeAddGroupForm();
-                    }
+                    self.changeAddGroupForm();
                 });
             };
             this.deleteGroup = function (groupId) {

@@ -1,8 +1,9 @@
-var connection = require('../connection');
+var connection = require('../connection'),
+    _ = require('lodash');
 function Helper() {
     this.buildQuery = {
         query: '',
-        select: (params:any):any => {
+        select: (params: any): any => {
             var sql = 'SELECT ';
             if (params !== '*') {
                 params.forEach(function (value) {
@@ -20,11 +21,11 @@ function Helper() {
 
             return this.buildQuery;
         },
-        from: (tbl:string) => {
+        from: (tbl: string) => {
             this.buildQuery.query += ' FROM `' + tbl + '`';
             return this.buildQuery;
         },
-        where: (conditions:any) => {
+        where: (conditions: any) => {
             if (typeof conditions == 'object') {
                 conditions = this.buildQuery._perpareCondition(conditions);
             }
@@ -56,13 +57,13 @@ function Helper() {
     }
 }
 Helper.prototype = {
-    encodeBase64: function (str:string):string {
+    encodeBase64: function (str: string): string {
         return new Buffer(str).toString('base64');
     },
-    decodeBase64: function (hash:string):string {
+    decodeBase64: function (hash: string): string {
         return new Buffer(hash, 'base64').toString('ascii');
     },
-    randomString: function (length:number):string {
+    randomString: function (length: number): string {
         if (typeof length == 'undefined') {
             length = 20;
         }
@@ -74,7 +75,7 @@ Helper.prototype = {
 
         return text;
     },
-    sendEmail: function (to:string, subject:string, content:string, callback:void) {
+    sendEmail: function (to: string, subject: string, content: string, callback: void) {
         var mailer = require("nodemailer");
         var smtpTransport = mailer.createTransport("SMTP", {
             service: "Gmail",
@@ -90,8 +91,27 @@ Helper.prototype = {
         };
         smtpTransport.sendMail(mailOptions, callback);
     },
-    getFirstItemArray: function (arr:any):any {
+    getFirstItemArray: function (arr: any): any {
         return arr[0];
+    },
+    handleRequest: function (handle) {
+        return function (req, res) {
+            var bodyObject: Object = req.body || {};
+            var params = _.extend({}, bodyObject, req.file, req.query, req.params);
+            if ((req.method === 'DELETE' || req.method === 'POST') && (_.isUndefined(params) || _.isEmpty(params))) {
+                res.status(204).end();
+            }
+            handle(params).then(function (result) {
+                if (req.method === 'DELETE' || req.method === 'POST') {
+                    res.status((result) ? 204 : 400).end();
+                } else {
+                    res.json(result);
+                }
+            })
+            .catch(function () {
+                res.status(400).end();
+            });
+        }
     }
 };
 module.exports = new Helper();

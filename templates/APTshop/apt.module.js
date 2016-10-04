@@ -91,37 +91,31 @@ aptShopModule.provider('aptShopAuthenticate', [function () {
             deferred.resolve(notification);
         }
         if (jQuery.inArray('existed', ruleArr) != -1 && fieldValue) {
-            $http.get("/validateUser", {
+            $http.get("/validate-user", {
                 params: param
             }).then(function (response) {
-                var notification = (+response.data.errorCode == 2 && response.data.isNotValid) ? fieldLabel + ' is existed' : '';
-                deferred.resolve(notification);
+                deferred.resolve((response.data.isNotValid) ? response.data.message : '');
             });
         }
         if (jQuery.inArray('email', ruleArr) != -1 && fieldValue) {
-            $http.get("/validateUser", {
+            $http.get("/validate-user", {
                 params: param
             }).then(function (response) {
-                var notification = (+response.data.errorCode == 3 && response.data.isNotValid) ? fieldLabel + ' is wrong format' : '';
-                deferred.resolve(notification);
+                deferred.resolve((response.data.isNotValid) ? response.data.message : '');
             });
         }
         if (jQuery.inArray('phone', ruleArr) != -1 && fieldValue) {
-            $http.get("/validateUser", {
+            $http.get("/validate-user", {
                 params: param
             }).then(function (response) {
-                var notification = (response.data.isNotValid && +response.data.errorCode == 3) ?
-                fieldLabel + ' is wrong format' : '';
-                deferred.resolve(notification);
+                deferred.resolve((response.data.isNotValid) ? response.data.message : '');
             });
         }
         if (jQuery.inArray('alphanumberic', ruleArr) != -1 && fieldValue) {
-            $http.get("/validateUser", {
+            $http.get("/validate-user", {
                 params: param
             }).then(function (response) {
-                var notification = (response.data.isNotValid && +response.data.errorCode == 4) ?
-                fieldLabel + ' is contain special character' : '';
-                deferred.resolve(notification);
+                deferred.resolve((response.data.isNotValid) ? response.data.message : '');
             });
         }
 

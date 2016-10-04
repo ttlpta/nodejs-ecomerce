@@ -3,7 +3,6 @@ var validator = require('validator'),
     Promise = require('bluebird'),
     _ = require('lodash'),
     user = require('./userModel');
-user.setMaxListeners(0);
 module.exports = function (app, io) {
     io.on('connection', function (socket) {
         socket.on('user_is_logging', function (data) {
@@ -22,121 +21,13 @@ module.exports = function (app, io) {
         });
     });
 
-    app.get('/user', function (req, res) {
-        var condition: string = (typeof req.query.username != 'undefined') ? '`username` LIKE "%' + req.query.username + '%"' : '';
-        user.listUser(req.query.limit, req.query.offset, req.query.orderBy, req.query.sort, condition)
-            .then(function (users) {
-                res.json(users);
-            })
-            .catch(function(){
-                res.status(403).end();
-            });
-    });
+    app.get('/user', helper.handleRequest(user.listUser));
+    app.get('/user/:userId', helper.handleRequest(user.showUserById));
+    app.get('/get-total-user', helper.handleRequest(user.totalUser));
+    app.post('/user', helper.handleRequest(user.saveUser));
+    app.delete('/user/:userId', helper.handleRequest(user.deleteUser));
 
-    app.get('/user/:id', function (req, res) {
-        if (_.isInteger(+req.params.id)) {
-            user.showUserById(req.params.id).then(function (result) {
-                res.json(result);
-            });
-        } else {
-            res.status(403).end();
-        }
-    });
-
-    app.get('/get-total-user', function (req, res) {
-        user.totalUser().then(function (totalUser) {
-            res.json(totalUser);
-        });
-    });
-
-    app.get('/validate-user', function (req, res) {
-        if (!_.isUndefined(req.query.username)) {
-            if (validator.isAlphanumeric(req.query.username)) {
-                user.validateUser(req.query).then(function (isExisted: boolean) {
-                    var result = (isExisted) ? 
-                    {
-                        isNotValid: true,
-                        message: 'Username is existed'
-                    } :
-                    {
-                        isNotValid: false
-                    };
-                    res.json(result);
-                });
-            } else {
-                res.json({
-                    isNotValid: true,
-                    message: 'Username contains special character or space'
-                });
-            }
-        }
-        if (!_.isUndefined(req.query.email)) {
-            if (validator.isEmail(req.query.email)) {
-                user.once('validate_user', function (isExisted) {
-                    var result = (isExisted) ? 
-                    {
-                        isNotValid: true,
-                        message: 'Email is existed'
-                    } :
-                    {
-                        isNotValid: false
-                    };
-                    res.json(result);
-                });
-                user.validateUser(req.query);
-            } else {
-                res.json({
-                    isNotValid: true,
-                    message: 'Email is wrong format'
-                });
-            }
-        }
-        if (!_.isUndefined(req.query.phone)) {
-            if (!validator.isMobilePhone(req.query.phone, 'vi-VN')) {
-                res.json({
-                    isNotValid: true,
-                    message: 'Phone number is wrong format'
-                });
-            } else {
-                res.json({
-                    isNotValid: false
-                });
-            }
-        }
-        if (!_.isUndefined(req.query.password)) {
-            if (!validator.isAlphanumeric(req.query.password)) {
-                res.json({
-                    isNotValid: true,
-                    errorCode: 'Password is wrong format'
-                });
-            } else {
-                res.json({
-                    isNotValid: false
-                });
-            }
-
-        }
-    });
-
-    app.post('/user', function (req, res) {
-        if (!_.isUndefined(req.body) && !_.isEmpty(req.body)) {
-            req.body.registered = new Date();
-            user.saveUser(req.body).then(function (userId) {
-                res.status((userId) ? 204 : 403).end();
-            });
-        }
-    });
-
-    app.delete('/user/:id', function (req, res) {
-        if (_.isInteger(+req.params.id)) {
-            user.deleteUser(req.params.id).then(function (result) {
-                res.status((result) ? 204 : 403).end();
-            });
-        } else {
-            res.status(403).end();
-        }
-    });
-
+    // Front-end Call
     app.post('/registerUser', function (req, res) {
         if (typeof req.body != 'undefined') {
             var saveUserPromise = new Promise(function (resolve, reject) {
@@ -267,6 +158,75 @@ module.exports = function (app, io) {
                 }
             });
             user.getUser(req.body);
+        }
+    });
+
+    // Validate all request
+    app.get('/validate-user', function (req, res) {
+        if (!_.isUndefined(req.query.username)) {
+            if (validator.isAlphanumeric(req.query.username)) {
+                user.validateUser(req.query).then(function (isExisted: boolean) {
+                    var result = (isExisted) ?
+                        {
+                            isNotValid: true,
+                            message: 'Username is existed'
+                        } :
+                        {
+                            isNotValid: false
+                        };
+                    res.json(result);
+                });
+            } else {
+                res.json({
+                    isNotValid: true,
+                    message: 'Username contains special character or space'
+                });
+            }
+        }
+        if (!_.isUndefined(req.query.email)) {
+            if (validator.isEmail(req.query.email)) {
+                user.validateUser(req.query).then(function (isExisted: boolean) {
+                    var result = (isExisted) ?
+                        {
+                            isNotValid: true,
+                            message: 'Email is existed'
+                        } :
+                        {
+                            isNotValid: false
+                        };
+                    res.json(result);
+                });
+            } else {
+                res.json({
+                    isNotValid: true,
+                    message: 'Email is wrong format'
+                });
+            }
+        }
+        if (!_.isUndefined(req.query.phone)) {
+            if (!validator.isMobilePhone(req.query.phone, 'vi-VN')) {
+                res.json({
+                    isNotValid: true,
+                    message: 'Phone number is wrong format'
+                });
+            } else {
+                res.json({
+                    isNotValid: false
+                });
+            }
+        }
+        if (!_.isUndefined(req.query.password)) {
+            if (!validator.isAlphanumeric(req.query.password)) {
+                res.json({
+                    isNotValid: true,
+                    message: 'Password is wrong format'
+                });
+            } else {
+                res.json({
+                    isNotValid: false
+                });
+            }
+
         }
     });
 };

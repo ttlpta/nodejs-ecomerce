@@ -7,15 +7,16 @@ var connection = require('../../connection'),
 var User = function () {
 };
 util.inherits(User, EventEmitter);
-User.prototype.listUser = function (limit: number, offset: number, orderBy: string, sort: string, condition: string): any {
+User.prototype.listUser = function (params: { limit: number, offset: number, orderBy: string, sort: string, username?: string }): any {
     return new Promise(function (resolve, reject) {
         var sql = helper.buildQuery
             .select(['id', 'email', 'username', 'group', 'street', 'city', 'country', 'state', 'zipcode'])
             .from('apt_user');
+        var condition: string = (typeof params.username != 'undefined') ? '`username` LIKE "%' + params.username + '%"' : '';
         if (condition) {
             sql = sql.where(condition);
         }
-        sql = sql.orderBy(orderBy, sort).limit(+limit, +offset).render();
+        sql = sql.orderBy(params.orderBy, params.sort).limit(+params.limit, +params.offset).render();
         connection.query(sql, (err, users) => {
             if (err) reject();
             var listUsers = [];
@@ -47,18 +48,18 @@ User.prototype.saveUser = function (user) {
         }
     });
 };
-User.prototype.showUserById = function (userId) {
+User.prototype.showUserById = function (params: { userId: number }) {
     return new Promise(function (resolve, reject) {
         connection.query('SELECT `id`, `salt`, `email`, `username`, `group`, `street`, `registered`, `city`, `country`, `state`, `zipcode`' +
-            'FROM `apt_user` WHERE `id` = ?', [userId], (err, rows) => {
-                if (err) throw err;
+            'FROM `apt_user` WHERE `id` = ?', [params.userId], (err, rows) => {
+                if (err) reject();
                 resolve((!_.isUndefined(rows[0].id)) ? rows[0] : {});
             });
     });
 };
-User.prototype.deleteUser = function (userId) {
+User.prototype.deleteUser = function (params: { userId: number }) {
     return new Promise(function (resolve, reject) {
-        connection.query('DELETE FROM `apt_user` WHERE `id` = ?', [userId], function (err, res) {
+        connection.query('DELETE FROM `apt_user` WHERE `id` = ?', [params.userId], function (err, res) {
             resolve({ success: (res.affectedRows) ? true : false });
         });
     });
@@ -92,6 +93,7 @@ User.prototype.validateUser = function (field) {
 User.prototype.totalUser = function () {
     return new Promise(function (resolve, reject) {
         connection.query('SELECT COUNT(*) as total FROM `apt_user`', function (err, rows) {
+            if (err) reject();
             resolve(rows[0]);
         });
     });
