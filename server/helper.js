@@ -95,7 +95,7 @@ Helper.prototype = {
             var bodyObject = req.body || {};
             var params = _.extend({}, bodyObject, req.file, req.query, req.params);
             if ((req.method === 'DELETE' || req.method === 'POST') && (_.isUndefined(params) || _.isEmpty(params))) {
-                res.status(204).end();
+                res.status(400).end();
             }
             handle(params).then(function (result) {
                 if (req.method === 'DELETE' || req.method === 'POST') {

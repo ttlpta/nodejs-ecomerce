@@ -2,71 +2,75 @@ var connection = require('../../connection'),
     util = require('util'),
     Promise = require('bluebird'),
     EventEmitter = require('events').EventEmitter,
-    helper = require('../helper');
+    _ = require('lodash');
+helper = require('../helper');
 var nestSetModel = function () {
 };
 util.inherits(nestSetModel, EventEmitter);
 nestSetModel.prototype.insertNode = function (data, parent) {
-    this.insertRight(data, parent);
+    return this.insertRight(data, parent);
 };
 nestSetModel.prototype.insertRight = function (data, parent) {
     var self = this;
     var updateLeftSql = 'UPDATE `apt_categories` SET `left` = `left` + 2 WHERE `left` > ' + parent.right;
     var updateRightSql = 'UPDATE `apt_categories` SET `right` = `right` + 2 WHERE `right` >= ' + parent.right;
-    var insertRightPromise = new Promise(function (resolve) {
-        connection.query(updateLeftSql, function (err) {
-            if (err)
-                throw err;
-            resolve();
-        });
-    });
-    insertRightPromise.then(function () {
-        return new Promise(function (resolve) {
-            connection.query(updateRightSql, function (err) {
-                if (err)
-                    throw err;
+    return new Promise(function (resolveAll, rejectAll) {
+        var insertRightPromise = new Promise(function (resolve, reject) {
+            connection.query(updateLeftSql, function (err) {
+                if (err) reject(err);
                 resolve();
             });
         });
-    }).then(function () {
-        return new Promise(function () {
-            data = Object.assign({
-                left: parent.right,
-                right: parent.right + 1,
-                level: parent.level + 1
-            }, data);
-            connection.query('INSERT INTO `apt_categories` SET ?', data, function (err, res) {
-                if (err)
-                    throw err;
-                self.emit('insert_node', res.insertId);
+        insertRightPromise.then(function () {
+            return new Promise(function (resolve, reject) {
+                connection.query(updateRightSql, function (err) {
+                    if (err) reject(err);
+                    resolve();
+                });
             });
+        }).then(function () {
+            return new Promise(function (resolve, reject) {
+                data = Object.assign({
+                    left: parent.right,
+                    right: parent.right + 1,
+                    level: parent.level + 1
+                }, data);
+                connection.query('INSERT INTO `apt_categories` SET ?', data, function (err, res) {
+                    if (err) reject(err);
+                    resolveAll((res.insertId) ? true : false);
+                });
+            });
+        }).catch(function (err) {
+            rejectAll(err);
         });
     });
 };
+
 nestSetModel.prototype.getNodeInfo = function (id) {
     var query = helper.buildQuery.select('*').from('apt_categories').where({
         id: id
     }).render();
-    var self = this;
-    connection.query(query, function (err, row) {
-        if (err)
-            throw err;
-        self.emit('get_node_info', row);
+    return new Promise(function (resolve, reject) {
+        connection.query(query, function (err, row) {
+            if (err) reject(err)
+            resolve(row);
+        });
     });
 };
 nestSetModel.prototype.updateNode = function (data, moveNodeInfo) {
     var self = this;
-    connection.query('UPDATE `apt_categories` SET ? WHERE `id` = ?', [data, data.id], function (err, row) {
-        if (err)
-            throw err;
-        if (+data.parent_id != +moveNodeInfo.parent_id) {
-            self.once('move_node', function (success) {
-                self.emit('update_node', success);
-            });
-            self.moveNode(moveNodeInfo, data.parent_id);
-        } else {
-            self.emit('update_node', (row.affectedRows) ? true : false);
-        }
+    return new Promise(function (resolve, reject) {
+        connection.query('UPDATE `apt_categories` SET ? WHERE `id` = ?', [data, data.id], function (err, row) {
+            if (err) reject();
+            if (+data.parent_id != +moveNodeInfo.parent_id) {
+                self.once('move_node', function (success) {
+                    resolve(success);
+                });
+                self.moveNode(moveNodeInfo, data.parent_id);
+            } else {
+                resolve((row.affectedRows) ? true : false);
+            }
+        });
     });
 };
 
@@ -74,7 +78,7 @@ nestSetModel.prototype.moveNode = function (moveNodeInfo, newParentId) {
     var self = this;
     var moveNodePromise = new Promise(function (resolve, reject) {
         var here = this;
-        if (helper.isEmptyObject(moveNodeInfo))
+        if (_.isEmpty(moveNodeInfo))
             reject();
         here.levelMoveNode = moveNodeInfo.level;
         here.leftMoveNode = moveNodeInfo.left;
@@ -119,18 +123,19 @@ nestSetModel.prototype.moveNode = function (moveNodeInfo, newParentId) {
     }).then(function () {
         return new Promise(function (resolve, reject) {
             var here = this;
-            self.once('get_node_info', function (result) {
-                if (helper.isEmptyObject(result)) {
-                    reject();
-                } else {
+            self.getNodeInfo(newParentId).then(function (result) {
+                if (!_.isEmpty(result)) {
                     var parentNodeInfo = helper.getFirstItemArray(result);
                     here.rightParentNode = parentNodeInfo.right;
                     here.levelParentNode = parentNodeInfo.level;
                     here.idParentNode = parentNodeInfo.id;
                     resolve();
+                } else {
+                    reject();
                 }
+            }).catch(function () {
+                reject();
             });
-            self.getNodeInfo(newParentId);
         })
     }).then(function () {
         return new Promise(function (resolve) {
@@ -200,26 +205,27 @@ nestSetModel.prototype.moveNode = function (moveNodeInfo, newParentId) {
 nestSetModel.prototype.removeOne = function (id) {
     var self = this;
     var removeOnePromise = new Promise(function (resolve, reject) {
-        self.once('get_node_info', function (result) {
-            if (helper.isEmptyObject(result)) {
+        self.getNodeInfo(id).then(function (result) {
+            if (_.isEmpty(result)) {
                 reject();
             } else {
                 resolve(helper.getFirstItemArray(result));
             }
+        }).catch(function () {
+            reject();
         });
-        self.getNodeInfo(id);
     });
     removeOnePromise.then(function (deleteNode) {
         return new Promise(function (resolve) {
             this.deleteNode = deleteNode;
             connection.query(helper.buildQuery
-                    .select('*')
-                    .from('apt_categories')
-                    .where({
-                        parent_id: deleteNode.id
-                    })
-                    .orderBy('left', 'asc')
-                    .render(),
+                .select('*')
+                .from('apt_categories')
+                .where({
+                    parent_id: deleteNode.id
+                })
+                .orderBy('left', 'asc')
+                .render(),
                 function (err, res) {
                     if (err) throw err;
                     resolve(res.reverse());
@@ -245,14 +251,15 @@ nestSetModel.prototype.removeOne = function (id) {
 nestSetModel.prototype.removeBrand = function (deletedId) {
     var self = this;
     var removeBrandPromise = new Promise(function (resolve, reject) {
-        self.once('get_node_info', function (result) {
-            if (helper.isEmptyObject(result)) {
+        self.getNodeInfo(deletedId).then(function (result) {
+            if (_.isEmpty(result)) {
                 reject();
             } else {
                 resolve(helper.getFirstItemArray(result));
             }
+        }).catch(function () {
+            reject();
         });
-        self.getNodeInfo(deletedId);
     });
     removeBrandPromise.then(function (delNode) {
         return new Promise(function (resolve) {
@@ -306,7 +313,7 @@ nestSetModel.prototype.moveNodeAfter = function (moveNodeInfo, newParentId, brot
             ' WHERE `left` BETWEEN ' + this.lftMoveNode + ' AND ' + this.rgtMoveNode;
         connection.query(sqlReset, function (err) {
             if (err) throw err;
-        resolve();
+            resolve();
         });
     });
     moveNodePromise
@@ -329,20 +336,21 @@ nestSetModel.prototype.moveNodeAfter = function (moveNodeInfo, newParentId, brot
                     ' WHERE `left` > ' + this.rgtMoveNode;
                 connection.query(sqlUpdateLeft, function (err) {
                     if (err) throw err;
-                resolve();
+                    resolve();
                 });
             });
         })
         .then(function () {
             return new Promise(function (resolve, reject) {
-                self.once('get_node_info', function (result) {
-                    if (helper.isEmptyObject(result)) {
+                self.getNodeInfo(brotherId).then(function (result) {
+                    if (_.isEmpty(result)) {
                         reject();
                     } else {
                         resolve(helper.getFirstItemArray(result));
                     }
+                }).catch(function () {
+                    reject();
                 });
-                self.getNodeInfo(brotherId);
             });
         })
         .then(function (infoBrotherNode) {
@@ -352,9 +360,9 @@ nestSetModel.prototype.moveNodeAfter = function (moveNodeInfo, newParentId, brot
                 ' WHERE `left` > ' + rgtBrotherNode + ' AND `right` > 0';
             return new Promise(function (resolve) {
                 this.rgtBrotherNode = rgtBrotherNode;
-                    connection.query(sqlUpdateLeft, function (err) {
-                        if (err) throw err;
-                resolve();
+                connection.query(sqlUpdateLeft, function (err) {
+                    if (err) throw err;
+                    resolve();
                 });
             });
         })
@@ -365,27 +373,28 @@ nestSetModel.prototype.moveNodeAfter = function (moveNodeInfo, newParentId, brot
             return new Promise(function (resolve) {
                 connection.query(sqlUpdateRight, function (err) {
                     if (err) throw err;
-                resolve();
+                    resolve();
                 });
             });
         })
         .then(function () {
             return new Promise(function (resolve, reject) {
-                self.once('get_node_info', function (result) {
-                    if (helper.isEmptyObject(result)) {
+                self.getNodeInfo(newParentId).then(function (result) {
+                    if (_.isEmpty(result)) {
                         reject();
                     } else {
                         resolve(helper.getFirstItemArray(result));
                     }
+                }).catch(function () {
+                    reject();
                 });
-                self.getNodeInfo(newParentId);
             });
         })
         .then(function () {
             return new Promise(function (resolve, reject) {
                 var here = this;
-                self.once('get_node_info', function (result) {
-                    if (helper.isEmptyObject(result)) {
+                self.getNodeInfo(newParentId).then(function (result) {
+                    if (_.isEmpty(result)) {
                         reject();
                     } else {
                         var parentNodeInfo = helper.getFirstItemArray(result);
@@ -394,8 +403,9 @@ nestSetModel.prototype.moveNodeAfter = function (moveNodeInfo, newParentId, brot
                         here.idParentNode = parentNodeInfo.id;
                         resolve();
                     }
+                }).catch(function () {
+                    reject();
                 });
-                self.getNodeInfo(newParentId);
             })
         })
         .then(function () {
@@ -405,7 +415,7 @@ nestSetModel.prototype.moveNodeAfter = function (moveNodeInfo, newParentId, brot
                     ' WHERE `left` >= ' + this.rightParentNode + ' AND `right` > 0';
                 connection.query(sqlUpdateLeft, function (err) {
                     if (err) throw err;
-                resolve();
+                    resolve();
                 });
             });
         })

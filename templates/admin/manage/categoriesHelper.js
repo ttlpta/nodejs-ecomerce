@@ -1,11 +1,8 @@
 var aptCategoriesHelper = angular.module('aptCategoriesHelper', []);
 aptCategoriesHelper.factory('catService', ['$resource', function ($resource) {
-    return $resource('/categories', {}, {
+    return $resource('/categories/:id', {}, {
         query: {
             method: 'GET',
-            params: {
-                action: 'listCat'
-            },
             isArray: true
         }
     });

@@ -17,28 +17,21 @@ aptCategoriesModule.component('categories', {
             if (!_isValidatedUser())
                 return;
             self.category.$save(function (data) {
-                if (data.success) {
-                    _initForm();
-                }
+                _initForm();
             });
         };
         this.editCat = function (catId, catName) {
             self.validateNameNotification = '';
             self.formTitle = 'Edit Category ' + catName;
-            self.category = catService.get({
-                action: 'editCat',
-                id: catId
-            }, function (result) {
-                self.category = result;
+            self.category = catService.get({id: catId}, function (result) {
+                self.category.parent_id = result.parent_id.toString();
             });
         };
         this.deleteCat = function (catId) {
             var yes = confirm('Are you sure?');
             if (yes) {
                 catService.delete({id: catId}, function (result) {
-                    if (result.success) {
-                        _initForm();
-                    }
+                    _initForm();
                 });
             }
         };

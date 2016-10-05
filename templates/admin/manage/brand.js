@@ -18,9 +18,7 @@ aptBrandModule.component('brand', {
         });
         this.saveBrand = function () {
             self.brand.$save(function (data) {
-                if (data.success) {
-                    self.brands = Brand.query();
-                }
+                self.brands = Brand.query();
                 _changeAddBrandForm();
             });
         };
@@ -43,9 +41,7 @@ aptBrandModule.component('brand', {
                 Brand.delete({
                     id: brandId
                 }, function (result) {
-                    if (result.success) {
-                        self.brands = Brand.query();
-                    }
+                    self.brands = Brand.query();
                 });
             }
         };
