@@ -26,7 +26,7 @@ aptUserModule.component('usergroup', {
             this.showGroup = function (groupId) {
                 _removeValidateNotice();
                 self.formTitle = 'Edit User Group ' + groupId;
-                self.group = userGroupService.get({id: groupId}, function (result) {
+                self.group = userGroupService.get({ id: groupId }, function (result) {
                     _setDefaultStatusPermission(self.permissions);
                     result.permissionId.status = ALLOW_PERMISSION;
                     angular.forEach(result.permissionId, _setStatusPermission);
@@ -36,9 +36,9 @@ aptUserModule.component('usergroup', {
                 switch (field) {
                     case 'groupname':
                         if (self.group.group_name) {
-                            $http.get("/admin/validateGroupUser", {params: self.group}).then(function (response) {
+                            $http.get("/admin/validate-group-user", { params: self.group }).then(function (response) {
                                 self.validateGroupnameNotification = (response.data.isExisted) ?
-                                    errorMsg[response.data.errorCode] : '';
+                                    response.data.message: '';
                             });
                         } else {
                             self.validateGroupnameNotification = 'Group name is required';
@@ -74,13 +74,8 @@ aptUserModule.component('usergroup', {
             this.deleteGroup = function (groupId) {
                 var confirm = window.confirm("Are you sure?");
                 if (confirm) {
-                    userGroupService.delete({id: groupId}, function (result) {
-                        if (result.success) {
-                            _init();
-                        } else {
-                            alert('Error');
-                            location.reload();
-                        }
+                    userGroupService.delete({ id: groupId }, function () {
+                        _init();
                     });
                 }
             };

@@ -91,7 +91,7 @@ Helper.prototype = {
         };
         smtpTransport.sendMail(mailOptions, callback);
     },
-    getFirstItemArray: function (arr: any): any {
+    getFirstItemArray: function (arr: any[]): any {
         return arr[0];
     },
     handleRequest: function (handle) {

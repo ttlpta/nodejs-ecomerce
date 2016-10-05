@@ -1,12 +1,9 @@
 var connection = require('../../connection'),
-    util = require('util'),
     _ = require('lodash'),
     Promise = require('bluebird'),
-    EventEmitter = require('events').EventEmitter,
     userGroupCombinePermission = require('../UsergroupCombinePermission/usergroupCombinePermissionModel');
 var UserGroup = function () {
 };
-util.inherits(UserGroup, EventEmitter);
 UserGroup.prototype.listGroup = function () {
     return new Promise(function (resolve, reject) {
         var sql = 'SELECT * FROM `apt_user_group`';
@@ -16,8 +13,7 @@ UserGroup.prototype.listGroup = function () {
         });
     });
 };
-UserGroup.prototype.showGroupById = function (groupId) {
-    var self = this;
+UserGroup.prototype.showGroupById = function (params) {
     return new Promise(function (resolve, reject) {
         var sql: string = 'SELECT DISTINCT aug.id AS group_id, aug.group_name AS group_name, apcg.permission_id, ap.code, ap.name' +
             ' FROM `apt_user_group` AS aug' +
@@ -30,8 +26,8 @@ UserGroup.prototype.showGroupById = function (groupId) {
             ' RIGHT JOIN `apt_permission_combine_group` AS apcg ON aug.id = apcg.user_group_id' +
             ' RIGHT JOIN `apt_permission` AS ap ON apcg.permission_id = ap.id' +
             ' WHERE aug.id = ?';
-        connection.query(sql, [groupId, groupId], function (err, groups) {
-            if (err || _.isUndefined(groups[0].id)) reject();
+        connection.query(sql, [params.id, params.id], function (err, groups) {
+            if (err || _.isUndefined(groups[0].group_id)) reject();
             var permissionIds = [];
             var group = {
                 'id': groups[0].group_id,
@@ -49,8 +45,7 @@ UserGroup.prototype.showGroupById = function (groupId) {
     });
 };
 UserGroup.prototype.validateGroup = function (group) {
-    var sql, param;
-    var self = this;
+    var sql: string, param: string[];
     if (typeof group.id != 'undefined') {
         sql = 'SELECT COUNT(*) as countGroup FROM `apt_user_group` WHERE `group_name` LIKE ? AND `id` != ?';
         param = [group.group_name, group.id]
@@ -58,57 +53,55 @@ UserGroup.prototype.validateGroup = function (group) {
         sql = 'SELECT COUNT(*) as countGroup FROM `apt_user_group` WHERE `group_name` LIKE ?';
         param = [group.group_name]
     }
-    connection.query(sql, param, function (err, rows) {
-        var isExisted = false;
-        if (err) throw err;
-        if (!err && rows[0].countGroup) {
-            isExisted = true;
-        }
-        self.emit('validate_group', isExisted);
+
+    return new Promise(function (resolve, reject) {
+        connection.query(sql, param, function (err, rows) {
+            if (err) reject();
+            var isExisted = (!err && rows[0].countGroup) ? true : false;
+            resolve(isExisted);
+        });
     });
 };
 UserGroup.prototype.saveGroup = function (group) {
-    return new Promise(function (resolveAll, rej) {
+    return new Promise(function (resolveAll, rejectAll) {
         if (!_.isEmpty(group)) {
             connection.beginTransaction(function (err) {
-                if (err) rej();
+                if (err) rejectAll();
                 if (!_.isUndefined(group.id)) {
                     var updateUserGroupPromise = new Promise(function (resolve, reject) {
                         connection.query('UPDATE `apt_user_group` SET `group_name` = ? WHERE `id` = ?', [group.groupName, +group.id],
                             function (err) {
-                                if (err) reject();
+                                if (err) {
+                                    reject(err)
+                                };
                                 resolve();
                             });
                     });
                     updateUserGroupPromise.then(function () {
-                        if (group.allowPermission) {
-                            return new Promise(function (resolve, reject) {
-                                userGroupCombinePermission.once('add_allow_group_permission_error', function (err) {
+                        return new Promise(function (resolve, reject) {
+                            userGroupCombinePermission.addAllowGroupPermission(+group.id, group.allowPermission)
+                                .then(function () {
+                                    resolve();
+                                })
+                                .catch(function (err) {
                                     reject(err);
                                 });
-                                userGroupCombinePermission.once('add_allow_group_permission_success', function () {
-                                    resolve();
-                                });
-                                userGroupCombinePermission.addAllowGroupPermission(+group.id, group.allowPermission);
-                            });
-                        }
+                        });
                     }).then(function () {
-                        if (group.denyPermission) {
-                            return new Promise(function (resolve, reject) {
-                                userGroupCombinePermission.once('remove_deny_group_permission_error', function (err) {
+                        return new Promise(function (resolve, reject) {
+                            userGroupCombinePermission.removeDenyGroupPermission(+group.id, group.denyPermission)
+                                .then(function () {
+                                    resolve();
+                                })
+                                .catch(function (err) {
                                     reject(err);
                                 });
-                                userGroupCombinePermission.once('remove_deny_group_permission_success', function () {
-                                    resolve();
-                                });
-                                userGroupCombinePermission.removeDenyGroupPermission(+group.id, group.denyPermission);
-                            });
-                        }
+                        });
                     }).then(function () {
                         return new Promise(function (resolve, reject) {
                             connection.commit(function (err, res) {
                                 if (err) {
-                                    reject();
+                                    reject(err);
                                 } else {
                                     resolveAll(true);
                                 }
@@ -116,7 +109,7 @@ UserGroup.prototype.saveGroup = function (group) {
                         });
                     }).catch(function (err) {
                         connection.rollback();
-                        rej();
+                        rejectAll();
                     });
                 } else {
                     var insertUserGroupPromise = new Promise(function (resolve, reject) {
@@ -131,14 +124,13 @@ UserGroup.prototype.saveGroup = function (group) {
                     insertUserGroupPromise.then(function (groupId) {
                         return new Promise(function (resolve, reject) {
                             if (group.allowPermission.length) {
-
-                                userGroupCombinePermission.once('add_allow_group_permission_error', function (err) {
-                                    reject(err);
-                                });
-                                userGroupCombinePermission.once('add_allow_group_permission_success', function () {
-                                    resolve();
-                                });
-                                userGroupCombinePermission.addAllowGroupPermission(+groupId, group.allowPermission);
+                                userGroupCombinePermission.addAllowGroupPermission(+group.id, group.allowPermission)
+                                    .then(function () {
+                                        resolve();
+                                    })
+                                    .catch(function () {
+                                        reject(err);
+                                    });
                             } else {
                                 resolve();
                             }
@@ -154,7 +146,8 @@ UserGroup.prototype.saveGroup = function (group) {
                             });
                         });
                     }).catch(function (err) {
-                        rej();
+                        console.log(err);
+                        rejectAll();
                         connection.rollback();
                     });
                 }
@@ -162,45 +155,45 @@ UserGroup.prototype.saveGroup = function (group) {
         }
     });
 };
-UserGroup.prototype.deleteGroup = function (groupId) {
-    var self = this;
-    if (groupId) {
-        connection.beginTransaction(function (err) {
-            if (err) throw err;
-            var deleteUserGroupCombinePermissionPromise = new Promise(function (resolve, reject) {
-                userGroupCombinePermission.once('remove_group_permission_error', function (err) {
-                    reject(err);
+UserGroup.prototype.deleteGroup = function (params) {
+    if (params.id) {
+        return new Promise(function (resolveAll, rejectAll) {
+            connection.beginTransaction(function (err) {
+                if (err) rejectAll();
+                var deleteUserGroupCombinePermissionPromise = new Promise(function (resolve, reject) {
+                    userGroupCombinePermission.deleteGroupByGroupId(params.id)
+                        .then(function () {
+                            resolve();
+                        })
+                        .catch(function () {
+                            reject(err);
+                        });
                 });
-                userGroupCombinePermission.once('remove_group_permission_success', function () {
-                    resolve();
-                });
-                userGroupCombinePermission.deleteGroupByGroupId(groupId);
-            });
-            deleteUserGroupCombinePermissionPromise.then(function () {
-                return new Promise(function (resolve, reject) {
-                    connection.query('DELETE FROM `apt_user_group` WHERE `id` = ?', [+groupId],
-                        function (err, res) {
+                deleteUserGroupCombinePermissionPromise.then(function () {
+                    return new Promise(function (resolve, reject) {
+                        connection.query('DELETE FROM `apt_user_group` WHERE `id` = ?', [+params.id],
+                            function (err, res) {
+                                if (err) {
+                                    reject(err);
+                                } else {
+                                    resolve();
+                                }
+                            });
+                    });
+                }).then(function () {
+                    return new Promise(function (resolve, reject) {
+                        connection.commit(function (err, res) {
                             if (err) {
                                 reject(err);
                             } else {
-                                resolve();
+                                resolveAll(true);
                             }
                         });
-                });
-            }).then(function () {
-                return new Promise(function (resolve, reject) {
-                    connection.commit(function (err, res) {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            self.emit('delete_group', { success: true });
-                        }
                     });
+                }).catch(function (err) {
+                    connection.rollback();
+                    rejectAll()
                 });
-            }).catch(function (err) {
-                if (err) throw err;
-                connection.rollback();
-                self.emit('delete_group', { success: false });
             });
         });
     }

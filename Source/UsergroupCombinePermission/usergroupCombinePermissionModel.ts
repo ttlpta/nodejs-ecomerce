@@ -1,48 +1,57 @@
 var connection = require('../../connection'),
     util = require('util'),
+    _ = require('lodash'),
     EventEmitter = require('events').EventEmitter;
 var UserGroupCombinePermission = function () {
 };
 util.inherits(UserGroupCombinePermission, EventEmitter);
 UserGroupCombinePermission.prototype.addAllowGroupPermission = function (groupId, allowPermissionIds) {
-    if (allowPermissionIds) {
-        var insertValues = '(' + allowPermissionIds.join(',' + groupId + '),(') + ','+groupId +')';
-        var sql = 'INSERT IGNORE INTO `apt_permission_combine_group` (`permission_id`, `user_group_id`) ' +
-            'VALUES ' + insertValues;
-        var self = this;
-        connection.query(sql, function (err, res) {
-            if (err) {
-                self.emit('add_allow_group_permission_error', err);
-            } else {
-                self.emit('add_allow_group_permission_success');
-            }
-        });
-    }
+    return new Promise(function (resolve, reject) {
+        if (!_.isEmpty(allowPermissionIds)) {
+            var insertValues: string = '(' + allowPermissionIds.join(',' + groupId + '),(') + ',' + groupId + ')';
+            var sql: string = 'INSERT IGNORE INTO `apt_permission_combine_group` (`permission_id`, `user_group_id`) ' +
+                'VALUES ' + insertValues;
+            connection.query(sql, function (err, res) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        } else {
+            resolve();
+        }
+    });
 };
 UserGroupCombinePermission.prototype.removeDenyGroupPermission = function (groupId, denyPermissionIds) {
-    if (denyPermissionIds) {
-		var deleteValues = denyPermissionIds.join(',');
-        var sql = 'DELETE FROM `apt_permission_combine_group` WHERE `user_group_id` = ? ' +
-		'AND `permission_id` IN ( '+deleteValues+' )';
-        var self = this;
+    return new Promise(function (resolve, reject) {
+        if (!_.isEmpty(denyPermissionIds)) {
+            var deleteValues: string = denyPermissionIds.join(',');
+            var sql: string = 'DELETE FROM `apt_permission_combine_group` WHERE `user_group_id` = ? ' +
+                'AND `permission_id` IN ( ' + deleteValues + ' )';
+            connection.query(sql, [+groupId], function (err, res) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        } else {
+            resolve();
+        }
+    });
+
+};
+UserGroupCombinePermission.prototype.deleteGroupByGroupId = function (groupId) {
+    var sql: string = 'DELETE FROM `apt_permission_combine_group` WHERE `user_group_id` = ? ';
+    return new Promise(function (resolve, reject) {
         connection.query(sql, [+groupId], function (err, res) {
             if (err) {
-                self.emit('remove_deny_group_permission_error', err);
+                reject(err);
             } else {
-                self.emit('remove_deny_group_permission_success');
+                resolve();
             }
         });
-    }
-};
-UserGroupCombinePermission.prototype.deleteGroupByGroupId = function(groupId){
-	var sql = 'DELETE FROM `apt_permission_combine_group` WHERE `user_group_id` = ? ';
-	var self = this;
-	connection.query(sql, [+groupId], function (err, res) {
-		if (err) {
-			self.emit('remove_group_permission_error', err);
-		} else {
-			self.emit('remove_group_permission_success');
-		}
-	});
+    });
 };
 module.exports = new UserGroupCombinePermission();
