@@ -84,40 +84,52 @@ aptShopModule.provider('aptShopAuthenticate', [function () {
         var ruleArr = rules.split("|");
         var deferred = $q.defer();
         var param = {};
+        var notification;
         param[fieldName] = fieldValue;
         fieldLabel = (typeof fieldLabel == 'undefined') ? fieldName : fieldLabel;
         if (jQuery.inArray('required', ruleArr) != -1) {
-            var notification = (!fieldValue) ? fieldLabel + ' is required' : '';
-            deferred.resolve(notification);
+            notification = (!fieldValue) ? fieldLabel + ' is required' : '';
         }
-        if (jQuery.inArray('existed', ruleArr) != -1 && fieldValue) {
-            $http.get("/validate-user", {
-                params: param
-            }).then(function (response) {
-                deferred.resolve((response.data.isNotValid) ? response.data.message : '');
-            });
-        }
-        if (jQuery.inArray('email', ruleArr) != -1 && fieldValue) {
-            $http.get("/validate-user", {
-                params: param
-            }).then(function (response) {
-                deferred.resolve((response.data.isNotValid) ? response.data.message : '');
-            });
-        }
-        if (jQuery.inArray('phone', ruleArr) != -1 && fieldValue) {
-            $http.get("/validate-user", {
-                params: param
-            }).then(function (response) {
-                deferred.resolve((response.data.isNotValid) ? response.data.message : '');
-            });
-        }
-        if (jQuery.inArray('alphanumberic', ruleArr) != -1 && fieldValue) {
-            $http.get("/validate-user", {
-                params: param
-            }).then(function (response) {
-                deferred.resolve((response.data.isNotValid) ? response.data.message : '');
-            });
-        }
+        $http.get("/validate-user", {
+            params: param
+        }).then((response) => {
+            if (jQuery.inArray('existed', ruleArr) != -1 && fieldValue) {
+                
+            }
+        });
+
+
+        // if (jQuery.inArray('existed', ruleArr) != -1 && fieldValue && !notification) {
+        //     $http.get("/validate-user", {
+        //         params: param
+        //     }).then((response) => {
+        //         notification = (response.data.isNotValid) ? response.data.message : '';
+        //         console.log(notification);
+        //     });
+        //     console.log(notification);
+        // }
+        // if (jQuery.inArray('email', ruleArr) != -1 && fieldValue && !notification) {
+        //     $http.get("/validate-user", {
+        //         params: param
+        //     }).then(function (response) {
+        //         notification = (response.data.isNotValid) ? response.data.message : '';
+        //     });
+        // }
+        // if (jQuery.inArray('phone', ruleArr) != -1 && fieldValue && !notification) {
+        //     $http.get("/validate-user", {
+        //         params: param
+        //     }).then(function (response) {
+        //         notification = (response.data.isNotValid) ? response.data.message : '';
+        //     });
+        // }
+        // if (jQuery.inArray('alphanumberic', ruleArr) != -1 && fieldValue && !notification) {
+        //     $http.get("/validate-user", {
+        //         params: param
+        //     }).then(function (response) {
+        //         notification = (response.data.isNotValid) ? response.data.message : '';
+        //     });
+        // }
+        // deferred.resolve(notification);
 
         return deferred.promise;
     };

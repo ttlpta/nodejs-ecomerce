@@ -1,11 +1,8 @@
 var aptProductHelper = angular.module('aptProductHelper', []);
 aptProductHelper.factory('productService', ['$resource', function ($resource) {
-    return $resource('/product', {}, {
+    return $resource('/product/:id', {}, {
         query: {
             method: 'GET',
-            params: {
-                action: 'listProduct'
-            },
             isArray: true
         }
     });

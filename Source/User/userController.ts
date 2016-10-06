@@ -2,6 +2,7 @@ var validator = require('validator'),
     helper = require('../helper'),
     Promise = require('bluebird'),
     _ = require('lodash'),
+    os = require('os'),
     user = require('./userModel');
 module.exports = function (app, io) {
     io.on('connection', function (socket) {
@@ -28,7 +29,7 @@ module.exports = function (app, io) {
     app.delete('/user/:userId', helper.handleRequest(user.deleteUser));
 
     // Front-end Call
-    app.post('/registerUser', function (req, res) {
+    app.post('/register-user', function (req, res) {
         if (typeof req.body != 'undefined') {
             var saveUserPromise = new Promise(function (resolve, reject) {
                 user.once('save_user', function (userId) {
@@ -55,19 +56,20 @@ module.exports = function (app, io) {
                 });
             }).then(function (result) {
                 return new Promise(function (resolve, reject) {
-                    helper.sendEmail(result.user.email,
-                        '[Apt Shop] Confirm your password',
-                        'Click this url to confirm your registed : ' +
-                        '' + req.protocol + '://' + req.hostname + '/APTshop/#/confirmRegisted?id=' + result.user.id + '&salt=' + result.user.salt, function (error, response) {
-                            if (error) {
-                                reject();
-                                throw error;
-                            } else {
-                                res.json({
-                                    success: true
-                                });
-                            }
-                        });
+                    console.log(os.hostname());
+                    // helper.sendEmail(result.user.email,
+                    //     '[Apt Shop] Confirm your password',
+                    //     'Click this url to confirm your registed : ' +
+                    //     '' + req.protocol + '://' + req.hostname + '/APTshop/#/confirmRegisted?id=' + result.user.id + '&salt=' + result.user.salt, function (error, response) {
+                    //         if (error) {
+                    //             reject();
+                    //             throw error;
+                    //         } else {
+                    //             res.json({
+                    //                 success: true
+                    //             });
+                    //         }
+                    //     });
                 });
             }).catch(function () {
                 res.json({

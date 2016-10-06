@@ -22,16 +22,12 @@ aptProductModule.component('product', {
                 }
                 self.product.date_modified = Number(new Date());
                 self.product.$save(function (data) {
-                    if (data.success) {
-                        self.products = Product.query();
-                    }
                     _changeAddProductForm();
                 });
             };
             this.editProduct = function (productId) {
                 self.formTitle = 'Edit Product ' + productId;
                 Product.get({
-                    action: 'getProduct',
                     id: productId
                 }, function (result) {
                     if (result.success == false) {
@@ -62,9 +58,7 @@ aptProductModule.component('product', {
                     Product.delete({
                         id: productId
                     }, function (result) {
-                        if (result.success) {
-                            _changeAddProductForm();
-                        }
+                        _changeAddProductForm();
                     });
                 }
             };

@@ -135,6 +135,34 @@ User.prototype.getUser = function (options) {
         self.emit('get_user', []);
     }
 };
+User.prototype.registerUser = function (user) {
+    return new Promise((resolve, reject) => {
+        this.saveUser(user)
+            .then(function (userId) {
+                user.showUserById(userId).then(function (user) {
+                    if (_.isEmpty(user)) {
+                        reject();
+                    } else {
+                        helper.sendEmail(user.email,
+                            '[Apt Shop] Confirm your password',
+                            'Click this url to confirm your registed : ' +
+                            '' + req.protocol + '://' + req.hostname + '/APTshop/#/confirmRegisted?id=' + user.id + '&salt=' + user.salt, function (error, response) {
+                                if (error) {
+                                    reject(error);
+                                } else {
+                                    resolve(true);
+                                }
+                            });
+                    }
+                }).catch(function () {
+                    reject();
+                });
+            })
+            .catch(function () {
+                reject();
+            });
+    });
+};
 var _perpareCondition = function (conditions) {
     var condition = '';
     for (var index in conditions) {

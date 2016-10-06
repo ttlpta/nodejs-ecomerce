@@ -5,7 +5,7 @@ aptShopRegisterModule.component('register', {
 	controller : ['validateRegisterErrorCode', '$http', '$resource', '$location', 'aptShopService',
 		function registerController(errorMsg, $http, $resource, $location, aptShopService) {
 			var self = this;
-			var User = $resource('/registerUser');
+			var User = $resource('/register-user');
 			this.isRegisted = false;
 			this.user = new User();
 			this.register = function () {

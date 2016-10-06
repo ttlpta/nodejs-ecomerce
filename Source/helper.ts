@@ -108,7 +108,8 @@ Helper.prototype = {
                     res.json(result);
                 }
             })
-            .catch(function () {
+            .catch(function (err) {
+                console.log(err);
                 res.status(400).end();
             });
         }
