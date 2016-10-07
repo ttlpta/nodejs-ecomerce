@@ -62,7 +62,7 @@ aptShopModule.provider('aptShopAuthenticate', [function () {
                             params: param
                         }).then(function (response) {
                             if (response.data.success) {
-                                $cookies.put('apt_session_user', response.data.hash);
+                                $cookies.put('apt_session_user', response.data.sessionId);
                                 $rootScope.$emit('refresh_header', true);
                                 $location.search({}).path('/home');
                             } else {

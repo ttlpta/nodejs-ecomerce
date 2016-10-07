@@ -97,35 +97,40 @@ User.prototype.totalUser = function () {
         });
     });
 };
-User.prototype.userLogin = function (data) {
+User.prototype.userLogin = function (params: { username: string, password: string }) {
     var self = this;
-    var sql = connection.format('SELECT `id`, `password`, `salt`, `email`, `username`, `group`, `street`,' +
-        ' `registered`, `city`, `country`, `state`, `zipcode` FROM `apt_user` WHERE `username` = ? AND `group` !=  5', data.username);
-    connection.query(sql, function (err, rows) {
-        if (rows[0]) {
-            var encryptPassword = helper.encodeBase64(data.password) + rows[0].salt;
-            if (encryptPassword === rows[0].password && delete rows[0].password) {
-                self.emit('user_login', rows[0]);
+    var sql = connection.format('SELECT `id`, `group`, `password`, `salt`' +
+        ' FROM `apt_user` WHERE `username` = ? AND `group` !=  5', params.username);
+    return new Promise(function (resolve, reject) {
+        connection.query(sql, function (err, rows) {
+            if (err) reject(err);
+            if (rows[0]) {
+                var encryptPassword = helper.encodeBase64(params.password) + rows[0].salt;
+                if (encryptPassword === rows[0].password) {
+                    var result = {
+                        success: true,
+                        hash: helper.encodeBase64(JSON.stringify(_.omit(rows[0], ['password', 'salt'])))
+                    };
+                    resolve(result);
+                } else {
+                    reject();
+                }
             } else {
-                self.emit('user_login', false);
+                reject();
             }
-        } else {
-            self.emit('user_login', false);
-        }
+        });
     });
 };
 User.prototype.getUser = function (options) {
     return new Promise(function (resolve, reject) {
         var condition = _perpareCondition(options);
         if (condition) {
-            connection.query('SELECT `id`, `salt`, `email`, `username`, `group`, `street`,' +
-                ' `registered`, `city`, `country`, `state`, `zipcode`' +
-                'FROM `apt_user` WHERE ' + condition, function (err, rows) {
-                    if (err) { reject(err); }
-                    else {
-                        resolve(rows);
-                    }
-                });
+            connection.query('SELECT * FROM `apt_user` WHERE ' + condition, function (err, rows) {
+                if (err) { reject(err); }
+                else {
+                    resolve(rows);
+                }
+            });
         } else {
             reject();
         }
@@ -158,30 +163,27 @@ User.prototype.confirmRegisted = function (params) {
         _User.getUser(params).then(function (users) {
             var user = helper.getFirstItemArray(users);
             if (+user.group == 5) {
-                // if (userData && delete userData.salt) {
-                //     userData.group = user.CUSTOMER;
-                //     user.once('save_user', function () {
-                //         res.json({
-                //             success: true,
-                //             hash: helper.encodeBase64(JSON.stringify(userData))
-                //         });
-                //     });
-                //     user.saveUser(userData);
-                // } else
-                //     res.json({
-                //         success: false
-                //     });
+                console.log('result');
                 user.group = 2;
-                user.saveUser(user).then(function(result){
-                    
-                }).catch(function(){
-                    reject();
+                _User.saveUser(user).then(function (result) {
+                    console.log(result);
+                    if (result) {
+                        _User.userLogin(_.pick(user, ['username', 'password'])).then(function (result) {
+                            resolve(result);
+                        }).catch(function (err) {
+                            reject(err);
+                        });
+                    } else {
+                        reject();
+                    }
+                }).catch(function (err) {
+                    reject(err);
                 });
             } else {
                 reject();
             }
         }).catch(function () {
-
+            reject();
         });
     });
 };

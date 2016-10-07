@@ -30,44 +30,21 @@ module.exports = function (app, io) {
 
     // Front-end Call
     app.post('/register-user', helper.handleRequest(user.registerUser));
-    app.get('/confirmRegisted', helper.handleRequest(user.confirmRegisted));
-    // app.get('/confirmRegisted', function (req, res) {
-    //     if (typeof req.query.id != 'undefined' && typeof req.query.salt != 'undefined') {
-    //         var id = req.query.id;
-    //         var salt = req.query.salt;
-    //         user.once('get_user', function (userDatas) {
-    //             var userData = helper.getFirstItemArray(userDatas);
-    //             if (+userData.group == user.UNCONFIRM) {
-    //                 if (userData && delete userData.salt) {
-    //                     userData.group = user.CUSTOMER;
-    //                     user.once('save_user', function () {
-    //                         res.json({
-    //                             success: true,
-    //                             hash: helper.encodeBase64(JSON.stringify(userData))
-    //                         });
-    //                     });
-    //                     user.saveUser(userData);
-    //                 } else
-    //                     res.json({
-    //                         success: false
-    //                     });
-    //             } else {
-    //                 res.json({
-    //                     success: false
-    //                 });
-    //             }
-    //         });
-    //         user.getUser({
-    //             salt: salt,
-    //             id: id
-    //         });
-    //     } else {
-    //         res.json({
-    //             success: false
-    //         });
-    //     }
-    // });
-
+    app.get('/confirmRegisted', function (req, res) {
+        if (!_.isUndefined(req.query.id) || !_.isUndefined(req.query.salt)) {
+            user.confirmRegisted(req.query).then(function (result) {
+                console.log(result);
+                if (result.success) {
+                    req.session.hash = result.hash;
+                    res.json({ success: true, sessionId: req.sessionID });
+                }
+            }).catch(function () {
+                res.status(400).end();
+            });
+        } else {
+            res.status(400).end();
+        }
+    });
     app.post('/userLogin', function (req, res) {
         if (typeof req.body != 'undefined') {
             user.once('user_login', function (result) {
