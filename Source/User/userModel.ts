@@ -4,9 +4,8 @@ var connection = require('../../connection'),
     _ = require('lodash'),
     EventEmitter = require('events').EventEmitter,
     helper = require('../helper');
-var User = function () {
-};
-util.inherits(User, EventEmitter);
+function User() { };
+var _User = new User();
 User.prototype.listUser = function (params: { limit: number, offset: number, orderBy: string, sort: string, username?: string }): any {
     return new Promise(function (resolve, reject) {
         var sql = helper.buildQuery
@@ -37,12 +36,12 @@ User.prototype.saveUser = function (user) {
         }
         if (!_.isUndefined(user.id)) {
             connection.query('UPDATE `apt_user` SET ? WHERE `id` = ?', [user, user.id], function (err, res) {
-                if (err) throw err;
-                resolve((res.changedRows) ? user.id : 0);
+                if (err) reject(err);
+                resolve((res.changedRows) ? true : false);
             });
         } else {
             connection.query('INSERT INTO `apt_user` SET ?', user, function (err, res) {
-                if (err) throw err;
+                if (err) reject(err);
                 resolve(res.insertId);
             });
         }
@@ -116,51 +115,74 @@ User.prototype.userLogin = function (data) {
     });
 };
 User.prototype.getUser = function (options) {
-    var self = this;
-    var condition = _perpareCondition(options);
-    if (condition) {
-        connection.query('SELECT `id`, `salt`, `email`, `username`, `group`, `street`,' +
-            ' `registered`, `city`, `country`, `state`, `zipcode`' +
-            'FROM `apt_user` WHERE ' + condition, function (err, rows) {
-                var result = {};
-                if (rows) {
-                    result = rows;
-                } else {
-                    if (err) throw err;
-                    result = [];
-                }
-                self.emit('get_user', result);
-            });
-    } else {
-        self.emit('get_user', []);
-    }
+    return new Promise(function (resolve, reject) {
+        var condition = _perpareCondition(options);
+        if (condition) {
+            connection.query('SELECT `id`, `salt`, `email`, `username`, `group`, `street`,' +
+                ' `registered`, `city`, `country`, `state`, `zipcode`' +
+                'FROM `apt_user` WHERE ' + condition, function (err, rows) {
+                    if (err) { reject(err); }
+                    else {
+                        resolve(rows);
+                    }
+                });
+        } else {
+            reject();
+        }
+    });
 };
 User.prototype.registerUser = function (user) {
     return new Promise((resolve, reject) => {
-        this.saveUser(user)
-            .then(function (userId) {
-                user.showUserById(userId).then(function (user) {
-                    if (_.isEmpty(user)) {
-                        reject();
-                    } else {
-                        helper.sendEmail(user.email,
-                            '[Apt Shop] Confirm your password',
-                            'Click this url to confirm your registed : ' +
-                            '' + req.protocol + '://' + req.hostname + '/APTshop/#/confirmRegisted?id=' + user.id + '&salt=' + user.salt, function (error, response) {
-                                if (error) {
-                                    reject(error);
-                                } else {
-                                    resolve(true);
-                                }
-                            });
-                    }
-                }).catch(function () {
+        _User.saveUser(user).then(function (userId) {
+            if (userId) {
+                helper.sendEmail(user.email,
+                    '[Apt Shop] Confirm your password',
+                    'Click this url to confirm your registed : ' +
+                    'http://localhost/APTshop/#/confirmRegisted?id=' + userId + '&salt=' + user.salt, function (error, response) {
+                        if (error) {
+                            reject(error);
+                        } else {
+                            resolve(true);
+                        }
+                    });
+            } else {
+                reject();
+            }
+        }).catch(function () {
+            reject();
+        });
+    });
+};
+User.prototype.confirmRegisted = function (params) {
+    return new Promise(function (resolve, reject) {
+        _User.getUser(params).then(function (users) {
+            var user = helper.getFirstItemArray(users);
+            if (+user.group == 5) {
+                // if (userData && delete userData.salt) {
+                //     userData.group = user.CUSTOMER;
+                //     user.once('save_user', function () {
+                //         res.json({
+                //             success: true,
+                //             hash: helper.encodeBase64(JSON.stringify(userData))
+                //         });
+                //     });
+                //     user.saveUser(userData);
+                // } else
+                //     res.json({
+                //         success: false
+                //     });
+                user.group = 2;
+                user.saveUser(user).then(function(result){
+                    
+                }).catch(function(){
                     reject();
                 });
-            })
-            .catch(function () {
+            } else {
                 reject();
-            });
+            }
+        }).catch(function () {
+
+        });
     });
 };
 var _perpareCondition = function (conditions) {
@@ -174,4 +196,4 @@ var _perpareCondition = function (conditions) {
 
     return condition;
 };
-module.exports = new User();
+module.exports = _User;

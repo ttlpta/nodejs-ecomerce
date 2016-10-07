@@ -29,93 +29,44 @@ module.exports = function (app, io) {
     app.delete('/user/:userId', helper.handleRequest(user.deleteUser));
 
     // Front-end Call
-    app.post('/register-user', function (req, res) {
-        if (typeof req.body != 'undefined') {
-            var saveUserPromise = new Promise(function (resolve, reject) {
-                user.once('save_user', function (userId) {
-                    if (+userId) {
-                        resolve(+userId);
-                    } else {
-                        reject();
-                    }
-                });
-                user.saveUser(Object.assign(req.body, {
-                    group: 3
-                }));
-            });
-            saveUserPromise.then(function (userId) {
-                return new Promise(function (resolve, reject) {
-                    user.once('show_user', function (result) {
-                        if (result.success) {
-                            resolve(result);
-                        } else {
-                            reject();
-                        }
-                    });
-                    user.showUserById(userId);
-                });
-            }).then(function (result) {
-                return new Promise(function (resolve, reject) {
-                    console.log(os.hostname());
-                    // helper.sendEmail(result.user.email,
-                    //     '[Apt Shop] Confirm your password',
-                    //     'Click this url to confirm your registed : ' +
-                    //     '' + req.protocol + '://' + req.hostname + '/APTshop/#/confirmRegisted?id=' + result.user.id + '&salt=' + result.user.salt, function (error, response) {
-                    //         if (error) {
-                    //             reject();
-                    //             throw error;
-                    //         } else {
-                    //             res.json({
-                    //                 success: true
-                    //             });
-                    //         }
-                    //     });
-                });
-            }).catch(function () {
-                res.json({
-                    success: false,
-                    errorCode: 8
-                });
-            });
-        }
-    });
-
-    app.get('/confirmRegisted', function (req, res) {
-        if (typeof req.query.id != 'undefined' && typeof req.query.salt != 'undefined') {
-            var id = req.query.id;
-            var salt = req.query.salt;
-            user.once('get_user', function (userDatas) {
-                var userData = helper.getFirstItemArray(userDatas);
-                if (+userData.group == user.UNCONFIRM) {
-                    if (userData && delete userData.salt) {
-                        userData.group = user.CUSTOMER;
-                        user.once('save_user', function () {
-                            res.json({
-                                success: true,
-                                hash: helper.encodeBase64(JSON.stringify(userData))
-                            });
-                        });
-                        user.saveUser(userData);
-                    } else
-                        res.json({
-                            success: false
-                        });
-                } else {
-                    res.json({
-                        success: false
-                    });
-                }
-            });
-            user.getUser({
-                salt: salt,
-                id: id
-            });
-        } else {
-            res.json({
-                success: false
-            });
-        }
-    });
+    app.post('/register-user', helper.handleRequest(user.registerUser));
+    app.get('/confirmRegisted', helper.handleRequest(user.confirmRegisted));
+    // app.get('/confirmRegisted', function (req, res) {
+    //     if (typeof req.query.id != 'undefined' && typeof req.query.salt != 'undefined') {
+    //         var id = req.query.id;
+    //         var salt = req.query.salt;
+    //         user.once('get_user', function (userDatas) {
+    //             var userData = helper.getFirstItemArray(userDatas);
+    //             if (+userData.group == user.UNCONFIRM) {
+    //                 if (userData && delete userData.salt) {
+    //                     userData.group = user.CUSTOMER;
+    //                     user.once('save_user', function () {
+    //                         res.json({
+    //                             success: true,
+    //                             hash: helper.encodeBase64(JSON.stringify(userData))
+    //                         });
+    //                     });
+    //                     user.saveUser(userData);
+    //                 } else
+    //                     res.json({
+    //                         success: false
+    //                     });
+    //             } else {
+    //                 res.json({
+    //                     success: false
+    //                 });
+    //             }
+    //         });
+    //         user.getUser({
+    //             salt: salt,
+    //             id: id
+    //         });
+    //     } else {
+    //         res.json({
+    //             success: false
+    //         });
+    //     }
+    // });
 
     app.post('/userLogin', function (req, res) {
         if (typeof req.body != 'undefined') {
@@ -171,6 +122,7 @@ module.exports = function (app, io) {
                     var result = (isExisted) ?
                         {
                             isNotValid: true,
+                            rule: 'existed',
                             message: 'Username is existed'
                         } :
                         {
@@ -181,6 +133,7 @@ module.exports = function (app, io) {
             } else {
                 res.json({
                     isNotValid: true,
+                    rule: 'alphanumberic',
                     message: 'Username contains special character or space'
                 });
             }
@@ -191,6 +144,7 @@ module.exports = function (app, io) {
                     var result = (isExisted) ?
                         {
                             isNotValid: true,
+                            rule: 'existed',
                             message: 'Email is existed'
                         } :
                         {
@@ -201,6 +155,7 @@ module.exports = function (app, io) {
             } else {
                 res.json({
                     isNotValid: true,
+                    rule: 'email',
                     message: 'Email is wrong format'
                 });
             }
@@ -209,6 +164,7 @@ module.exports = function (app, io) {
             if (!validator.isMobilePhone(req.query.phone, 'vi-VN')) {
                 res.json({
                     isNotValid: true,
+                    rule: 'phone-number',
                     message: 'Phone number is wrong format'
                 });
             } else {
@@ -221,6 +177,7 @@ module.exports = function (app, io) {
             if (!validator.isAlphanumeric(req.query.password)) {
                 res.json({
                     isNotValid: true,
+                    rule: 'alphanumberic',
                     message: 'Password is wrong format'
                 });
             } else {
