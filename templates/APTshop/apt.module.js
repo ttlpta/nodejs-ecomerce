@@ -14,6 +14,7 @@ aptShopModule.provider('aptShopAuthenticate', [function () {
             if (typeof $cookies.get('apt_session_user') == 'undefined') {
                 return {};
             }
+            console.log(JSON.parse($base64.decode($cookies.get('apt_session_user'))));
             return (jsonParse) ? JSON.parse($base64.decode($cookies.get('apt_session_user')))
                 : $base64.decode($cookies.get('apt_session_user'));
         };
@@ -61,8 +62,10 @@ aptShopModule.provider('aptShopAuthenticate', [function () {
                         $http.get("/confirmRegisted", {
                             params: param
                         }).then(function (response) {
+                            console.log(response);
                             if (response.data.success) {
-                                $cookies.put('apt_session_user', response.data.sessionId);
+                                $cookies.put('apt_session_id', response.data.sessionId);
+                                $cookies.put('apt_session_user', response.data.current_user);
                                 $rootScope.$emit('refresh_header', true);
                                 $location.search({}).path('/home');
                             } else {

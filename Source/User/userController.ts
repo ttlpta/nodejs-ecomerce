@@ -33,10 +33,9 @@ module.exports = function (app, io) {
     app.get('/confirmRegisted', function (req, res) {
         if (!_.isUndefined(req.query.id) || !_.isUndefined(req.query.salt)) {
             user.confirmRegisted(req.query).then(function (result) {
-                console.log(result);
                 if (result.success) {
                     req.session.hash = result.hash;
-                    res.json({ success: true, sessionId: req.sessionID });
+                    res.json({ success: true, sessionId: req.sessionID, current_user: result.current_user });
                 }
             }).catch(function () {
                 res.status(400).end();

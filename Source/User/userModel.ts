@@ -98,18 +98,16 @@ User.prototype.totalUser = function () {
     });
 };
 User.prototype.userLogin = function (params: { username: string, password: string }) {
-    var self = this;
-    var sql = connection.format('SELECT `id`, `group`, `password`, `salt`' +
-        ' FROM `apt_user` WHERE `username` = ? AND `group` !=  5', params.username);
+    var sql = connection.format('SELECT `id`, `username`, `group`, `password`' +
+        ' FROM `apt_user` WHERE `username` = ? ', params.username);
     return new Promise(function (resolve, reject) {
         connection.query(sql, function (err, rows) {
             if (err) reject(err);
             if (rows[0]) {
-                var encryptPassword = helper.encodeBase64(params.password) + rows[0].salt;
-                if (encryptPassword === rows[0].password) {
+                if (params.password === rows[0].password) {
                     var result = {
                         success: true,
-                        hash: helper.encodeBase64(JSON.stringify(_.omit(rows[0], ['password', 'salt'])))
+                        current_user: helper.encodeBase64(JSON.stringify(_.omit(rows[0], ['password'])))
                     };
                     resolve(result);
                 } else {
@@ -162,11 +160,9 @@ User.prototype.confirmRegisted = function (params) {
     return new Promise(function (resolve, reject) {
         _User.getUser(params).then(function (users) {
             var user = helper.getFirstItemArray(users);
-            if (+user.group == 5) {
-                console.log('result');
+            if (_.isNull(user.group)) {
                 user.group = 2;
-                _User.saveUser(user).then(function (result) {
-                    console.log(result);
+                _User.saveUser(_.omit(user, ['password'])).then(function (result) {
                     if (result) {
                         _User.userLogin(_.pick(user, ['username', 'password'])).then(function (result) {
                             resolve(result);
