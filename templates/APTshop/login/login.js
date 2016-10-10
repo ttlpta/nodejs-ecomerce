@@ -25,9 +25,10 @@ aptShopLoginModule.component('login', {
                 if (!_isValidatedUser())
                     return false;
                 var param = {username: self.username, password: self.password};
-                $http.post('/userLogin', param).then(function (response) {
+                $http.post('/user-login', param).then(function (response) {
                     if (response.data.success) {
-                        $cookies.put('apt_session_user', response.data.hash);
+                        $cookies.put('apt_session_id', response.data.sessionId);
+                        $cookies.put('apt_session_user', response.data.current_user);
                         $rootScope.$emit('refresh_header');
                         $location.search({}).path('/home');
                     } else {

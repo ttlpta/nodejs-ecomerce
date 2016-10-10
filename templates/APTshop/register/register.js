@@ -13,12 +13,7 @@ aptShopRegisterModule.component('register', {
 					return false;
 				self.user.registered = new Date();
 				self.user.$save(function (data) {
-					if (data.success) {
-						self.isRegisted = true;
-					} else {
-						self.notification = errorMsg[data.errorCode];
-						self.user = new User();
-					}
+					self.isRegisted = true;
 				});
 			};
 			this.validateField = function (field) {

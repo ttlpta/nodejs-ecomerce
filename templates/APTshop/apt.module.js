@@ -14,7 +14,6 @@ aptShopModule.provider('aptShopAuthenticate', [function () {
             if (typeof $cookies.get('apt_session_user') == 'undefined') {
                 return {};
             }
-            console.log(JSON.parse($base64.decode($cookies.get('apt_session_user'))));
             return (jsonParse) ? JSON.parse($base64.decode($cookies.get('apt_session_user')))
                 : $base64.decode($cookies.get('apt_session_user'));
         };
@@ -27,7 +26,6 @@ aptShopModule.provider('aptShopAuthenticate', [function () {
     var socket = io();
     $rootScope.$on('refresh_header', function () {
         if (aptShopAuthenticate.isLogin()) {
-            console.log();
             socket.emit('user_is_logging', aptShopAuthenticate.getCurrentUser(false));
         }
     });
@@ -52,17 +50,17 @@ aptShopModule.provider('aptShopAuthenticate', [function () {
                     break;
                 case 'logout':
                     $cookies.remove('apt_session_user');
+                    $cookies.remove('apt_session_id');
                     $rootScope.$emit('refresh_header');
                     $location.path('/home');
                     socket.emit('forceDisconnect');
                     break;
-                case 'confirmRegisted':
+                case 'confirm-registed':
                     var param = $location.search();
                     if (!aptShopAuthenticate.isLogin()) {
-                        $http.get("/confirmRegisted", {
+                        $http.get("/confirm-registed", {
                             params: param
                         }).then(function (response) {
-                            console.log(response);
                             if (response.data.success) {
                                 $cookies.put('apt_session_id', response.data.sessionId);
                                 $cookies.put('apt_session_user', response.data.current_user);
@@ -79,6 +77,9 @@ aptShopModule.provider('aptShopAuthenticate', [function () {
                     break;
                 case 'updatePassword':
                     $rootScope.title = 'Update password';
+                    break;
+                case 'category':
+                    $rootScope.title = 'Category';
                     break;
             }
         });

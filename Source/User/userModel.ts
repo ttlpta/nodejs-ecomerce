@@ -37,6 +37,7 @@ User.prototype.saveUser = function (user) {
         if (!_.isUndefined(user.id)) {
             connection.query('UPDATE `apt_user` SET ? WHERE `id` = ?', [user, user.id], function (err, res) {
                 if (err) reject(err);
+                console.log(res.changedRows);
                 resolve((res.changedRows) ? true : false);
             });
         } else {
@@ -98,10 +99,13 @@ User.prototype.totalUser = function () {
     });
 };
 User.prototype.userLogin = function (params: { username: string, password: string }) {
+    console.log('aaaaaaaaaaaaaaaaaaaaa');
     var sql = connection.format('SELECT `id`, `username`, `group`, `password`' +
         ' FROM `apt_user` WHERE `username` = ? ', params.username);
+        console.log(sql);
     return new Promise(function (resolve, reject) {
         connection.query(sql, function (err, rows) {
+            console.log(rows[0]);
             if (err) reject(err);
             if (rows[0]) {
                 if (params.password === rows[0].password) {
@@ -109,6 +113,7 @@ User.prototype.userLogin = function (params: { username: string, password: strin
                         success: true,
                         current_user: helper.encodeBase64(JSON.stringify(_.omit(rows[0], ['password'])))
                     };
+                    console.log('aa');
                     resolve(result);
                 } else {
                     reject();
@@ -119,19 +124,19 @@ User.prototype.userLogin = function (params: { username: string, password: strin
         });
     });
 };
-User.prototype.getUser = function (options) {
+User.prototype.getUserFirst = function (select, where) {
+    return _User.getUser(select, where, true);
+};
+User.prototype.getUser = function (select, where, first) {
+    if (_.isUndefined(first)) first = false;
     return new Promise(function (resolve, reject) {
-        var condition = _perpareCondition(options);
-        if (condition) {
-            connection.query('SELECT * FROM `apt_user` WHERE ' + condition, function (err, rows) {
-                if (err) { reject(err); }
-                else {
-                    resolve(rows);
-                }
-            });
-        } else {
-            reject();
-        }
+        var sql = helper.buildQuery.select(select).from('apt_user').where(where).render();
+        connection.query(sql, function (err, rows) {
+            if (err) { reject(err); }
+            else {
+                resolve((first) ? helper.getFirstItemArray(rows) : rows);
+            }
+        });
     });
 };
 User.prototype.registerUser = function (user) {
@@ -141,7 +146,7 @@ User.prototype.registerUser = function (user) {
                 helper.sendEmail(user.email,
                     '[Apt Shop] Confirm your password',
                     'Click this url to confirm your registed : ' +
-                    'http://localhost/APTshop/#/confirmRegisted?id=' + userId + '&salt=' + user.salt, function (error, response) {
+                    'http://localhost/APTshop/#/confirm-registed?id=' + userId + '&salt=' + user.salt, function (error, response) {
                         if (error) {
                             reject(error);
                         } else {
@@ -157,29 +162,22 @@ User.prototype.registerUser = function (user) {
     });
 };
 User.prototype.confirmRegisted = function (params) {
-    return new Promise(function (resolve, reject) {
-        _User.getUser(params).then(function (users) {
-            var user = helper.getFirstItemArray(users);
-            if (_.isNull(user.group)) {
-                user.group = 2;
-                _User.saveUser(_.omit(user, ['password'])).then(function (result) {
-                    if (result) {
-                        _User.userLogin(_.pick(user, ['username', 'password'])).then(function (result) {
-                            resolve(result);
-                        }).catch(function (err) {
-                            reject(err);
-                        });
-                    } else {
-                        reject();
-                    }
-                }).catch(function (err) {
-                    reject(err);
-                });
+    return new Promise(function (resolveAll, rejectAll) {
+        var confirmRegistedPromise = _User.getUserFirst('*', params);
+        confirmRegistedPromise.then(function (user) {
+            this.user = user;
+            user.group = 2;
+            return _User.saveUser(_.omit(user, ['password']));
+        }).then(function (result) {
+            if (result) {
+                return _User.userLogin(_.pick(this.user, ['username', 'password']));
             } else {
-                reject();
+                return Promise.reject;
             }
-        }).catch(function () {
-            reject();
+        }).then(function (result) {
+            resolveAll(result);
+        }).catch(function (err) {
+            rejectAll(err);
         });
     });
 };

@@ -72,4 +72,13 @@ Product.prototype.deleteProduct = function (params: { id: number }) {
         });
     });
 };
+Product.prototype.getProductByCatId = function (params: { id: number }) {
+    var sql = helper.buildQuery.select('*').from('apt_product').where({ category_id: params.id }).render();
+    return new Promise(function (resolve, reject) {
+        connection.query(sql, (err, rows) => {
+            if (err) reject(err);
+            resolve(rows);
+        });
+    });
+};
 module.exports = new Product();

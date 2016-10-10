@@ -1,3 +1,9 @@
-/**
- * Created by Admin on 9/13/2016.
- */
+var aptProductHelper = angular.module('aptProductHelper', []);
+aptProductHelper.factory('productService', ['$resource', function ($resource) {
+    return $resource('/category/:id/product', {}, {
+        query: {
+            method: 'GET',
+            isArray: true
+        }
+    });
+}]);

@@ -4,7 +4,7 @@ aptShopModule.config(['$routeProvider',
             .when('/home', {
                 template: '<home></home>'
             })
-            .when('/confirmRegisted', {
+            .when('/confirm-registed', {
                 template: ''
             })
             .when('/login', {

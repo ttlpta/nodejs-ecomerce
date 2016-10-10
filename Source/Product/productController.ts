@@ -5,4 +5,5 @@ module.exports = function (app) {
     app.get('/product/:id', helper.handleRequest(product.getProductById));
     app.post('/product', helper.handleRequest(product.saveProduct));
     app.delete('/product/:id', helper.handleRequest(product.deleteProduct));
+    app.get('/category/:id/product', helper.handleRequest(product.getProductByCatId));
 };
