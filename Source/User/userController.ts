@@ -51,7 +51,7 @@ module.exports = function (app, io) {
             userLoginPromise.then(function (userData) {
                 return user.userLogin({ username: username, password: passwordEncode + userData.salt });
             }).then(function (result) {
-                console.log(result);
+                console.trace('result');
                 if (result.success) {
                     res.json({ success: true, sessionId: req.sessionID, current_user: result.current_user });
                 }

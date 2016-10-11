@@ -14,28 +14,26 @@
                 <div ng-repeat="product in productsCtrl.products" class="col-md-4 item-grid1 simpleCart_shelfItem">
                     <div class=" mid-pop">
                         <div class="pro-img">
-                            <img src="images/pc.jpg" class="img-responsive" alt="">
+                            <img ng-src="{{product.image}}" class="img-responsive" alt="">
 
                             <div class="zoom-icon ">
-                                <a class="picture" href="images/pc.jpg" rel="title"
+                                <a class="picture" href="#/product#{{product.id}}" rel="title"
                                    class="b-link-stripe b-animate-go  thickbox"><i
                                         class="glyphicon glyphicon-search icon "></i></a>
-                                <a href="single.html"><i class="glyphicon glyphicon-menu-right icon"></i></a>
                             </div>
                         </div>
                         <div class="mid-1">
                             <div class="women">
                                 <div class="women-top">
-                                    <span>Women</span>
-                                    <h6><a href="single.html">{{product.name}}</a></h6>
+                                    <h6><a href="#">{{product.name}}</a></h6>
                                 </div>
                                 <div class="img item_add">
-                                    <a href="#"><img src="images/ca.png" alt=""></a>
+                                    <a href="#"><img src="assert/images/ca.png" alt=""></a>
                                 </div>
                                 <div class="clearfix"></div>
                             </div>
                             <div class="mid-2">
-                                <p><label>${{product.price}}</label><em class="item_price">$70.00</em></p>
+                                <p><label></label><em class="item_price">${{product.price}}</em></p>
 
                                 <div class="block">
                                     <div class="starbox small ghosting"></div>

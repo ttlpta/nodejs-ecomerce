@@ -1,6 +1,7 @@
 var connection = require('../../connection'),
     util = require('util'),
     _ = require('lodash'),
+    config = require('../../config'),
     EventEmitter = require('events').EventEmitter,
     helper = require('../helper');
 var Product = function () {
@@ -77,7 +78,14 @@ Product.prototype.getProductByCatId = function (params: { id: number }) {
     return new Promise(function (resolve, reject) {
         connection.query(sql, (err, rows) => {
             if (err) reject(err);
-            resolve(rows);
+            var products: Object[] = [];
+            _.forEach(rows, function (row) {
+                var images = JSON.parse(row.images_path);
+                row.image = config.productImageDir + images[0];
+                
+                products.push(_.omit(row, ['images_path']));
+            });
+            resolve(products);
         });
     });
 };

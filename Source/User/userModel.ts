@@ -99,13 +99,10 @@ User.prototype.totalUser = function () {
     });
 };
 User.prototype.userLogin = function (params: { username: string, password: string }) {
-    console.log('aaaaaaaaaaaaaaaaaaaaa');
     var sql = connection.format('SELECT `id`, `username`, `group`, `password`' +
         ' FROM `apt_user` WHERE `username` = ? ', params.username);
-        console.log(sql);
     return new Promise(function (resolve, reject) {
         connection.query(sql, function (err, rows) {
-            console.log(rows[0]);
             if (err) reject(err);
             if (rows[0]) {
                 if (params.password === rows[0].password) {
@@ -113,7 +110,6 @@ User.prototype.userLogin = function (params: { username: string, password: strin
                         success: true,
                         current_user: helper.encodeBase64(JSON.stringify(_.omit(rows[0], ['password'])))
                     };
-                    console.log('aa');
                     resolve(result);
                 } else {
                     reject();

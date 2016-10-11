@@ -25,6 +25,9 @@ aptAdminModule.config(['$routeProvider',
             .when('/brand', {
                 template : '<apt-header></apt-header><brand></brand><apt-footer></apt-footer>'
             })
+			.when('/setting', {
+                template : '<apt-header></apt-header><setting></setting><apt-footer></apt-footer>'
+            })
 			.otherwise('/login');
 		}
 	]);

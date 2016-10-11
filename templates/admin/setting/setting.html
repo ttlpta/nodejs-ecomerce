@@ -1,0 +1,39 @@
+<div id="wrapper">
+    <div id="content">
+        <br/>
+        <div id="box">
+            <h3 id="adduser">{{(settingCtrl.formTitle) ? settingCtrl.formTitle : 'Setting'}}</h3>
+            <p class="adduser-notification">{{settingCtrl.notification}}</p>
+            <form id="form" name="addUserForm" ng-submit="settingCtrl.saveSetting()">
+                <fieldset id="personal">
+                    <legend>SITE SETTING</legend>
+                    <label for="title">Title: </label>
+                    <input ng-model="settingCtrl.setting.title" type="text"/>
+                    <br/>
+                    <label for="description">Description : </label>
+                    <input ng-blur="settingCtrl.validateField('description')" ng-model="settingCtrl.setting.description" type="text" tabindex="2"/>
+                    <span class="help-block adduser-notification">{{userCtrl.validateDescriptionNotification}}</span>
+                    <br/>
+                    <label for="logo">Logo : </label>
+                    <input type="file" file-image name="image" />
+                    <br/>
+                    <label for="fb">Facebook Page : </label>
+                    <input ng-model="settingCtrl.setting.facebook"/>
+                    <span class="help-block adduser-notification">{{settingCtrl.validateFacebookNotification}}</span>
+                    <br/>
+                    <label for="street">Currency : </label>
+                    <select ng-model="settingCtrl.setting.currency">
+                        <option>VND</option>
+                        <option>USA</option>
+                    </select>
+                    <br/>
+                </fieldset>
+                <br/>
+                <div align="center">
+                    <input id="button1" type="submit" value="Send"/>
+                </div>
+            </form>
+        </div>
+    </div>
+    <apt-sidebar></apt-sidebar>
+</div>
