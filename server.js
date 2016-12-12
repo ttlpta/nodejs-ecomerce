@@ -60,5 +60,5 @@ require('./server/Categories/categoriesController')(app);
 require('./server/Product/productController')(app);
 require('./server/Brand/brandController')(app);
 server.listen(80, function () {
-    console.log('Running....');
+    console.log('Runningaa....');
 });
